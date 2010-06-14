@@ -1,0 +1,46 @@
+
+#app-window {
+	border: #555 1px solid; 
+	margin-left: auto;
+	margin-right: auto;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 200px;
+	position: relative;
+}
+
+#loader {
+	height: 300px;
+	text-align: center;
+	margin-top: 200px;
+	vertical-align: top;
+	font-size: x-small;
+	color: #555;
+}
+
+#loader img {
+	margin-right: 20px;
+	
+}
+
+.checkers-bg {
+	background-image: url("images/checkers3.gif");
+	background-repeat: repeat;
+	
+}
+
+.mindmap-node {
+	border: 2px #333 solid;
+	padding: 12px;
+	font-weight: bold;
+	font-size: larger;
+	background-color: #fff;
+	margin: 0px 48px 48px 0px;
+}
+
+
+.mindmap-node-selected {
+	border: 2px #f00 dashed;
+}
