@@ -114,7 +114,6 @@ public class NodeWidget extends Composite implements NodeView {
 	@Override
 	public void setLocation(NodeLocation location) {
 		NodeWidget parent = getParentNodeWidget();
-		_childPanelRight.getElement().
 		if (location == NodeLocation.LEFT) {
 			_container.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_RIGHT);
 		} else {
