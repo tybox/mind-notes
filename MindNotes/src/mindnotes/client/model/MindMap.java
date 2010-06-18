@@ -6,6 +6,7 @@ public class MindMap {
 	public MindMap() {
 		_rootNode = new Node();
 		_rootNode.setText("Root");
+		_rootNode.setNodeLocation(NodeLocation.ROOT);
 	}
 	
 	/**
@@ -22,6 +23,7 @@ public class MindMap {
 	 */
 	public void setRootNode(Node rootNode) {
 		_rootNode = rootNode;
+		_rootNode.setNodeLocation(NodeLocation.ROOT);
 	}
 	
 	

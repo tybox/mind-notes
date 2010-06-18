@@ -5,9 +5,11 @@ import mindnotes.client.model.Node;
 public interface MindMapView {
 	
 	public interface Listener {
-		public void addGesture();
 		public void deleteGesture();
 		public void clickGesture();
+		public void addLeftGesture();
+		public void addRightGesture();
+		public void addGesture();
 	}
 	
 	public void setListener(Listener l);

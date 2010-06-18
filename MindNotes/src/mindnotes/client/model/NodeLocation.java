@@ -8,5 +8,5 @@ package mindnotes.client.model;
  *
  */
 public enum NodeLocation {
-	LEFT, RIGHT
+	LEFT, RIGHT, ROOT
 }
