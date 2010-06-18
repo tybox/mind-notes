@@ -4,8 +4,6 @@ import mindnotes.client.model.Node;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -28,20 +26,26 @@ public class MindMapWidget extends Composite implements MindMapView, RequiresRes
 		_actionsPanel = new ActionsPanel(this);
 		_actionsPanel.setVisible(false);
 		
-		_actionsPanel.getAddButton().addClickHandler(new ClickHandler() {
+		_actionsPanel.setListener(new ActionsPanel.Listener() {
 			
 			@Override
-			public void onClick(ClickEvent event) {
-				if (_listener != null) _listener.addGesture();
-				
+			public void deleteClicked() {
+				_listener.deleteGesture();
 			}
-		});
-		
-		_actionsPanel.getDeleteButton().addClickHandler(new ClickHandler() {
 			
 			@Override
-			public void onClick(ClickEvent event) {
-				if (_listener != null) _listener.deleteGesture();
+			public void addRightClicked() {
+				_listener.addRightGesture();
+			}
+			
+			@Override
+			public void addLeftClicked() {
+				_listener.addLeftGesture();
+			}
+			
+			@Override
+			public void addClicked() {
+				_listener.addGesture();
 			}
 		});
 		

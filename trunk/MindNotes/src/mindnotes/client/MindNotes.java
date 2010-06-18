@@ -2,6 +2,7 @@ package mindnotes.client;
 
 import mindnotes.client.model.MindMap;
 import mindnotes.client.model.Node;
+import mindnotes.client.model.NodeLocation;
 import mindnotes.client.presentation.MindMapPresenter;
 import mindnotes.client.ui.MindNotesUI;
 
@@ -34,8 +35,10 @@ public class MindNotes implements EntryPoint {
 		n.setText("Hello");
 		Node n1 = new Node();
 		n1.setText("World 1-1");
+		n1.setNodeLocation(NodeLocation.LEFT);
 		Node n2 = new Node();
 		n2.setText("World 1-2");
+		n2.setNodeLocation(NodeLocation.RIGHT);
 		n.addChildNode(n1);
 		n.addChildNode(n2);
 		mm.setRootNode(n);

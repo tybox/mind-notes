@@ -2,6 +2,8 @@ package mindnotes.client.presentation;
 
 import mindnotes.client.model.MindMap;
 import mindnotes.client.model.Node;
+import mindnotes.client.model.NodeLocation;
+import mindnotes.client.ui.NodeWidget;
 
 public class MindMapPresenter implements MindMapView.Listener {
 	
@@ -26,6 +28,12 @@ public class MindMapPresenter implements MindMapView.Listener {
 		@Override
 		public void nodeTextEdited(NodeView view, String oldText, String newText) {
 			updateNodeText(view, _node, newText);
+		}
+
+		@Override
+		public void nodeEditFinished(NodeWidget nodeWidget) {
+			// editing of node was finished; deselect node
+			selectNode(null, null);
 		}
 
 	}
@@ -84,18 +92,28 @@ public class MindMapPresenter implements MindMapView.Listener {
 		
 	}
 
-	@Override
-	public void addGesture() {
-		addChild(_selection.selectedNodeView, _selection.selectedNode);
-	}
-
-	private void addChild(NodeView nodeView, Node node) {
+	/**
+	 * 
+	 * @param nodeView
+	 * @param node
+	 * @param loc Suggested node location. In current layout, if <c>node's parent</c> is not a root node,
+	 * <c>loc</c> is ignored and parent node location is used.
+	 */
+	private void addChild(NodeView nodeView, Node node, NodeLocation loc) {
 		
 		Node child = new Node();
 		child.setText("New node");
+		if (node.getNodeLocation() == NodeLocation.ROOT) {
+			child.setNodeLocation(loc);
+		} else {
+			child.setNodeLocation(node.getNodeLocation());
+		}
+			
 		node.addChildNode(child);
+		
 		NodeView childView = nodeView.createChild();
 		setUpNodeView(childView, child);
+		selectNode(childView, child);
 		_mindMapView.nodeLayoutChanged();
 	}
 
@@ -118,6 +136,21 @@ public class MindMapPresenter implements MindMapView.Listener {
 	public void clickGesture() {
 		// user clicked on the working area and not on any particular widget; deselect
 		selectNode(null, null);
+	}
+
+	@Override
+	public void addLeftGesture() {
+		addChild(_selection.selectedNodeView, _selection.selectedNode, NodeLocation.LEFT);
+	}
+
+	@Override
+	public void addRightGesture() {
+		addChild(_selection.selectedNodeView, _selection.selectedNode, NodeLocation.RIGHT);
+	}
+
+	@Override
+	public void addGesture() {
+		addChild(_selection.selectedNodeView, _selection.selectedNode, null);
 	}
 
 }

@@ -1,6 +1,7 @@
 package mindnotes.client.presentation;
 
 import mindnotes.client.model.NodeLocation;
+import mindnotes.client.ui.NodeWidget;
 
 public interface NodeView {
 	
@@ -8,6 +9,7 @@ public interface NodeView {
 		public void nodeClicked(NodeView sender);
 		public void nodeResize(NodeView sender);
 		public void nodeTextEdited(NodeView view, String oldText, String newText);
+		public void nodeEditFinished(NodeWidget nodeWidget);
 	}
 	
 	public void setListener(Listener listener);

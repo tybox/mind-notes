@@ -33,14 +33,23 @@
 
 .mindmap-node {
 	border: 2px #333 solid;
-	padding: 12px;
 	font-weight: bold;
-	font-size: larger;
+	font-size: 14px;
 	background-color: #fff;
 	margin: 0px 48px 48px 0px;
 }
 
+.mindmap-node .node-text {
+	margin: 12px;
+}
+
+.mindmap-node .node-textBox {
+	margin: 12px;
+	border:none;
+	font-weight: bold;
+	font-size: 14px;
+}
 
 .mindmap-node-selected {
-	border: 2px #f00 dashed;
+	border: 2px #f00 solid;
 }
