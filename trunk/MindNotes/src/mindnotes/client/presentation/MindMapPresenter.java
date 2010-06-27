@@ -6,7 +6,7 @@ import mindnotes.client.model.NodeLocation;
 import mindnotes.client.ui.NodeWidget;
 
 public class MindMapPresenter implements MindMapView.Listener {
-	
+
 	public class NodeActions implements NodeView.Listener {
 
 		private Node _node;
@@ -18,11 +18,6 @@ public class MindMapPresenter implements MindMapView.Listener {
 		@Override
 		public void nodeClicked(NodeView view) {
 			selectNode(view, _node);
-		}
-
-		@Override
-		public void nodeResize(NodeView sender) {
-			_mindMapView.nodeLayoutChanged();
 		}
 
 		@Override
@@ -40,15 +35,15 @@ public class MindMapPresenter implements MindMapView.Listener {
 
 	private MindMapView _mindMapView;
 	private MindMap _mindMap;
-	
+
 	private Selection _selection;
-	
+
 	public MindMapPresenter(MindMapView mindMapView) {
 		_mindMapView = mindMapView;
 		_mindMapView.setListener(this);
 		_selection = new Selection();
 	}
-	
+
 	public void updateNodeText(NodeView view, Node node, String newText) {
 		node.setText(newText);
 		view.setText(newText);
@@ -60,7 +55,7 @@ public class MindMapPresenter implements MindMapView.Listener {
 		}
 		_selection.selectedNode = node;
 		_selection.selectedNodeView = view;
-		if (view !=null) {
+		if (view != null) {
 			view.setSelected(true);
 			_mindMapView.showActionsPanel(view, node);
 		} else {
@@ -76,31 +71,32 @@ public class MindMapPresenter implements MindMapView.Listener {
 	private void generateView() {
 		NodeView rootNodeView = _mindMapView.getRootNodeView();
 		rootNodeView.removeAll();
-		
+
 		setUpNodeView(rootNodeView, _mindMap.getRootNode());
-		_mindMapView.nodeLayoutChanged();
 	}
 
 	private void setUpNodeView(NodeView nodeView, Node node) {
 		nodeView.setListener(new NodeActions(node));
 		nodeView.setText(node.getText());
 		nodeView.setLocation(node.getNodeLocation());
-		
-		for(Node child: node.getChildren()) {
+
+		for (Node child : node.getChildren()) {
 			setUpNodeView(nodeView.createChild(), child);
 		}
-		
+
 	}
 
 	/**
 	 * 
 	 * @param nodeView
 	 * @param node
-	 * @param loc Suggested node location. In current layout, if <c>node's parent</c> is not a root node,
-	 * <c>loc</c> is ignored and parent node location is used.
+	 * @param loc
+	 *            Suggested node location. In current layout, if <c>node's
+	 *            parent</c> is not a root node, <c>loc</c> is ignored and
+	 *            parent node location is used.
 	 */
 	private void addChild(NodeView nodeView, Node node, NodeLocation loc) {
-		
+
 		Node child = new Node();
 		child.setText("New node");
 		if (node.getNodeLocation() == NodeLocation.ROOT) {
@@ -108,13 +104,12 @@ public class MindMapPresenter implements MindMapView.Listener {
 		} else {
 			child.setNodeLocation(node.getNodeLocation());
 		}
-			
+
 		node.addChildNode(child);
-		
+
 		NodeView childView = nodeView.createChild();
 		setUpNodeView(childView, child);
 		selectNode(childView, child);
-		_mindMapView.nodeLayoutChanged();
 	}
 
 	@Override
@@ -123,29 +118,32 @@ public class MindMapPresenter implements MindMapView.Listener {
 	}
 
 	private void deleteNode(NodeView nodeView, Node node) {
-		if (node.getParent() == null) return;
+		if (node.getParent() == null)
+			return;
 		nodeView.delete();
-		
+
 		node.getParent().removeChildNode(node);
-		
-		_mindMapView.nodeLayoutChanged();
+
 		selectNode(null, null);
 	}
 
 	@Override
 	public void clickGesture() {
-		// user clicked on the working area and not on any particular widget; deselect
+		// user clicked on the working area and not on any particular widget;
+		// deselect
 		selectNode(null, null);
 	}
 
 	@Override
 	public void addLeftGesture() {
-		addChild(_selection.selectedNodeView, _selection.selectedNode, NodeLocation.LEFT);
+		addChild(_selection.selectedNodeView, _selection.selectedNode,
+				NodeLocation.LEFT);
 	}
 
 	@Override
 	public void addRightGesture() {
-		addChild(_selection.selectedNodeView, _selection.selectedNode, NodeLocation.RIGHT);
+		addChild(_selection.selectedNodeView, _selection.selectedNode,
+				NodeLocation.RIGHT);
 	}
 
 	@Override

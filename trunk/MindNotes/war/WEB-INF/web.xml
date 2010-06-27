@@ -4,11 +4,11 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-  
 
-  <!-- Default page to serve -->
-  <welcome-file-list>
-    <welcome-file>MindNotes.html</welcome-file>
-  </welcome-file-list>
+
+	<!-- Default page to serve -->
+	<welcome-file-list>
+		<welcome-file>MindNotes.html</welcome-file>
+	</welcome-file-list>
 
 </web-app>
