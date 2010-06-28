@@ -52,13 +52,17 @@ public class MindMapWidget extends Composite implements MindMapView,
 			public void addClicked() {
 				_listener.addGesture();
 			}
+
+			@Override
+			public void expandClicked() {
+				_listener.expandGesture();
+			}
 		});
 
 		_arrowsWidget = new ArrowsWidget(this);
 		_arrowsWidget.setPixelSize(1000, 1000);
 
 		_rootNode = new NodeWidget();
-		_rootNode.setArrowMaker(_arrowsWidget);
 		_rootNode.setContainer(this);
 
 		_viewportPanel = new AbsolutePanel();
@@ -137,7 +141,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	@Override
 	public void removeNode(NodeWidget node) {
 		_viewportPanel.remove(node);
-		for (NodeWidget child : node.getChildren()) {
+		for (NodeWidget child : node.getNodeChildren()) {
 			removeNode(child);
 		}
 	}
@@ -198,5 +202,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 	@Override
 	public void onNodeLayoutInvalidated(NodeWidget node) {
 		updateLayout();
+	}
+
+	public NodeWidget getRootNodeWidget() {
+		return _rootNode;
 	}
 }

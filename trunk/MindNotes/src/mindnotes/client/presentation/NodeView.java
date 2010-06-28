@@ -28,4 +28,6 @@ public interface NodeView {
 	public void setSelected(boolean isSelected);
 
 	public void delete();
+
+	public void toggleExpansion();
 }
