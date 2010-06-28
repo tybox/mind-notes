@@ -151,4 +151,10 @@ public class MindMapPresenter implements MindMapView.Listener {
 		addChild(_selection.selectedNodeView, _selection.selectedNode, null);
 	}
 
+	@Override
+	public void expandGesture() {
+		_selection.selectedNodeView.toggleExpansion();
+
+	}
+
 }

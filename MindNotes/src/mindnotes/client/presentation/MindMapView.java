@@ -14,6 +14,8 @@ public interface MindMapView {
 		public void addRightGesture();
 
 		public void addGesture();
+
+		public void expandGesture();
 	}
 
 	public void setListener(Listener l);

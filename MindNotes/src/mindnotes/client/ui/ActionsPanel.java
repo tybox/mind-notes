@@ -9,11 +9,16 @@ import com.google.gwt.user.client.ui.FlowPanel;
 public class ActionsPanel extends Composite {
 
 	public interface Listener {
-		
+
 		public void addClicked();
+
 		public void addRightClicked();
+
 		public void addLeftClicked();
+
 		public void deleteClicked();
+
+		public void expandClicked();
 
 	}
 
@@ -24,6 +29,7 @@ public class ActionsPanel extends Composite {
 	private Button _addLeftButton;
 	private Button _addRightButton;
 	private Button _addButton;
+	private Button _expandButton;
 	private Listener _listener;
 
 	public ActionsPanel(MindMapWidget mapWidget) {
@@ -33,6 +39,7 @@ public class ActionsPanel extends Composite {
 		_addRightButton = new Button("Add Right");
 		_addButton = new Button("Add");
 		_deleteButton = new Button("Delete");
+		_expandButton = new Button("Expand");
 
 		// events
 		{
@@ -68,6 +75,14 @@ public class ActionsPanel extends Composite {
 						_listener.deleteClicked();
 				}
 			});
+			_expandButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					if (_listener != null)
+						_listener.expandClicked();
+				}
+			});
 		}
 
 		_container = new FlowPanel();
@@ -78,6 +93,19 @@ public class ActionsPanel extends Composite {
 		_container.setStylePrimaryName("actionspanel");
 
 		initWidget(_container);
+	}
+
+	/**
+	 * Sets the look of expand/collapse button.
+	 * 
+	 * @param expand
+	 * @param visible
+	 */
+	public void setExpandButtonLook(boolean expand, boolean visible) {
+		_expandButton.setVisible(visible);
+		if (!visible)
+			return;
+		_expandButton.setText(expand ? "Expand" : "Collapse");
 	}
 
 	public void showNextTo(NodeWidget widget) {
