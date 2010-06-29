@@ -90,6 +90,7 @@ public class ActionsPanel extends Composite {
 		_container.add(_addRightButton);
 		_container.add(_addButton);
 		_container.add(_deleteButton);
+		_container.add(_expandButton);
 		_container.setStylePrimaryName("actionspanel");
 
 		initWidget(_container);
@@ -105,7 +106,7 @@ public class ActionsPanel extends Composite {
 		_expandButton.setVisible(visible);
 		if (!visible)
 			return;
-		_expandButton.setText(expand ? "Expand" : "Collapse");
+		_expandButton.setText(expand ? "Collapse" : "Expand");
 	}
 
 	public void showNextTo(NodeWidget widget) {
@@ -116,10 +117,12 @@ public class ActionsPanel extends Composite {
 		_mapWidget.getViewportPanel().setWidgetPosition(this, x, y);
 
 		boolean isroot = widget.getParentNodeWidget() == null;
+		_deleteButton.setVisible(!isroot);
 		_addLeftButton.setVisible(isroot);
 		_addRightButton.setVisible(isroot);
 		_addButton.setVisible(!isroot);
-
+		setExpandButtonLook(widget.isExpanded(), !widget.getNodeChildren()
+				.isEmpty());
 		setVisible(true);
 	}
 

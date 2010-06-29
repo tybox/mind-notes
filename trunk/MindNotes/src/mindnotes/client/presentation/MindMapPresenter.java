@@ -79,6 +79,7 @@ public class MindMapPresenter implements MindMapView.Listener {
 		nodeView.setListener(new NodeActions(node));
 		nodeView.setText(node.getText());
 		nodeView.setLocation(node.getNodeLocation());
+		nodeView.setExpanded(node.isExpanded());
 
 		for (Node child : node.getChildren()) {
 			setUpNodeView(nodeView.createChild(), child);
@@ -153,7 +154,10 @@ public class MindMapPresenter implements MindMapView.Listener {
 
 	@Override
 	public void expandGesture() {
-		_selection.selectedNodeView.toggleExpansion();
+		_selection.selectedNode.setExpanded(!_selection.selectedNode
+				.isExpanded());
+		_selection.selectedNodeView.setExpanded(_selection.selectedNode
+				.isExpanded());
 
 	}
 

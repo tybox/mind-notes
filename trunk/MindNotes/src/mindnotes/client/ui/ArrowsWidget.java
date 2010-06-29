@@ -57,6 +57,9 @@ public class ArrowsWidget extends Composite {
 		oy = _canvas.getAbsoluteTop();
 		for (Arrow arrow : node.getArrows()) {
 
+			// ignore arrows to/from hidden nodes
+			if (!(arrow.from.isVisible() && arrow.to.isVisible()))
+				continue;
 			// find coords of top-left corners of two nodes
 			fx = arrow.from.getBubbleLeft() - ox;
 			fy = arrow.from.getBubbleTop() - oy;

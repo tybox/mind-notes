@@ -27,7 +27,8 @@ public interface NodeView {
 
 	public void setSelected(boolean isSelected);
 
+	public void setExpanded(boolean isExpanded);
+
 	public void delete();
 
-	public void toggleExpansion();
 }
