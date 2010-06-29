@@ -21,39 +21,38 @@ public class MindNotes implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		
+
 		MindNotesUI mindNotesUI = new MindNotesUI();
-		
-		final MindMapPresenter presenter = new MindMapPresenter(mindNotesUI.getMindMapView());
-		
+
+		final MindMapPresenter presenter = new MindMapPresenter(
+				mindNotesUI.getMindMapView());
+
 		RootLayoutPanel.get().add(mindNotesUI);
-		
+
 		DOM.getElementById("loader").removeFromParent();
 
 		final MindMap mm = new MindMap();
 		Node n = new Node();
-		n.setText("Hello");
+		n.setText("<b>Hello</b>");
 		Node n1 = new Node();
-		n1.setText("World 1-1");
+		n1.setText("<b>World 1-1</b>");
 		n1.setNodeLocation(NodeLocation.LEFT);
 		Node n2 = new Node();
-		n2.setText("World 1-2");
+		n2.setText("<b>World 1-2</b>");
 		n2.setNodeLocation(NodeLocation.RIGHT);
 		n.addChildNode(n1);
 		n.addChildNode(n2);
 		mm.setRootNode(n);
-		
-		// set the mindmap as a deferred command to let all the UI to set up properly;
+
+		// set the mindmap as a deferred command to let all the UI to set up
+		// properly;
 		DeferredCommand.addCommand(new Command() {
-			
+
 			@Override
 			public void execute() {
 				presenter.setMindMap(mm);
 			}
 		});
-		
-		
-		
 
 	}
 }

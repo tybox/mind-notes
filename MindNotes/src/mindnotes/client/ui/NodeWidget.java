@@ -14,7 +14,7 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
 
 public class NodeWidget extends DeckPanel implements NodeView,
@@ -26,8 +26,9 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	private Listener _listener;
 
 	// node contents
-	private Label _label;
+	private HTML _label;
 	private TextBox _textBox;
+	private TextEditor _textEditor;
 
 	// node tree relatives
 	private List<NodeWidget> _children;
@@ -38,7 +39,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	private NodeLocation _nodeLocation;
 	private Box _branchBounds;
 	private boolean _layoutValid;
-	private boolean _expanded;
+	private boolean _expanded = true;
 
 	public NodeWidget() {
 
@@ -53,6 +54,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 		_arrows = new HashSet<Arrow>();
 
+		_textEditor = new TextEditor();
 		_textBox = new TextBox();
 		_textBox.setStylePrimaryName("node");
 		_textBox.addStyleDependentName("textBox");
@@ -69,13 +71,13 @@ public class NodeWidget extends DeckPanel implements NodeView,
 			}
 		});
 
-		_label = new Label();
+		_label = new HTML();
 		_label.setStylePrimaryName("node");
 		_label.addStyleDependentName("text");
 		_label.addClickHandler(handler);
 
 		add(_label);
-		add(_textBox);
+		add(_textEditor);
 		showWidget(0);
 		_children = new ArrayList<NodeWidget>();
 
@@ -150,7 +152,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	@Override
 	public void setText(String text) {
-		_label.setText(text);
+		_label.setHTML(text);
 	}
 
 	public int getBubbleWidth() {
@@ -174,11 +176,16 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		if (isSelected) {
 			addStyleDependentName("node-selected");
 			int w = _label.getElement().getClientWidth();
-			_textBox.setText(_label.getText());
-			_textBox.setWidth(w + "px");
+			// _textBox.setText(_label.getText());
+			// _textBox.setWidth(w + "px");
+
 			showWidget(1); // show text box;
-			_textBox.setFocus(true);
-			_textBox.selectAll();
+			// setHTML after making rich text editor visible
+			// to avoid weird behavior of using the formatter when the widget is
+			// not visible
+			_textEditor.setHTML(_label.getHTML());
+
+			_textEditor.startEdit();
 			if (_container != null)
 				_container.onNodeLayoutInvalidated(this);
 
@@ -187,9 +194,9 @@ public class NodeWidget extends DeckPanel implements NodeView,
 			showWidget(0); // show label;
 
 			if (_listener != null) {
-				if (!_label.getText().equals(_textBox.getText())) {
-					_listener.nodeTextEdited(this, _label.getText(),
-							_textBox.getText());
+				if (!_label.getHTML().equals(_textEditor.getHTML())) {
+					_listener.nodeTextEdited(this, _label.getHTML(),
+							_textEditor.getHTML());
 				}
 			}
 			if (_container != null)
@@ -280,33 +287,24 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		return _parent;
 	}
 
-	@Override
-	public void toggleExpansion() {
-		_expanded = !_expanded;
-		if (_expanded)
-			showAllChildren();
-		else
-			hideAllChildren();
-	}
-
 	public boolean isExpanded() {
 		return _expanded;
 	}
 
 	public void setExpanded(boolean expanded) {
 		_expanded = expanded;
-	}
-
-	private void hideAllChildren() {
 		for (NodeWidget child : _children) {
-			child.setVisible(false);
-			removeArrowTo(child);
+			child.setBranchVisible(_expanded);
 		}
+		if (_container != null)
+			_container.onNodeLayoutInvalidated(this);
 	}
 
-	private void showAllChildren() {
-		// TODO Auto-generated method stub
-
+	private void setBranchVisible(boolean visible) {
+		setVisible(visible);
+		for (NodeWidget child : _children) {
+			child.setBranchVisible(visible);
+		}
 	}
 
 	public Set<Arrow> getArrows() {

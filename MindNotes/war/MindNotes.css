@@ -30,7 +30,6 @@
 
 .mindmap-node {
 	border: 2px #333 solid;
-	font-weight: bold;
 	font-size: 14px;
 	background-color: #fff;
 	margin: 0px 48px 48px 0px;
@@ -43,10 +42,26 @@
 .mindmap-node .node-textBox {
 	margin: 12px;
 	border: none;
-	font-weight: bold;
 	font-size: 14px;
 }
 
 .mindmap-node-selected {
 	border: 2px #f00 solid;
+}
+
+.mindmap-rte .gwt-RichTextArea {
+	border: 1px #555 solid;
+	margin: 2px;
+}
+
+.mindmap-rte .gwt-RichTextArea body {
+	font-family: Arial Unicode MS,Arial,sans-serif; 
+}
+
+.mindmap-rte .gwt-ToggleButton {
+	width: 20px;
+	height: 20px;
+	margin: 2px;
+	padding: 3px;
+	text-align: center;
 }
