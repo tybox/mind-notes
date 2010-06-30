@@ -16,6 +16,9 @@ public interface MindMapView {
 		public void addGesture();
 
 		public void expandGesture();
+
+		public void keyboardShortcut(int keyCode, boolean meta,
+				boolean shiftKey, boolean altKey);
 	}
 
 	public void setListener(Listener l);

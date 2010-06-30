@@ -48,6 +48,9 @@
 .mindmap-node-selected {
 	border: 2px #f00 solid;
 }
+.mindmap-node-focused {
+	border: 2px #f88 solid;
+}
 
 .mindmap-rte .gwt-RichTextArea {
 	border: 1px #555 solid;

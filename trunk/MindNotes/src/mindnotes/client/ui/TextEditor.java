@@ -131,9 +131,4 @@ public class TextEditor extends Composite {
 		_underlineButton.setDown(_textArea.getFormatter().isUnderlined());
 	}
 
-	public void startEdit() {
-		_textArea.setFocus(true);
-		_textArea.getFormatter().selectAll();
-	}
-
 }
