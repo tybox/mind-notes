@@ -27,32 +27,25 @@
 	<g:DockLayoutPanel unit='PX' ui:field="dockLayoutPanel">
 		<g:north size='60'>
 			<g:HTML addStyleNames="{style.header}">
-				<h1 class="header-h1">Mind Notes App</h1>
+				<h1 class="header-h1">Mind Notes App<span style="font-size: smaller">(30.06.2009)</span></h1>
 			</g:HTML>
 		</g:north>
 		<g:center>
 			<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
 		</g:center>
-		<g:west size='192'>
+		<g:west size='266'>
 			<g:HTML>
 				<div class="{style.sidebar}">
-					<h2>First proofs of concept</h2>
-					<p>What you see on the right is a mindmap model presented by the
-						application.</p>
-					<p>
-						The app's design based on MVP pattern; the nodes, or bubbles, are
-						regular widgets but the relation arrows are rendered on a HTML5
-						Canvas.
-				</p>
-					<p>
-						<i>TODO: maybe SVG would be better, SVG would allow mouse events
-							on the arrows.</i>
-					</p>
-					<p>The bubbles lay out themselves via css positioning; upon layout
-						change (one
-						of the nodes changes size, nodes added or deleted) a Canvas repaint
-						is fired to
-						update the arrows.</p>
+					<h2>Iteration 2</h2>
+					<p><strong>Better Layout, Undo Stack, Rich Text Formatting, Copy/Paste</strong></p>
+					<ul>
+					<li>The nodes are now positioned on an AbsolutePanel, and their positions are calculated
+					by the script. Left-hand side and right-hand sides are now supported.</li>
+					<li>After adding or deleting nodes, try undoing this (ctrl+z)</li>
+					<li>Nodes now can be edited using rich text editing. You can play with the B-I-U buttons, or paste some text from another webpage.</li>
+					<li>Try cutting (ctrl+x) and pasting (ctrl+v) nodes around. Copy is not implemented yet.</li>
+					<li>I abandoned the idea of porting this to SVG, because current method works well enough.</li>
+					</ul>
 				</div>
 			</g:HTML>
 		</g:west>

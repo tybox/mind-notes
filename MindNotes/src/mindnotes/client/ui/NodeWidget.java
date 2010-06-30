@@ -8,14 +8,15 @@ import java.util.Set;
 import mindnotes.client.model.NodeLocation;
 import mindnotes.client.presentation.NodeView;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.TextBox;
 
 public class NodeWidget extends DeckPanel implements NodeView,
 		LayoutTreeElement {
@@ -27,7 +28,6 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	// node contents
 	private HTML _label;
-	private TextBox _textBox;
 	private TextEditor _textEditor;
 
 	// node tree relatives
@@ -40,6 +40,8 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	private Box _branchBounds;
 	private boolean _layoutValid;
 	private boolean _expanded = true;
+	private boolean _isSelected;
+	private FocusPanel _focusPanel;
 
 	public NodeWidget() {
 
@@ -55,21 +57,6 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		_arrows = new HashSet<Arrow>();
 
 		_textEditor = new TextEditor();
-		_textBox = new TextBox();
-		_textBox.setStylePrimaryName("node");
-		_textBox.addStyleDependentName("textBox");
-
-		_textBox.addKeyPressHandler(new KeyPressHandler() {
-
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				if (event.getCharCode() == KeyCodes.KEY_ENTER) {
-					if (_listener != null) {
-						_listener.nodeEditFinished(NodeWidget.this);
-					}
-				}
-			}
-		});
 
 		_label = new HTML();
 		_label.setStylePrimaryName("node");
@@ -77,7 +64,24 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		_label.addClickHandler(handler);
 
 		add(_label);
-		add(_textEditor);
+		_focusPanel = new FocusPanel(_textEditor);
+		_focusPanel.addFocusHandler(new FocusHandler() {
+
+			@Override
+			public void onFocus(FocusEvent event) {
+				addStyleDependentName("node-focused");
+			}
+		});
+		_focusPanel.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				// woo-hoo (when I feel heavy metal)
+				removeStyleDependentName("node-focused");
+
+			}
+		});
+		add(_focusPanel);
 		showWidget(0);
 		_children = new ArrayList<NodeWidget>();
 
@@ -172,12 +176,12 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	}
 
 	@Override
-	public void setSelected(boolean isSelected) {
+	public void setSelected(final boolean isSelected) {
+		if (isSelected == _isSelected)
+			return;
+		_isSelected = isSelected;
 		if (isSelected) {
 			addStyleDependentName("node-selected");
-			int w = _label.getElement().getClientWidth();
-			// _textBox.setText(_label.getText());
-			// _textBox.setWidth(w + "px");
 
 			showWidget(1); // show text box;
 			// setHTML after making rich text editor visible
@@ -185,7 +189,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 			// not visible
 			_textEditor.setHTML(_label.getHTML());
 
-			_textEditor.startEdit();
+			_focusPanel.setFocus(true);
 			if (_container != null)
 				_container.onNodeLayoutInvalidated(this);
 
@@ -202,6 +206,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 			if (_container != null)
 				_container.onNodeLayoutInvalidated(this);
 		}
+
 	}
 
 	public int getBubbleTop() {

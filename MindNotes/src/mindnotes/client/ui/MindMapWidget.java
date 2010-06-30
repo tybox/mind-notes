@@ -4,8 +4,13 @@ import mindnotes.client.model.Node;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -27,6 +32,34 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private NodeLayout _layout;
 
 	public MindMapWidget() {
+
+		Event.addNativePreviewHandler(new NativePreviewHandler() {
+
+			@Override
+			public void onPreviewNativeEvent(NativePreviewEvent event) {
+				if (event.getTypeInt() == Event.ONKEYPRESS) {
+
+					NativeEvent nativeEvent = event.getNativeEvent();
+
+					// hack for Macs to make cmd button behave like ctrl on
+					// other platforms
+					boolean meta = Window.Navigator.getPlatform().equals(
+							"MacIntel") ? nativeEvent.getMetaKey()
+							: nativeEvent.getCtrlKey();
+
+					boolean shortcut = meta || nativeEvent.getShiftKey()
+							|| nativeEvent.getAltKey();
+
+					if (_listener != null && shortcut) {
+						_listener.keyboardShortcut(nativeEvent.getKeyCode(),
+								meta, nativeEvent.getShiftKey(),
+								nativeEvent.getAltKey());
+					}
+				}
+
+			}
+		});
+
 		_layout = new NodeLayout();
 		_actionsPanel = new ActionsPanel(this);
 		_actionsPanel.setVisible(false);
