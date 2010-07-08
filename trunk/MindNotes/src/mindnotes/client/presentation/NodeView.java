@@ -1,16 +1,17 @@
 package mindnotes.client.presentation;
 
-import mindnotes.client.model.NodeLocation;
 import mindnotes.client.ui.NodeWidget;
+import mindnotes.shared.model.NodeLocation;
 
 public interface NodeView {
 
 	public interface Listener {
-		public void nodeClicked(NodeView sender);
+		public void nodeClickedGesture(NodeView sender);
 
-		public void nodeTextEdited(NodeView view, String oldText, String newText);
+		public void nodeTextEditedGesture(NodeView view, String oldText,
+				String newText);
 
-		public void nodeEditFinished(NodeWidget nodeWidget);
+		public void nodeEditFinishedGesture(NodeWidget nodeWidget);
 	}
 
 	public void setListener(Listener listener);

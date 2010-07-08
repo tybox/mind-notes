@@ -26,9 +26,19 @@
 	</ui:style>
 	<g:DockLayoutPanel unit='PX' ui:field="dockLayoutPanel">
 		<g:north size='60'>
-			<g:HTML addStyleNames="{style.header}">
-				<h1 class="header-h1">Mind Notes App<span style="font-size: smaller">(30.06.2009)</span></h1>
-			</g:HTML>
+			<g:DockLayoutPanel unit='PX'>
+			<g:center>
+				<g:HTML addStyleNames="{style.header}">
+					<h1 class="header-h1">Mind Notes App<span style="font-size: smaller">(30.06.2009)</span></h1>
+				</g:HTML>
+			</g:center>
+			<g:east size='120'>
+				<g:FlowPanel addStyleNames="{style.header}">
+					<g:Button ui:field="loadButton">Load from cloud</g:Button>
+					<g:Button ui:field="saveButton">Save to cloud</g:Button>
+				</g:FlowPanel>
+			</g:east>
+			</g:DockLayoutPanel>
 		</g:north>
 		<g:center>
 			<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
@@ -36,8 +46,8 @@
 		<g:west size='266'>
 			<g:HTML>
 				<div class="{style.sidebar}">
-					<h2>Iteration 2</h2>
-					<p><strong>Better Layout, Undo Stack, Rich Text Formatting, Copy/Paste</strong></p>
+					<h2>Iteration 3</h2>
+					<p><strong>Cloud Storage</strong></p>
 					<ul>
 					<li>The nodes are now positioned on an AbsolutePanel, and their positions are calculated
 					by the script. Left-hand side and right-hand sides are now supported.</li>

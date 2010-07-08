@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mindnotes.client.model.NodeLocation;
 import mindnotes.client.presentation.NodeView;
+import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -49,7 +49,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				_listener.nodeClicked(NodeWidget.this);
+				_listener.nodeClickedGesture(NodeWidget.this);
 
 			}
 		};
@@ -199,7 +199,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 			if (_listener != null) {
 				if (!_label.getHTML().equals(_textEditor.getHTML())) {
-					_listener.nodeTextEdited(this, _label.getHTML(),
+					_listener.nodeTextEditedGesture(this, _label.getHTML(),
 							_textEditor.getHTML());
 				}
 			}

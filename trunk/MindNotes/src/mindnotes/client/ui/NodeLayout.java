@@ -1,13 +1,13 @@
 package mindnotes.client.ui;
 
-import mindnotes.client.model.NodeLocation;
+import mindnotes.shared.model.NodeLocation;
 
 /**
  * NodeLayout is responsible for computing desired positions of nodes in a node
  * tree based on their relations.
  * 
  * 
- * TODO maybe this should be inside another class, but what about testing?
+ * 
  * 
  * 
  * 

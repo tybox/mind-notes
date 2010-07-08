@@ -1,6 +1,6 @@
 package mindnotes.client.presentation;
 
-import mindnotes.client.model.Node;
+import mindnotes.shared.model.Node;
 
 public interface MindMapView {
 
@@ -19,6 +19,10 @@ public interface MindMapView {
 
 		public void keyboardShortcut(int keyCode, boolean meta,
 				boolean shiftKey, boolean altKey);
+
+		public void saveToCloudGesture();
+
+		public void loadFromCloudGesture();
 	}
 
 	public void setListener(Listener l);

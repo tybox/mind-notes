@@ -1,8 +1,8 @@
 package mindnotes.client.ui;
 
-import mindnotes.client.model.Node;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
+import mindnotes.shared.model.Node;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
@@ -32,16 +32,21 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private NodeLayout _layout;
 
 	public MindMapWidget() {
-
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
 
 			@Override
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
-				if (event.getTypeInt() == Event.ONKEYPRESS) {
+				/**
+				 * Chrome does not fire a 'keypress' event with ctr+c, ctrl+v,
+				 * ctrl+x (it does for ctrl+z) Firefox does not exhibit this
+				 * behavior. Oh well.
+				 */
+				if (event.getTypeInt() == Event.ONKEYDOWN) {
 
 					NativeEvent nativeEvent = event.getNativeEvent();
 
-					// hack for Macs to make cmd button behave like ctrl on
+					// hack for Macs to make cmd button behave like ctrl
+					// on
 					// other platforms
 					boolean meta = Window.Navigator.getPlatform().equals(
 							"MacIntel") ? nativeEvent.getMetaKey()
@@ -239,5 +244,19 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	public NodeWidget getRootNodeWidget() {
 		return _rootNode;
+	}
+
+	public void saveToCloudClicked() {
+		if (_listener != null) {
+			_listener.saveToCloudGesture();
+		}
+
+	}
+
+	public void loadFromCloudClicked() {
+		if (_listener != null) {
+			_listener.loadFromCloudGesture();
+		}
+
 	}
 }

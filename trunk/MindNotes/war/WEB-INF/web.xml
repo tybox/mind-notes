@@ -5,6 +5,17 @@
 
 <web-app>
 
+	 <servlet>
+	    <servlet-name>mindmapStorageServlet</servlet-name>
+    	<servlet-class>mindnotes.server.MindmapStorageServiceImpl</servlet-class>
+  	</servlet>
+  
+
+  <servlet-mapping>
+    <servlet-name>mindmapStorageServlet</servlet-name>
+    <url-pattern>/mindnotes/storage</url-pattern>
+  </servlet-mapping>
+  
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
