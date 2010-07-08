@@ -1,12 +1,14 @@
-package mindnotes.client.model;
+package mindnotes.shared.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node {
+public class Node implements Serializable {
 
 	private List<Node> _childNodes;
 	private String _text;
+
 	private Node _parent;
 	private NodeLocation _nodeLocation;
 	private boolean _expanded;

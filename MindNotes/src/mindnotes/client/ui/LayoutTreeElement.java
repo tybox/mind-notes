@@ -2,7 +2,7 @@ package mindnotes.client.ui;
 
 import java.util.List;
 
-import mindnotes.client.model.NodeLocation;
+import mindnotes.shared.model.NodeLocation;
 
 public interface LayoutTreeElement {
 

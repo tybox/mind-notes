@@ -3,8 +3,8 @@ package mindnotes.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import mindnotes.client.model.MindMap;
-import mindnotes.client.model.Node;
+import mindnotes.shared.model.MindMap;
+import mindnotes.shared.model.Node;
 
 import org.junit.Test;
 

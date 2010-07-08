@@ -1,6 +1,6 @@
 package mindnotes.client.presentation;
 
-import mindnotes.client.model.Node;
+import mindnotes.shared.model.Node;
 
 /**
  * For now, it's a boring DTO; functionality will grow over time with more advanced

@@ -1,8 +1,8 @@
 package mindnotes.client;
 
 import static junit.framework.Assert.assertEquals;
-import mindnotes.client.model.NodeLocation;
 import mindnotes.client.ui.NodeLayout;
+import mindnotes.shared.model.NodeLocation;
 
 import org.junit.Test;
 

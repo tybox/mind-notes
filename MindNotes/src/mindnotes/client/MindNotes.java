@@ -1,10 +1,10 @@
 package mindnotes.client;
 
-import mindnotes.client.model.MindMap;
-import mindnotes.client.model.Node;
-import mindnotes.client.model.NodeLocation;
-import mindnotes.client.presentation.MindMapPresenter;
+import mindnotes.client.presentation.MindMapEditor;
 import mindnotes.client.ui.MindNotesUI;
+import mindnotes.shared.model.MindMap;
+import mindnotes.shared.model.Node;
+import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
@@ -24,7 +24,7 @@ public class MindNotes implements EntryPoint {
 
 		MindNotesUI mindNotesUI = new MindNotesUI();
 
-		final MindMapPresenter presenter = new MindMapPresenter(
+		final MindMapEditor presenter = new MindMapEditor(
 				mindNotesUI.getMindMapView());
 
 		RootLayoutPanel.get().add(mindNotesUI);
@@ -32,6 +32,7 @@ public class MindNotes implements EntryPoint {
 		DOM.getElementById("loader").removeFromParent();
 
 		final MindMap mm = new MindMap();
+		mm.setTitle("My mindmap");
 		Node n = new Node();
 		n.setText("<b>Hello</b>");
 		Node n1 = new Node();

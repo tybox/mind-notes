@@ -3,9 +3,9 @@ package mindnotes.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import mindnotes.client.model.NodeLocation;
 import mindnotes.client.ui.Box;
 import mindnotes.client.ui.LayoutTreeElement;
+import mindnotes.shared.model.NodeLocation;
 
 public class MockLayoutTreeElement implements LayoutTreeElement {
 

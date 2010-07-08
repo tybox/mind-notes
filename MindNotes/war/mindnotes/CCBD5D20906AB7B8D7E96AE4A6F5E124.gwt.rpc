@@ -1,0 +1,17 @@
+com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true, true, true, true, com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException/3936916533, 3936916533
+java.lang.Exception, true, false, true, false, java.lang.Exception/1920171873, 1920171873
+java.lang.RuntimeException, true, false, true, false, java.lang.RuntimeException/515124647, 515124647
+java.lang.String, true, true, true, true, java.lang.String/2004016611, 2004016611
+java.lang.Throwable, true, false, true, false, java.lang.Throwable/2953622131, 2953622131
+java.util.ArrayList, true, true, true, true, java.util.ArrayList/3821976829, 3821976829
+java.util.Arrays$ArrayList, true, true, true, true, java.util.Arrays$ArrayList/1243019747, 1243019747
+java.util.LinkedList, true, true, true, true, java.util.LinkedList/1060625595, 1060625595
+java.util.Stack, true, true, true, true, java.util.Stack/1031431137, 1031431137
+java.util.Vector, true, true, true, true, java.util.Vector/3125574444, 3125574444
+mindnotes.shared.model.MindMap, true, true, true, true, mindnotes.shared.model.MindMap/1181931316, 1181931316
+mindnotes.shared.model.MindMapInfo, true, true, false, false, mindnotes.shared.model.MindMapInfo/3153893273, 3153893273
+[Lmindnotes.shared.model.MindMapInfo;, true, true, false, false, [Lmindnotes.shared.model.MindMapInfo;/4194283102, 4194283102
+mindnotes.shared.model.Node, true, true, true, true, mindnotes.shared.model.Node/908041537, 908041537
+mindnotes.shared.model.NodeLocation, true, true, true, true, mindnotes.shared.model.NodeLocation/2528271570, 2528271570
+[Lmindnotes.shared.model.Node;, true, true, true, true, [Lmindnotes.shared.model.Node;/153787775, 153787775
+mindnotes.shared.services.MindmapStorageService, false, false, false, false, _, 2579957014
