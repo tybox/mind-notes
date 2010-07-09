@@ -32,7 +32,6 @@ public class MindNotes implements EntryPoint {
 		DOM.getElementById("loader").removeFromParent();
 
 		final MindMap mm = new MindMap();
-		mm.setTitle("My mindmap");
 		Node n = new Node();
 		n.setText("<b>Hello</b>");
 		Node n1 = new Node();

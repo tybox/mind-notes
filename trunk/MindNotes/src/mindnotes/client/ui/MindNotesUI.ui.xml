@@ -3,42 +3,71 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:mn='urn:import:mindnotes.client.ui'>
 	<ui:style>
 		.bordered {
-		border: 1px #000 solid;
+			border: 1px #000 solid;
 		}
+		
 		.sidebar {
-		padding: 12px;
+			padding: 12px;
 		}
+		
 		.sidebar p {
-		text-align: justify;
+			text-align: justify;
 		}
-
+		
 		.header {
-		border-bottom: 1px #f00 solid;
-		background: #222228;
-		margin-bottom: 12px;
-		color: #fffaf1;
-		height: 60px;
+			border-bottom: 1px #f00 solid;
+			background: #222228;
+			margin-bottom: 12px;
+			color: #fffaf1;
+			height: 60px;
 		}
-
+		
 		.header h1 {
-		margin-top: 0px;
+			margin-top: 0px;
+		}
+		
+		.toprightlinks {
+			padding: 12px;
+			text-align: right;
+			font-weight: bold;
+			color: #eee;
+		}
+		
+		.toprightlinks a {
+			color: #eee;
+		}
+		
+		.topbutton {
+			cursor: pointer;
+
+			margin-left: 12px;
+			text-decoration: underline;
+		}
+		
+		.topbar {
+			width: 100%;
 		}
 	</ui:style>
 	<g:DockLayoutPanel unit='PX' ui:field="dockLayoutPanel">
-		<g:north size='60'>
-			<g:DockLayoutPanel unit='PX'>
-			<g:center>
+		<g:north size='40'>
+			<g:HorizontalPanel addStyleNames="{style.topbar}">
 				<g:HTML addStyleNames="{style.header}">
-					<h1 class="header-h1">Mind Notes App<span style="font-size: smaller">(30.06.2009)</span></h1>
+					<h1 class="header-h1">
+						Mind Notes App
+						<span style="font-size: smaller">(9.07.2009)</span>
+					</h1>
 				</g:HTML>
-			</g:center>
-			<g:east size='120'>
-				<g:FlowPanel addStyleNames="{style.header}">
-					<g:Button ui:field="loadButton">Load from cloud</g:Button>
-					<g:Button ui:field="saveButton">Save to cloud</g:Button>
+				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}">
+					<g:InlineLabel ui:field="greetLabel"></g:InlineLabel>
+					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Load from
+						cloud</g:Anchor>
+					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to
+						cloud</g:Anchor>
+					<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
+
 				</g:FlowPanel>
-			</g:east>
-			</g:DockLayoutPanel>
+			</g:HorizontalPanel>
+
 		</g:north>
 		<g:center>
 			<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
@@ -47,14 +76,14 @@
 			<g:HTML>
 				<div class="{style.sidebar}">
 					<h2>Iteration 3</h2>
-					<p><strong>Cloud Storage</strong></p>
+					<p>
+						<strong>Cloud Storage</strong>
+					</p>
 					<ul>
-					<li>The nodes are now positioned on an AbsolutePanel, and their positions are calculated
-					by the script. Left-hand side and right-hand sides are now supported.</li>
-					<li>After adding or deleting nodes, try undoing this (ctrl+z)</li>
-					<li>Nodes now can be edited using rich text editing. You can play with the B-I-U buttons, or paste some text from another webpage.</li>
-					<li>Try cutting (ctrl+x) and pasting (ctrl+v) nodes around. Copy is not implemented yet.</li>
-					<li>I abandoned the idea of porting this to SVG, because current method works well enough.</li>
+						<li>The app now requires Google Accounts login; you should see your
+						email in the top right corner.</li>
+						<li>Try making your own mind map and click "Save to cloud"</li>
+						<li>Make some changes or reload the page, then click "Load from cloud"</li>
 					</ul>
 				</div>
 			</g:HTML>

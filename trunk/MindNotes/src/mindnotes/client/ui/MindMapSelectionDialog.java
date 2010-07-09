@@ -10,13 +10,15 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MindMapSelectionDialog extends Composite implements
+public class MindMapSelectionDialog extends DialogBox implements
 		MindMapSelectionView {
 
 	protected Widget _selectedWidget;
@@ -54,15 +56,15 @@ public class MindMapSelectionDialog extends Composite implements
 	}
 
 	public MindMapSelectionDialog() {
-		initWidget(uiBinder.createAndBindUi(this));
+		add(uiBinder.createAndBindUi(this));
 		okButton.setEnabled(false);
 		okButton.addClickHandler(new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				if (_listener != null)
+				if (_listener != null && _selectedDocument != null)
 					_listener.mindMapChosen(_selectedDocument);
-				MindMapSelectionDialog.this.setVisible(false);
+				MindMapSelectionDialog.this.hide();
 			}
 		});
 
@@ -70,10 +72,11 @@ public class MindMapSelectionDialog extends Composite implements
 
 			@Override
 			public void onClick(ClickEvent event) {
-				MindMapSelectionDialog.this.setVisible(false);
+				MindMapSelectionDialog.this.hide();
 			}
 		});
 
+		setText("Document Selection (Cloud)");
 	}
 
 	@UiField
@@ -81,6 +84,9 @@ public class MindMapSelectionDialog extends Composite implements
 
 	@UiField
 	protected Button cancelButton;
+
+	@UiField
+	protected HTML dialogText;
 
 	@UiField
 	protected FlexTable availableDocumentsTable;
@@ -97,6 +103,15 @@ public class MindMapSelectionDialog extends Composite implements
 
 		availableDocumentsTable.clear();
 
+		boolean empty = mindmaps.isEmpty();
+
+		cancelButton.setVisible(!empty);
+		okButton.setEnabled(empty);
+
+		dialogText
+				.setHTML(empty ? "There are no documents stored in the cloud yet. Go ahead and make one! <br /> click <strong>Save To Cloud</strong> later."
+						: "Please select a document to open:");
+
 		// populate the table with values for mindmaps
 		int i = 0;
 		for (MindMapInfo doc : mindmaps) {
@@ -106,6 +121,21 @@ public class MindMapSelectionDialog extends Composite implements
 			availableDocumentsTable.setWidget(i, 1, link);
 			i++;
 		}
+
+	}
+
+	@Override
+	public void askForCloudDocumentSelection() {
+		// center the dialog window
+		setPopupPositionAndShow(new PositionCallback() {
+
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				setPopupPosition((Window.getClientWidth() - offsetWidth) / 2,
+						(Window.getClientHeight() - offsetHeight) / 2);
+
+			}
+		});
 
 	}
 }

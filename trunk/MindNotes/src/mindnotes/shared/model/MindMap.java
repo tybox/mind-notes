@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 public class MindMap implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2262820174504249978L;
+
 	private Node _rootNode;
 	private String _title;
 
