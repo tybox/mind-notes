@@ -14,4 +14,6 @@ public interface MindMapSelectionView {
 
 	public void setMindMaps(List<MindMapInfo> mindmaps);
 
+	public void askForCloudDocumentSelection();
+
 }

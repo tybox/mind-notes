@@ -1,5 +1,6 @@
 package mindnotes.client.ui;
 
+import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.shared.model.Node;
@@ -30,6 +31,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private NodeWidget _rootNode;
 
 	private NodeLayout _layout;
+
+	private MindMapSelectionDialog _mindMapSelectionDialog;
+
+	private MindNotesUI _window;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -259,4 +264,36 @@ public class MindMapWidget extends Composite implements MindMapView,
 		}
 
 	}
+
+	@Override
+	public MindMapSelectionView getMindMapSelectionView() {
+		if (_mindMapSelectionDialog == null) {
+			_mindMapSelectionDialog = new MindMapSelectionDialog();
+		}
+		return _mindMapSelectionDialog;
+	}
+
+	@Override
+	public String askForDocumentTitle() {
+		// TODO make this a neat DialogBox
+
+		return Window.prompt("Enter the title of your mind map:",
+				"Untitled Mind Map");
+
+	}
+
+	public void setEditorWindow(MindNotesUI window) {
+		_window = window;
+	}
+
+	@Override
+	public void setLogoutLink(String logoutURL) {
+		_window.setLogoutLink(logoutURL);
+	}
+
+	@Override
+	public void setUserEmail(String email) {
+		_window.setUserEmail(email);
+	}
+
 }

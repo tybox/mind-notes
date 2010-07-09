@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Node implements Serializable {
 
+	private static final long serialVersionUID = 3281037573267611972L;
+
 	private List<Node> _childNodes;
 	private String _text;
 

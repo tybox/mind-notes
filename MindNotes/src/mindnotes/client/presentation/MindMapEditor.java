@@ -1,13 +1,18 @@
 package mindnotes.client.presentation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import mindnotes.shared.model.MindMap;
+import mindnotes.shared.model.MindMapInfo;
 import mindnotes.shared.model.Node;
 import mindnotes.shared.model.NodeLocation;
 import mindnotes.shared.services.MindmapStorageService;
 import mindnotes.shared.services.MindmapStorageServiceAsync;
+import mindnotes.shared.services.UserInfo;
+import mindnotes.shared.services.UserInfoService;
+import mindnotes.shared.services.UserInfoServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -155,6 +160,7 @@ public class MindMapEditor {
 
 	MindmapStorageServiceAsync _mindmapStorage = GWT
 			.create(MindmapStorageService.class);
+	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
 
 	public MindMapEditor(MindMapView mindMapView) {
 		_nodeViews = new HashMap<Node, NodeView>();
@@ -164,6 +170,27 @@ public class MindMapEditor {
 		_mindMapView.setListener(new Gestures(this));
 		_selection = new Selection();
 		_clipboard = new Selection();
+	}
+
+	/**
+	 * 
+	 */
+	private void updateUserInfo() {
+		// ask asynchronously for user info
+		_userInfoService.getUserInfo(new AsyncCallback<UserInfo>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				_mindMapView.setUserEmail(null);
+				_mindMapView.setLogoutLink(null);
+			}
+
+			@Override
+			public void onSuccess(UserInfo result) {
+				_mindMapView.setLogoutLink(result.getLogoutURL());
+				_mindMapView.setUserEmail(result.getEmail());
+			}
+		});
 	}
 
 	/**
@@ -288,27 +315,56 @@ public class MindMapEditor {
 		setUpNodeView(childView, newNode);
 	}
 
-	public void loadFromCloud() {
-		_mindmapStorage.loadMindmap("agptaW5kLW5vdGVzcg8LEglEU01pbmRNYXAYAww",
-				new AsyncCallback<MindMap>() {
+	public void loadFromCloud(MindMapInfo map) {
+		_mindmapStorage.loadMindmap(map.getKey(), new AsyncCallback<MindMap>() {
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onFailure(Throwable caught) {
+				throw new RuntimeException(caught);
 
-					}
+			}
 
-					@Override
-					public void onSuccess(MindMap result) {
-						if (result != null)
-							setMindMap(result);
+			@Override
+			public void onSuccess(MindMap result) {
+				if (result != null)
+					setMindMap(result);
+				else
+					throw new NullPointerException("result is null");
 
-					}
-				});
+			}
+		});
 	}
 
 	public void loadFromCloudWithDialog() {
-		// TODO Auto-generated method stub
+
+		_mindmapStorage
+				.getAvailableMindmaps(new AsyncCallback<List<MindMapInfo>>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO what happens on failure? make nice dialogs
+
+					}
+
+					@Override
+					public void onSuccess(List<MindMapInfo> result) {
+						MindMapSelectionView selectionView = _mindMapView
+								.getMindMapSelectionView();
+						selectionView.setMindMaps(result);
+						selectionView
+								.setListener(new MindMapSelectionView.Listener() {
+
+									@Override
+									public void mindMapChosen(MindMapInfo map) {
+										loadFromCloud(map);
+									}
+								});
+
+						// show the selection (most probably a dialog) to the
+						// user
+						selectionView.askForCloudDocumentSelection();
+					}
+				});
 
 	}
 
@@ -317,11 +373,19 @@ public class MindMapEditor {
 	}
 
 	public void saveToCloud() {
+		if (_mindMap.getTitle() == null) {
+			String title = _mindMapView.askForDocumentTitle();
+			if (title == null)
+				return;
+			_mindMap.setTitle(title);
+		}
+
 		_mindmapStorage.saveMindmap(_mindMap, new AsyncCallback<Void>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-
+				// XXX what should happen here?
+				throw new RuntimeException(caught);
 			}
 
 			@Override
@@ -353,6 +417,7 @@ public class MindMapEditor {
 	public void setMindMap(MindMap mindMap) {
 		_mindMap = mindMap;
 		generateView();
+		updateUserInfo();
 	}
 
 	public void setNodeText(Node node, String newText) {

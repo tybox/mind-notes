@@ -7,9 +7,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
@@ -29,9 +30,15 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	DockLayoutPanel dockLayoutPanel;
 
 	@UiField
-	Button saveButton;
+	Anchor saveButton;
 	@UiField
-	Button loadButton;
+	Anchor loadButton;
+
+	@UiField
+	Anchor logoutLink;
+
+	@UiField
+	Label greetLabel;
 
 	public MindNotesUI() {
 
@@ -51,6 +58,7 @@ public class MindNotesUI extends Composite implements RequiresResize,
 				mindMapWidget.loadFromCloudClicked();
 			}
 		});
+		mindMapWidget.setEditorWindow(this);
 	}
 
 	public MindMapView getMindMapView() {
@@ -60,6 +68,14 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	@Override
 	public void onResize() {
 		dockLayoutPanel.onResize();
+	}
+
+	public void setLogoutLink(String logoutURL) {
+		logoutLink.setHref(logoutURL);
+	}
+
+	public void setUserEmail(String email) {
+		greetLabel.setText(email);
 	}
 
 }

@@ -10,11 +10,11 @@
 		}
 	</ui:style>
 	<g:VerticalPanel>
-		<g:HTML>Please select a document to open:</g:HTML>
+		<g:HTML ui:field="dialogText">Please select a document to open:</g:HTML>
 		<g:FlexTable ui:field="availableDocumentsTable">
 						
 		</g:FlexTable>
-		<g:FlowPanel addStyleName="{style.buttonbar}">
+		<g:FlowPanel addStyleNames="{style.buttonbar}">
 			<g:Button ui:field="cancelButton">Cancel</g:Button>
 			<g:Button ui:field="okButton">OK</g:Button>
 		</g:FlowPanel>

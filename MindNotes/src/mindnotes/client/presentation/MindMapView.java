@@ -34,4 +34,12 @@ public interface MindMapView {
 	public void hideActionsPanel();
 
 	public void updateLayout();
+
+	public MindMapSelectionView getMindMapSelectionView();
+
+	public String askForDocumentTitle();
+
+	public void setLogoutLink(String logoutURL);
+
+	public void setUserEmail(String email);
 }
