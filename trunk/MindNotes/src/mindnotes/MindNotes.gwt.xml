@@ -19,5 +19,9 @@
 	<!-- Specify the paths for translatable code -->
 	<source path='client' />
 	<source path='shared' />
+	
+	<define-linker class="mindnotes.linker.CacheManifestLinker" name="cachemanifest" />
+	
+	<add-linker name="cachemanifest" />
 
 </module>
