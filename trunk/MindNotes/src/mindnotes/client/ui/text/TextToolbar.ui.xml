@@ -1,0 +1,51 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	
+	<ui:image field="iconB" />
+	<ui:image field="iconI" />
+	<ui:image field="iconU" />
+	<ui:image field="iconLink" />
+	<ui:image field="iconImage" />
+	<ui:style>
+	
+		.toolbar {
+				background: #fff;
+				border: 1px #888 solid;
+				width: 100px;
+				
+			}
+			
+		.toolbutton {
+				
+				width: 24px;
+				height: 24px;
+				margin: 1px;
+				padding: 0;
+			}
+			
+			
+	
+		@sprite .icon-b { gwt-image: "iconB" }
+		@sprite .icon-i { gwt-image: "iconI" }
+		@sprite .icon-u { gwt-image: "iconU" }
+		@sprite .icon-link { gwt-image: "iconLink" }
+		@sprite .icon-image { gwt-image: "iconImage" }
+	</ui:style>
+	<g:HTMLPanel>
+	<style>
+	 	.rte-toolbar .gwt-ToggleButton-up,
+	 	.rte-toolbar .gwt-PushButton-up
+	 	{
+	 		border: 1px solid transparent;
+	 	}
+	</style>
+	<g:HorizontalPanel addStyleNames="{style.toolbar}" stylePrimaryName="rte-toolbar">
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-b}" ui:field="boldButton" />
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-i}" ui:field="italicButton" />
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-u}" ui:field="underlineButton" />
+		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-link}" ui:field="linkButton" />
+		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-image}" ui:field="imageButton" />
+	</g:HorizontalPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 

@@ -87,7 +87,6 @@
 						<li>Try making your own mind map and click "Save to cloud"</li>
 						<li>Make some changes or reload the page, then click "Load from cloud"</li>
 					</ul>
-					<txt:TextFormattingPanel></txt:TextFormattingPanel>
 				</div>
 			</g:HTMLPanel>
 		</g:west>
