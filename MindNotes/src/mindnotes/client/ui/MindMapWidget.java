@@ -3,6 +3,7 @@ package mindnotes.client.ui;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
+import mindnotes.client.ui.text.TextEditor;
 import mindnotes.shared.model.Node;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -16,9 +17,10 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class MindMapWidget extends Composite implements MindMapView,
-		NodeContainer, RequiresResize {
+		NodeContainer, RequiresResize, PopupContainer {
 
 	private AbsolutePanel _viewportPanel;
 
@@ -107,6 +109,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		_rootNode = new NodeWidget();
 		_rootNode.setContainer(this);
+		TextEditor textEditor = new TextEditor();
+		textEditor.setToolbarHost(this);
+		_rootNode.setTextEditor(textEditor);
 
 		_viewportPanel = new AbsolutePanel();
 		_viewportPanel.add(_arrowsWidget, 0, 0);
@@ -293,4 +298,13 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_window.setCloudBarVisible(email != null);
 	}
 
+	@Override
+	public void showPopup(Widget anchor, int top, int left, Widget popup) {
+		int x = anchor.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft()
+				+ left;
+		int y = anchor.getAbsoluteTop() - _viewportPanel.getAbsoluteTop() + top;
+		_viewportPanel.add(popup, x, y);
+		popup.setVisible(true);
+
+	}
 }

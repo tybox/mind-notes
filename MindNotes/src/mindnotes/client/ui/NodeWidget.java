@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import mindnotes.client.presentation.NodeView;
+import mindnotes.client.ui.text.TextEditor;
 import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -56,8 +57,6 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 		_arrows = new HashSet<Arrow>();
 
-		_textEditor = new TextEditor();
-
 		_label = new HTML();
 		_label.setStylePrimaryName("node");
 		_label.addStyleDependentName("text");
@@ -91,6 +90,10 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		addDomHandler(handler, ClickEvent.getType());
 	}
 
+	public void setTextEditor(TextEditor textEditor) {
+		_textEditor = textEditor;
+	}
+
 	public void setContainer(NodeContainer container) {
 		_container = container;
 	}
@@ -99,6 +102,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	public NodeView createChild() {
 		NodeWidget child = new NodeWidget();
 		child.setContainer(_container);
+		child.setTextEditor(_textEditor);
 		child.setLayoutParent(this);
 		_arrows.add(new Arrow(this, child));
 		_children.add(child);
@@ -183,6 +187,10 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		if (isSelected) {
 			addStyleDependentName("node-selected");
 
+			if (_textEditor.getParent() != _focusPanel) {
+				_focusPanel.add(_textEditor);
+			}
+
 			showWidget(1); // show text box;
 			// setHTML after making rich text editor visible
 			// to avoid weird behavior of using the formatter when the widget is
@@ -190,11 +198,15 @@ public class NodeWidget extends DeckPanel implements NodeView,
 			_textEditor.setHTML(_label.getHTML());
 
 			_focusPanel.setFocus(true);
-			if (_container != null)
+
+			if (_container != null) {
 				_container.onNodeLayoutInvalidated(this);
+			}
+			_textEditor.showToolbar();
 
 		} else {
 			removeStyleDependentName("node-selected");
+			_textEditor.hideToolbar();
 			showWidget(0); // show label;
 
 			if (_listener != null) {
