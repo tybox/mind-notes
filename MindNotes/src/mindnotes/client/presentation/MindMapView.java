@@ -39,7 +39,5 @@ public interface MindMapView {
 
 	public String askForDocumentTitle();
 
-	public void setLogoutLink(String logoutURL);
-
-	public void setUserEmail(String email);
+	public void setUserInfo(String email, String logoutURL);
 }

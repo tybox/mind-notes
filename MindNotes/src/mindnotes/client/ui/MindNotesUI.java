@@ -4,13 +4,14 @@ import mindnotes.client.presentation.MindMapView;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,37 +29,32 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	MindMapWidget mindMapWidget;
 	@UiField
 	DockLayoutPanel dockLayoutPanel;
-
 	@UiField
 	Anchor saveButton;
 	@UiField
 	Anchor loadButton;
-
 	@UiField
 	Anchor logoutLink;
-
 	@UiField
 	Label greetLabel;
+	@UiField
+	Panel cloudBarPanel;
 
 	public MindNotesUI() {
 
 		initWidget(uiBinder.createAndBindUi(this));
-
-		saveButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				mindMapWidget.saveToCloudClicked();
-			}
-		});
-		loadButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				mindMapWidget.loadFromCloudClicked();
-			}
-		});
 		mindMapWidget.setEditorWindow(this);
+
+	}
+
+	@UiHandler("loadButton")
+	public void onLoadClicked(ClickEvent event) {
+		mindMapWidget.loadFromCloudClicked();
+	}
+
+	@UiHandler("saveButton")
+	public void onSaveClicked(ClickEvent event) {
+		mindMapWidget.saveToCloudClicked();
 	}
 
 	public MindMapView getMindMapView() {
@@ -76,6 +72,11 @@ public class MindNotesUI extends Composite implements RequiresResize,
 
 	public void setUserEmail(String email) {
 		greetLabel.setText(email);
+	}
+
+	public void setCloudBarVisible(boolean visible) {
+		cloudBarPanel.setVisible(visible);
+
 	}
 
 }
