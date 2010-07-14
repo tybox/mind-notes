@@ -181,14 +181,14 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				_mindMapView.setUserEmail(null);
-				_mindMapView.setLogoutLink(null);
+				_mindMapView.setUserInfo(null, null);
 			}
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setLogoutLink(result.getLogoutURL());
-				_mindMapView.setUserEmail(result.getEmail());
+				_mindMapView.setUserInfo(result.getEmail(),
+						result.getLogoutURL());
+
 			}
 		});
 	}

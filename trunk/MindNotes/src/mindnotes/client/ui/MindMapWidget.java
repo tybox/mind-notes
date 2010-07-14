@@ -287,13 +287,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	@Override
-	public void setLogoutLink(String logoutURL) {
-		_window.setLogoutLink(logoutURL);
-	}
-
-	@Override
-	public void setUserEmail(String email) {
+	public void setUserInfo(String email, String logoutURL) {
 		_window.setUserEmail(email);
+		_window.setLogoutLink(logoutURL);
+		_window.setCloudBarVisible(email != null);
 	}
 
 }
