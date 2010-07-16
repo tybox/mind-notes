@@ -10,10 +10,11 @@
 		
 		.sidebar {
 			padding: 12px;
+			min-width: 266px;
 		}
 		
 		.sidebar p {
-			text-align: justify;
+			text-align: justify;		
 		}
 		
 		.header {
@@ -72,24 +73,32 @@
 
 		</g:north>
 		<g:center>
-			<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
+			
+			<g:SplitLayoutPanel>
+			<g:west size='266'>
+			<g:ScrollPanel>
+				<g:HTMLPanel>
+					<div class="{style.sidebar}">
+						<h2>Iteration 3</h2>
+						<p>
+							<strong>Cloud Storage</strong>
+						</p>
+						<ul>
+							<li>The app now requires Google Accounts login; you should see your
+							email in the top right corner.</li>
+							<li>Try making your own mind map and click "Save to cloud"</li>
+							<li>Make some changes or reload the page, then click "Load from cloud"</li>
+						</ul>
+					</div>
+				</g:HTMLPanel>
+			</g:ScrollPanel>
+			</g:west>
+			<g:center>
+				<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
+			</g:center>
+			</g:SplitLayoutPanel>
 		</g:center>
-		<g:west size='266'>
-			<g:HTMLPanel>
-				<div class="{style.sidebar}">
-					<h2>Iteration 3</h2>
-					<p>
-						<strong>Cloud Storage</strong>
-					</p>
-					<ul>
-						<li>The app now requires Google Accounts login; you should see your
-						email in the top right corner.</li>
-						<li>Try making your own mind map and click "Save to cloud"</li>
-						<li>Make some changes or reload the page, then click "Load from cloud"</li>
-					</ul>
-				</div>
-			</g:HTMLPanel>
-		</g:west>
+
 	</g:DockLayoutPanel>
 
 </ui:UiBinder> 
