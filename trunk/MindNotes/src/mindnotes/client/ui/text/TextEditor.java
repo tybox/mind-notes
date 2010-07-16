@@ -1,33 +1,34 @@
 package mindnotes.client.ui.text;
 
+import mindnotes.client.ui.DialogCallback;
 import mindnotes.client.ui.PopupContainer;
 
-import com.google.gwt.dom.client.IFrameElement;
-import com.google.gwt.dom.client.LinkElement;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class TextEditor extends Composite implements TextToolbar.Listener {
 
 	private TextToolbar _toolbar;
-	private RichTextArea _textArea;
+	private StyledRichTextArea _textArea;
 
 	/**
 	 * The widget that will host the toolbar popup
 	 */
 	private PopupContainer _toolbarHost;
+	private ImageInsertDialog _imageInsertDialog;
+	private LinkInsertDialog _linkInsertDialog;
 
 	public TextEditor() {
 
 		_toolbar = new TextToolbar();
 		_toolbar.setListener(this);
 
-		_textArea = new RichTextArea();
+		_textArea = new StyledRichTextArea("rte.css");
 		_textArea.getElement().setPropertyString("border", "none");
 
 		_textArea.addMouseUpHandler(new MouseUpHandler() {
@@ -83,16 +84,58 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 
 	@Override
 	public void insertImage() {
-		// TODO Auto-generated method stub
+		if (_imageInsertDialog == null)
+			_imageInsertDialog = new ImageInsertDialog();
+		_imageInsertDialog.showDialog(new DialogCallback<String>() {
+			
+			@Override
+			public void dialogSuccessful(String imageURL) {
+				insertImage(imageURL);
+			}
+			
+			@Override
+			public void dialogCancelled() {
+				// no action needed on cancel
+			}
+		});
+	}
 
+	protected void insertImage(String imageURL) {
+		_textArea.getFormatter().insertImage(imageURL);
 	}
 
 	@Override
 	public void insertLink() {
-		// TODO Auto-generated method stub
+		if (_linkInsertDialog == null) {
+			_linkInsertDialog = new LinkInsertDialog();
+		}
+		_linkInsertDialog.showDialog(new DialogCallback<String[]>() {
 
+			@Override
+			public void dialogCancelled() {
+			}
+
+			@Override
+			public void dialogSuccessful(String[] dr) {
+				insertLink(dr[0], dr[1]);
+			}
+		});
 	}
 
+	protected void insertLink(String url, String text) {
+		if (text != null && !text.isEmpty()) {
+			// TODO potential script injection vulnerability
+			_textArea.getFormatter().insertHTML("<a href=\""+URL.encode(url)+"\">"+text+"</a>");
+			
+		} else {
+			_textArea.getFormatter().createLink(url);
+		}
+	}
+	
+	protected void setFont() {
+		_textArea.getFormatter().setFontName("");
+	}
+		
 	public String getHTML() {
 
 		return _textArea.getHTML();
@@ -100,17 +143,6 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 
 	public void setHTML(String html) {
 		_textArea.setHTML(html);
-		// append style link
-		// CAVEAT: this works great, but is implementation-specific, and no
-		// checks for NPE's are made.
-		// wild debugging sessions - start here
-		IFrameElement ife = IFrameElement.as(_textArea.getElement());
-		LinkElement le = ife.getContentDocument().createLinkElement();
-		le.setAttribute("rel", "stylesheet");
-		le.setAttribute("type", "text/css");
-		le.setAttribute("href", "rte.css");
-		ife.getContentDocument().getElementsByTagName("head").getItem(0)
-				.appendChild(le);
 
 		updateButtonState();
 

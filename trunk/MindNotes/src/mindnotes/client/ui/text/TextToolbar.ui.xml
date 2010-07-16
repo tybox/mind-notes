@@ -7,30 +7,35 @@
 	<ui:image field="iconU" />
 	<ui:image field="iconLink" />
 	<ui:image field="iconImage" />
+	<ui:image field="iconJustLeft" />
+	<ui:image field="iconJustCenter" />
+	<ui:image field="iconJustRight" />
+	<ui:image field="iconJustJust" />
+	
 	<ui:style>
 	
 		.toolbar {
 				background: #fff;
 				border: 1px #888 solid;
 				width: 100px;
-				
 			}
 			
-		.toolbutton {
-				
+		.toolbutton {	
 				width: 24px;
 				height: 24px;
 				margin: 1px;
 				padding: 0;
 			}
-			
-			
-	
+		
 		@sprite .icon-b { gwt-image: "iconB" }
 		@sprite .icon-i { gwt-image: "iconI" }
 		@sprite .icon-u { gwt-image: "iconU" }
 		@sprite .icon-link { gwt-image: "iconLink" }
 		@sprite .icon-image { gwt-image: "iconImage" }
+		@sprite .icon-justLeft { gwt-image: "iconJustLeft" }
+		@sprite .icon-justCenter { gwt-image: "iconJustCenter" }
+		@sprite .icon-justRight { gwt-image: "iconJustRight" }
+		@sprite .icon-justJust { gwt-image: "iconJustJust" }
 	</ui:style>
 	<g:HTMLPanel>
 	<style>
@@ -46,6 +51,12 @@
 		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-u}" ui:field="underlineButton" />
 		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-link}" ui:field="linkButton" />
 		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-image}" ui:field="imageButton" />
+		<g:ListBox ui:field='fontNameComboBox' visibleItemCount='1'/>
+		<g:ListBox ui:field='fontSizeComboBox' visibleItemCount='1'/>
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justLeft}" ui:field='justifyLeft' />
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justCenter}" ui:field='justifyCenter' />
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justRight}" ui:field='justifyRight' />
+		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justJust}" ui:field='justifyJustify' />
 	</g:HorizontalPanel>
 	</g:HTMLPanel>
 </ui:UiBinder> 
