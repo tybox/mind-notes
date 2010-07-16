@@ -89,7 +89,27 @@
 							<li>Try making your own mind map and click "Save to cloud"</li>
 							<li>Make some changes or reload the page, then click "Load from cloud"</li>
 						</ul>
+						<p>
+							<strong>App Cache</strong>
+						</p>
+						<ul>
+							<li>The app can be loaded and used without an internet connection.
+							Try disconnecting from the internet and then hitting refresh.</li>
+							<li>Notice the cloud features are disabled now.</li>
+						</ul>
+						<h2>Iteration 2</h2>
+					<p><strong>Better Layout, Undo Stack, Rich Text Formatting, Copy/Paste</strong></p>
+					<ul>
+					<li>The nodes are now positioned on an AbsolutePanel, and their positions are calculated
+					by the script. Left-hand side and right-hand sides are now supported.</li>
+					<li>After adding or deleting nodes, try undoing this (ctrl+z)</li>
+					<li>Nodes now can be edited using rich text editing. You can play with the B-I-U buttons, or paste some text from another webpage.</li>
+					<li>Try cutting (ctrl+x) and pasting (ctrl+v) nodes around. Copy is not implemented yet.</li>
+					<li>I abandoned the idea of porting this to SVG, because current method works well enough.</li>
+					</ul>
+					
 					</div>
+					
 				</g:HTMLPanel>
 			</g:ScrollPanel>
 			</g:west>
