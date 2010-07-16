@@ -51,8 +51,7 @@
 		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-u}" ui:field="underlineButton" />
 		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-link}" ui:field="linkButton" />
 		<g:PushButton addStyleNames="{style.toolbutton} {style.icon-image}" ui:field="imageButton" />
-		<g:ListBox ui:field='fontNameComboBox' visibleItemCount='1'/>
-		<g:ListBox ui:field='fontSizeComboBox' visibleItemCount='1'/>
+		
 		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justLeft}" ui:field='justifyLeft' />
 		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justCenter}" ui:field='justifyCenter' />
 		<g:ToggleButton addStyleNames="{style.toolbutton} {style.icon-justRight}" ui:field='justifyRight' />
