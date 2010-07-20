@@ -30,9 +30,8 @@ public class MindMapEditor {
 
 		@Override
 		public void doAction() {
-			_createdNode = addChild(_selection.selectedNodeView,
-					_selection.selectedNode, _location);
-			selectNode(_createdNode);
+			_createdNode = addChild(_selection.getCurrentNode(), _location);
+			setCurrentNode(_createdNode);
 		}
 
 		@Override
@@ -52,11 +51,12 @@ public class MindMapEditor {
 
 		@Override
 		public void doAction() {
-			_cutNode = _selection.selectedNode;
+			// TODO make this action work on the whole selection
+			_cutNode = _selection.getCurrentNode();
 			if (_cutNode == null)
 				return;
 			_parentNode = _cutNode.getParent();
-			_clipboard.selectedNode = _cutNode;
+			_clipboard.setCurrentNode(_cutNode);
 			deleteNode(_cutNode);
 		}
 
@@ -69,7 +69,7 @@ public class MindMapEditor {
 			if (_cutNode == null)
 				return;
 			insertChild(_parentNode, _cutNode);
-			selectNode(_cutNode);
+			setCurrentNode(_cutNode);
 		}
 
 	}
@@ -92,7 +92,7 @@ public class MindMapEditor {
 		@Override
 		public void undoAction() {
 			insertChild(_parentNode, _removedNode);
-			selectNode(_removedNode);
+			setCurrentNode(_removedNode);
 		}
 
 	}
@@ -100,9 +100,9 @@ public class MindMapEditor {
 	private class ExpandAction implements Action {
 
 		private boolean _expandOnUndo;
-		private Selection _subject;
+		private Node _subject;
 
-		public ExpandAction(Selection subject) {
+		public ExpandAction(Node subject) {
 			_subject = subject;
 			if (_subject == null)
 				throw new NullPointerException();
@@ -110,17 +110,16 @@ public class MindMapEditor {
 
 		@Override
 		public void doAction() {
-			_subject.selectedNode.setExpanded(!_subject.selectedNode
-					.isExpanded());
-			_subject.selectedNodeView.setExpanded(_subject.selectedNode
-					.isExpanded());
-			_expandOnUndo = !_subject.selectedNode.isExpanded();
+			_subject.setExpanded(!_subject.isExpanded());
+
+			_nodeViews.get(_subject).setExpanded(_subject.isExpanded());
+			_expandOnUndo = !_subject.isExpanded();
 		}
 
 		@Override
 		public void undoAction() {
-			_subject.selectedNode.setExpanded(_expandOnUndo);
-			_subject.selectedNodeView.setExpanded(_expandOnUndo);
+			_subject.setExpanded(_expandOnUndo);
+			_nodeViews.get(_subject).setExpanded(_expandOnUndo);
 		}
 
 	}
@@ -135,11 +134,11 @@ public class MindMapEditor {
 
 		@Override
 		public void doAction() {
-			if (_clipboard.selectedNode == null)
+			if (_clipboard.getCurrentNode() == null)
 				return;
-			_pastedNode = _clipboard.selectedNode;
-			insertChild(_selection.selectedNode, _pastedNode);
-			selectNode(_pastedNode);
+			_pastedNode = _clipboard.getCurrentNode();
+			insertChild(_selection.getCurrentNode(), _pastedNode);
+			setCurrentNode(_pastedNode);
 		}
 
 		@Override
@@ -186,8 +185,8 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setUserInfo(result.getEmail(),
-						result.getLogoutURL());
+				_mindMapView.setUserInfo(result.getEmail(), result
+						.getLogoutURL());
 
 			}
 		});
@@ -195,14 +194,13 @@ public class MindMapEditor {
 
 	/**
 	 * 
-	 * @param nodeView
 	 * @param node
 	 * @param loc
 	 *            Suggested node location. In current layout, if <c>node's
 	 *            parent</c> is not a root node, <c>loc</c> is ignored and
 	 *            parent node location is used.
 	 */
-	private Node addChild(NodeView nodeView, Node node, NodeLocation loc) {
+	private Node addChild(Node node, NodeLocation loc) {
 
 		Node child = new Node();
 		child.setText("New node");
@@ -214,7 +212,7 @@ public class MindMapEditor {
 
 		node.addChildNode(child);
 
-		NodeView childView = nodeView.createChild();
+		NodeView childView = _nodeViews.get(node).createChild();
 		setUpNodeView(childView, child);
 		return child;
 
@@ -228,7 +226,7 @@ public class MindMapEditor {
 
 		node.getParent().removeChildNode(node);
 
-		selectNode(node.getParent());
+		setCurrentNode(node.getParent());
 	}
 
 	/**
@@ -293,13 +291,13 @@ public class MindMapEditor {
 	}
 
 	public void deleteSelection() {
-		doUndoableAction(new DeleteAction(_selection.selectedNode));
+		doUndoableAction(new DeleteAction(_selection.getCurrentNode()));
 	}
 
 	public void deselect() {
 		// user clicked on the working area and not on any particular widget;
 		// deselect
-		selectNode(null);
+		setCurrentNode(null);
 	}
 
 	public void insertChild(Node parentNode, Node newNode) {
@@ -395,20 +393,34 @@ public class MindMapEditor {
 		});
 	}
 
-	public void selectNode(Node node) {
-		if (_selection.selectedNode == node)
-			return;
-		if (_selection.selectedNodeView != null) {
-			_selection.selectedNodeView.setSelected(false);
+	public void setCurrentNode(Node node) {
+		setCurrentNode(node, false);
+	}
+
+	private void setCurrentNode(Node node, boolean enterTextMode) {
+		Node oldCurrentNode = _selection.getCurrentNode();
+
+		// check if the new current node is different from the last one
+		if (oldCurrentNode != node) {
+			// update old current node ui
+			if (oldCurrentNode != null) {
+				_nodeViews.get(oldCurrentNode).setSelectionState(
+						SelectionState.DESELECTED);
+			}
+
+			// update selection state
+			_selection.setCurrentNode(node);
 		}
+		// update new current node ui
+		if (node != null) {
+			NodeView nodeView = _nodeViews.get(node);
 
-		NodeView view = _nodeViews.get(node);
-
-		_selection.selectedNode = node;
-		_selection.selectedNodeView = view;
-		if (view != null) {
-			view.setSelected(true);
-			_mindMapView.showActionsPanel(view, node);
+			if (enterTextMode) {
+				nodeView.setSelectionState(SelectionState.TEXT_EDITING);
+			} else {
+				nodeView.setSelectionState(SelectionState.CURRENT);
+			}
+			_mindMapView.showActionsPanel(nodeView, node);
 		} else {
 			_mindMapView.hideActionsPanel();
 		}
@@ -426,11 +438,19 @@ public class MindMapEditor {
 	}
 
 	public void toggleExpand() {
-		doUndoableAction(new ExpandAction(_selection));
+		doUndoableAction(new ExpandAction(_selection.getCurrentNode()));
 	}
 
 	public void undo() {
 		_undoStack.undo();
+	}
+
+	public void enterTextMode(Node node) {
+		setCurrentNode(node, true);
+	}
+
+	public void exitTextMode() {
+		setCurrentNode(_selection.getCurrentNode(), false);
 	}
 
 }

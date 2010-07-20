@@ -8,6 +8,8 @@ public interface NodeView {
 	public interface Listener {
 		public void nodeClickedGesture(NodeView sender);
 
+		public void nodeDoubleClickedGesture(NodeView sender);
+
 		public void nodeTextEditedGesture(NodeView view, String oldText,
 				String newText);
 
@@ -26,7 +28,11 @@ public interface NodeView {
 
 	public void setLocation(NodeLocation location);
 
-	public void setSelected(boolean isSelected);
+	/**
+	 * @see Selection for difference between selected node and current node.
+	 * @param isSelected
+	 */
+	public void setSelectionState(SelectionState state);
 
 	public void setExpanded(boolean isExpanded);
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import mindnotes.client.presentation.NodeView;
+import mindnotes.client.presentation.SelectionState;
 import mindnotes.client.ui.text.TextEditor;
 import mindnotes.shared.model.NodeLocation;
 
@@ -13,6 +14,8 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.user.client.ui.DeckPanel;
@@ -20,7 +23,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 
 public class NodeWidget extends DeckPanel implements NodeView,
-		LayoutTreeElement {
+		LayoutTreeElement, TextEditor.Listener {
 
 	// external dependencies
 	private Set<Arrow> _arrows;
@@ -30,6 +33,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	// node contents
 	private HTML _label;
 	private TextEditor _textEditor;
+	private FocusPanel _focusPanel;
 
 	// node tree relatives
 	private List<NodeWidget> _children;
@@ -41,8 +45,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	private Box _branchBounds;
 	private boolean _layoutValid;
 	private boolean _expanded = true;
-	private boolean _isSelected;
-	private FocusPanel _focusPanel;
+	private SelectionState _state;
 
 	public NodeWidget() {
 
@@ -57,7 +60,19 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 		_arrows = new HashSet<Arrow>();
 
-		_label = new HTML();
+		_label = new HTML() {
+			{
+				addDomHandler(new DoubleClickHandler() {
+
+					@Override
+					public void onDoubleClick(DoubleClickEvent event) {
+						if (_listener != null) {
+							_listener.nodeDoubleClickedGesture(NodeWidget.this);
+						}
+					}
+				}, DoubleClickEvent.getType());
+			}
+		};
 		_label.setStylePrimaryName("node");
 		_label.addStyleDependentName("text");
 		_label.addClickHandler(handler);
@@ -179,46 +194,116 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	}
 
+	public SelectionState getSelectionState() {
+		return _state;
+	}
+
 	@Override
-	public void setSelected(final boolean isSelected) {
-		if (isSelected == _isSelected)
+	public void setSelectionState(SelectionState state) {
+		if (state == _state)
 			return;
-		_isSelected = isSelected;
-		if (isSelected) {
-			addStyleDependentName("node-selected");
-
-			if (_textEditor.getParent() != _focusPanel) {
-				_focusPanel.add(_textEditor);
-			}
-
-			showWidget(1); // show text box;
-			// setHTML after making rich text editor visible
-			// to avoid weird behavior of using the formatter when the widget is
-			// not visible
-			_textEditor.setHTML(_label.getHTML());
-
-			_focusPanel.setFocus(true);
-
-			if (_container != null) {
-				_container.onNodeLayoutInvalidated(this);
-			}
-			_textEditor.showToolbar();
-
-		} else {
-			removeStyleDependentName("node-selected");
-			_textEditor.hideToolbar();
-			showWidget(0); // show label;
-
-			if (_listener != null) {
-				if (!_label.getHTML().equals(_textEditor.getHTML())) {
-					_listener.nodeTextEditedGesture(this, _label.getHTML(),
-							_textEditor.getHTML());
-				}
-			}
-			if (_container != null)
-				_container.onNodeLayoutInvalidated(this);
+		_state = state;
+		switch (state) {
+		case DESELECTED:
+			setDeselected();
+			break;
+		case SELECTED:
+			setSelected();
+			break;
+		case CURRENT:
+			setCurrent();
+			break;
+		case PARENT_SELECTED:
+			setParentSelected();
+			break;
+		case TEXT_EDITING:
+			setCurrent();
+			enterTextEditing();
+			break;
 		}
 
+		if (state != SelectionState.TEXT_EDITING) {
+			exitTextEditing();
+		}
+
+		if (_container != null)
+			_container.onNodeLayoutInvalidated(this);
+
+	}
+
+	private void setParentSelected() {
+		addStyleDependentName("node-parent-selected");
+		removeStyleDependentName("node-selected");
+		removeStyleDependentName("node-current");
+		for (NodeWidget child : _children) {
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
+		}
+	}
+
+	private void setCurrent() {
+		addStyleDependentName("node-current");
+		removeStyleDependentName("node-selected");
+		removeStyleDependentName("node-parent-selected");
+		for (NodeWidget child : _children) {
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
+		}
+	}
+
+	private void setSelected() {
+		addStyleDependentName("node-selected");
+		removeStyleDependentName("node-current");
+		removeStyleDependentName("node-parent-selected");
+		for (NodeWidget child : _children) {
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
+		}
+	}
+
+	private void setDeselected() {
+		removeStyleDependentName("node-selected");
+		removeStyleDependentName("node-current");
+		removeStyleDependentName("node-parent-selected");
+		for (NodeWidget child : _children) {
+			if (child.getSelectionState() == SelectionState.PARENT_SELECTED) {
+				child.setSelectionState(SelectionState.DESELECTED);
+			}
+		}
+	}
+
+	private void enterTextEditing() {
+		if (_textEditor.getParent() != _focusPanel) {
+			_focusPanel.add(_textEditor);
+			_textEditor.setListener(this);
+		}
+
+		showWidget(1); // show text box;
+		// setHTML after making rich text editor visible
+		// to avoid weird behavior of using the formatter when the widget is
+		// not visible
+		_textEditor.setHTML(_label.getHTML());
+
+		_focusPanel.setFocus(true);
+
+		// must be called before showToolbar(), so that the toolbar knows where
+		// to appear
+		if (_container != null) {
+			_container.onNodeLayoutInvalidated(this);
+		}
+		_textEditor.showToolbar();
+	}
+
+	private void exitTextEditing() {
+		if (getVisibleWidget() == 0)
+			return; // we're not in text editing!
+
+		_textEditor.hideToolbar();
+		showWidget(0); // show label;
+
+		if (_listener != null) {
+			if (!_label.getHTML().equals(_textEditor.getHTML())) {
+				_listener.nodeTextEditedGesture(this, _label.getHTML(),
+						_textEditor.getHTML());
+			}
+		}
 	}
 
 	public int getBubbleTop() {
@@ -326,6 +411,14 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	public Set<Arrow> getArrows() {
 		return _arrows;
+	}
+
+	@Override
+	public void onTextEditorExit() {
+		if (_listener != null) {
+			_listener.nodeEditFinishedGesture(this);
+		}
+
 	}
 
 }

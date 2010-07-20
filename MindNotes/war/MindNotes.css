@@ -48,6 +48,15 @@
 .mindmap-node-selected {
 	border: 2px #f00 solid;
 }
+
+.mindmap-node-parent-selected {
+	border: 2px #a00 solid;
+}
+
+.mindmap-node-current {
+	border: 2px #f00 dashed;
+}
+
 .mindmap-node-focused {
 	border: 2px #f88 solid;
 }

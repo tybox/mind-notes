@@ -100,7 +100,12 @@ public class Gestures implements MindMapView.Listener {
 
 		@Override
 		public void nodeClickedGesture(NodeView view) {
-			_editor.selectNode(_node);
+			_editor.setCurrentNode(_node);
+		}
+
+		@Override
+		public void nodeDoubleClickedGesture(NodeView sender) {
+			_editor.enterTextMode(_node);
 		}
 
 		@Override
@@ -111,8 +116,8 @@ public class Gestures implements MindMapView.Listener {
 
 		@Override
 		public void nodeEditFinishedGesture(NodeWidget nodeWidget) {
-			// editing of node was finished; deselect node
-			_editor.deselect();
+			// editing of node was finished; exit node text mode
+			_editor.exitTextMode();
 		}
 
 	}

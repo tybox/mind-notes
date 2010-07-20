@@ -3,6 +3,7 @@ package mindnotes.client.ui.text;
 import mindnotes.client.ui.DialogCallback;
 import mindnotes.client.ui.PopupContainer;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -23,6 +24,12 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 	private ImageInsertDialog _imageInsertDialog;
 	private LinkInsertDialog _linkInsertDialog;
 
+	public interface Listener {
+		public void onTextEditorExit();
+	}
+
+	private Listener _listener;
+
 	public TextEditor() {
 
 		_toolbar = new TextToolbar();
@@ -42,6 +49,11 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+					if (_listener != null) {
+						_listener.onTextEditorExit();
+					}
+				}
 				updateButtonState();
 			}
 		});
@@ -87,12 +99,12 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 		if (_imageInsertDialog == null)
 			_imageInsertDialog = new ImageInsertDialog();
 		_imageInsertDialog.showDialog(new DialogCallback<String>() {
-			
+
 			@Override
 			public void dialogSuccessful(String imageURL) {
 				insertImage(imageURL);
 			}
-			
+
 			@Override
 			public void dialogCancelled() {
 				// no action needed on cancel
@@ -125,17 +137,18 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 	protected void insertLink(String url, String text) {
 		if (text != null && !text.isEmpty()) {
 			// TODO potential script injection vulnerability
-			_textArea.getFormatter().insertHTML("<a href=\""+URL.encode(url)+"\">"+text+"</a>");
-			
+			_textArea.getFormatter().insertHTML(
+					"<a href=\"" + URL.encode(url) + "\">" + text + "</a>");
+
 		} else {
 			_textArea.getFormatter().createLink(url);
 		}
 	}
-	
+
 	protected void setFont() {
 		_textArea.getFormatter().setFontName("");
 	}
-		
+
 	public String getHTML() {
 
 		return _textArea.getHTML();
@@ -160,6 +173,14 @@ public class TextEditor extends Composite implements TextToolbar.Listener {
 
 	public PopupContainer getToolbarHost() {
 		return _toolbarHost;
+	}
+
+	public void setListener(Listener listener) {
+		_listener = listener;
+	}
+
+	public Listener getListener() {
+		return _listener;
 	}
 
 }
