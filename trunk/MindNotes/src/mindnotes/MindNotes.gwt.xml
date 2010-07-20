@@ -26,5 +26,9 @@
 	<define-linker class="mindnotes.linker.CacheManifestLinker" name="cachemanifest" />
 	
 	<add-linker name="cachemanifest" />
+	<!--
+	specify one permutation only for faster compile
+	 <set-property name="user.agent" value="gecko"/> -->
+	
 
 </module>

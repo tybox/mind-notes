@@ -57,7 +57,7 @@
 				<g:HTML addStyleNames="{style.header}">
 					<h1 class="header-h1">
 						Mind Notes App
-						<span style="font-size: smaller">(9.07.2009)</span>
+						<span style="font-size: smaller">(20.07.2010)</span>
 					</h1>
 				</g:HTML>
 				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}" ui:field="cloudBarPanel">
