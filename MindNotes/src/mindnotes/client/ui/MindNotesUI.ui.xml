@@ -79,6 +79,10 @@
 			<g:ScrollPanel>
 				<g:HTMLPanel>
 					<div class="{style.sidebar}">
+						<p><a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">View source</a><br />
+						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
+						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
+					
 						<h2>Iteration 3</h2>
 						<p>
 							<strong>Cloud Storage</strong>
