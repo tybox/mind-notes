@@ -10,16 +10,13 @@ import mindnotes.client.presentation.SelectionState;
 import mindnotes.client.ui.text.TextEditor;
 import mindnotes.shared.model.NodeLocation;
 
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 
 public class NodeWidget extends DeckPanel implements NodeView,
@@ -33,7 +30,6 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	// node contents
 	private HTML _label;
 	private TextEditor _textEditor;
-	private FocusPanel _focusPanel;
 
 	// node tree relatives
 	private List<NodeWidget> _children;
@@ -78,24 +74,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		_label.addClickHandler(handler);
 
 		add(_label);
-		_focusPanel = new FocusPanel(_textEditor);
-		_focusPanel.addFocusHandler(new FocusHandler() {
 
-			@Override
-			public void onFocus(FocusEvent event) {
-				addStyleDependentName("node-focused");
-			}
-		});
-		_focusPanel.addBlurHandler(new BlurHandler() {
-
-			@Override
-			public void onBlur(BlurEvent event) {
-				// woo-hoo (when I feel heavy metal)
-				removeStyleDependentName("node-focused");
-
-			}
-		});
-		add(_focusPanel);
 		showWidget(0);
 		_children = new ArrayList<NodeWidget>();
 
@@ -270,8 +249,8 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	}
 
 	private void enterTextEditing() {
-		if (_textEditor.getParent() != _focusPanel) {
-			_focusPanel.add(_textEditor);
+		if (_textEditor.getParent() != this) {
+			add(_textEditor);
 			_textEditor.setListener(this);
 		}
 
@@ -279,23 +258,28 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		// setHTML after making rich text editor visible
 		// to avoid weird behavior of using the formatter when the widget is
 		// not visible
-		_textEditor.setHTML(_label.getHTML());
 
-		_focusPanel.setFocus(true);
+		_textEditor.setHTML(_label.getHTML());
+		DeferredCommand.addCommand(new Command() {
+
+			@Override
+			public void execute() {
+				_textEditor.setFocus(true);
+			}
+		});
 
 		// must be called before showToolbar(), so that the toolbar knows where
 		// to appear
 		if (_container != null) {
 			_container.onNodeLayoutInvalidated(this);
 		}
-		_textEditor.showToolbar();
+
 	}
 
 	private void exitTextEditing() {
 		if (getVisibleWidget() == 0)
 			return; // we're not in text editing!
 
-		_textEditor.hideToolbar();
 		showWidget(0); // show label;
 
 		if (_listener != null) {
