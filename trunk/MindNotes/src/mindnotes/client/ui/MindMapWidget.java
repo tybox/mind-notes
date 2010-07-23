@@ -10,9 +10,9 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -64,8 +64,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 					if (_listener != null && shortcut) {
 						_listener.keyboardShortcut(nativeEvent.getKeyCode(),
-								meta, nativeEvent.getShiftKey(), nativeEvent
-										.getAltKey());
+								meta, nativeEvent.getShiftKey(),
+								nativeEvent.getAltKey());
 					}
 				}
 
@@ -110,7 +110,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_rootNode = new NodeWidget();
 		_rootNode.setContainer(this);
 		TextEditor textEditor = new TextEditor();
-		textEditor.setToolbarHost(this);
 		_rootNode.setTextEditor(textEditor);
 
 		_viewportPanel = new AbsolutePanel();
