@@ -3,7 +3,7 @@ package mindnotes.client.ui;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
-import mindnotes.client.ui.text.TextEditor;
+import mindnotes.client.ui.text.TinyEditor;
 import mindnotes.shared.model.Node;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -109,7 +109,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		_rootNode = new NodeWidget();
 		_rootNode.setContainer(this);
-		TextEditor textEditor = new TextEditor();
+		TinyEditor textEditor = new TinyEditor();
 		_rootNode.setTextEditor(textEditor);
 
 		_viewportPanel = new AbsolutePanel();

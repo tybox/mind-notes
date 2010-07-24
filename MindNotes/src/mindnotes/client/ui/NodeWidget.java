@@ -7,20 +7,19 @@ import java.util.Set;
 
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.presentation.SelectionState;
-import mindnotes.client.ui.text.TextEditor;
+import mindnotes.client.ui.text.TinyEditor;
 import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.SimplePanel;
 
-public class NodeWidget extends DeckPanel implements NodeView,
-		LayoutTreeElement, TextEditor.Listener {
+public class NodeWidget extends Composite implements NodeView,
+		LayoutTreeElement {
 
 	// external dependencies
 	private Set<Arrow> _arrows;
@@ -29,7 +28,7 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	// node contents
 	private HTML _label;
-	private TextEditor _textEditor;
+	private TinyEditor _textEditor;
 
 	// node tree relatives
 	private List<NodeWidget> _children;
@@ -41,6 +40,8 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	private Box _branchBounds;
 	private boolean _layoutValid;
 	private boolean _expanded = true;
+
+	// node state
 	private SelectionState _state;
 
 	public NodeWidget() {
@@ -49,7 +50,9 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 			@Override
 			public void onClick(ClickEvent event) {
-				_listener.nodeClickedGesture(NodeWidget.this);
+				if (!isEditing()) {
+					_listener.nodeClickedGesture(NodeWidget.this);
+				}
 
 			}
 		};
@@ -73,10 +76,11 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		_label.addStyleDependentName("text");
 		_label.addClickHandler(handler);
 
-		add(_label);
-
-		showWidget(0);
 		_children = new ArrayList<NodeWidget>();
+
+		SimplePanel panel = new SimplePanel();
+		panel.add(_label);
+		initWidget(panel);
 
 		setStylePrimaryName("mindmap");
 		addStyleDependentName("node");
@@ -84,7 +88,11 @@ public class NodeWidget extends DeckPanel implements NodeView,
 		addDomHandler(handler, ClickEvent.getType());
 	}
 
-	public void setTextEditor(TextEditor textEditor) {
+	protected boolean isEditing() {
+		return _state == SelectionState.TEXT_EDITING;
+	}
+
+	public void setTextEditor(TinyEditor textEditor) {
 		_textEditor = textEditor;
 	}
 
@@ -249,27 +257,21 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	}
 
 	private void enterTextEditing() {
-		if (_textEditor.getParent() != this) {
-			add(_textEditor);
-			_textEditor.setListener(this);
-		}
 
-		showWidget(1); // show text box;
 		// setHTML after making rich text editor visible
 		// to avoid weird behavior of using the formatter when the widget is
 		// not visible
 
-		_textEditor.setHTML(_label.getHTML());
-		DeferredCommand.addCommand(new Command() {
+		_textEditor.attach(_label.getElement());
 
-			@Override
-			public void execute() {
-				_textEditor.setFocus(true);
-			}
-		});
+		// DeferredCommand.addCommand(new Command() {
+		//
+		// @Override
+		// public void execute() {
+		// _textEditor.setFocus(true);
+		// }
+		// });
 
-		// must be called before showToolbar(), so that the toolbar knows where
-		// to appear
 		if (_container != null) {
 			_container.onNodeLayoutInvalidated(this);
 		}
@@ -277,16 +279,14 @@ public class NodeWidget extends DeckPanel implements NodeView,
 	}
 
 	private void exitTextEditing() {
-		if (getVisibleWidget() == 0)
-			return; // we're not in text editing!
 
-		showWidget(0); // show label;
+		_textEditor.detach();
 
 		if (_listener != null) {
-			if (!_label.getHTML().equals(_textEditor.getHTML())) {
-				_listener.nodeTextEditedGesture(this, _label.getHTML(),
-						_textEditor.getHTML());
-			}
+			// TODO use isDirty;
+			_listener.nodeTextEditedGesture(this, _label.getHTML(),
+					_label.getHTML());
+
 		}
 	}
 
@@ -395,14 +395,6 @@ public class NodeWidget extends DeckPanel implements NodeView,
 
 	public Set<Arrow> getArrows() {
 		return _arrows;
-	}
-
-	@Override
-	public void onTextEditorExit() {
-		if (_listener != null) {
-			_listener.nodeEditFinishedGesture(this);
-		}
-
 	}
 
 }
