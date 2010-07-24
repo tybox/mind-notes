@@ -108,6 +108,33 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_arrowsWidget.setPixelSize(1000, 1000);
 
 		_rootNode = new NodeWidget();
+		NodeContextMenu contextMenu = new NodeContextMenu();
+		contextMenu.setListener(new NodeContextMenu.Listener() {
+
+			@Override
+			public void onMenuPaste() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onMenuDelete() {
+				_listener.deleteGesture();
+
+			}
+
+			@Override
+			public void onMenuCut() {
+
+			}
+
+			@Override
+			public void onMenuCopy() {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		_rootNode.setContextMenu(contextMenu);
 		_rootNode.setContainer(this);
 		TinyEditor textEditor = new TinyEditor();
 		_rootNode.setTextEditor(textEditor);
