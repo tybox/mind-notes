@@ -15,7 +15,9 @@ public class TinyConfig {
 		mode : "none",
 		theme : "advanced",
 		theme_advanced_toolbar_align : "left",
-		theme_advanced_toolbar_location: "external"
+		theme_advanced_buttons1: "bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,justifyfull, separator,link,unlink,image,html,separator,undo,cut,copy,paste",
+		theme_advanced_buttons2: "fontselect,fontsizeselect,forecolor,backcolor,separator,indent,outdent,bullist,numlist",
+		theme_advanced_buttons3: ""
 		};
 	}-*/;
 

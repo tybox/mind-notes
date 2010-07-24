@@ -32,6 +32,7 @@ public class ArrowsWidget extends Composite {
 
 			@Override
 			public void onClick(Widget sender) {
+
 				sendOnClick();
 			}
 		});
@@ -52,6 +53,7 @@ public class ArrowsWidget extends Composite {
 	}
 
 	public void renderArrowsForNodeWidget(NodeWidget node) {
+
 		double ox, oy, fx, fy, tx, ty, sinAlpha, cosAlpha, h1x, h1y, h2x, h2y;
 		ox = _canvas.getAbsoluteLeft();
 		oy = _canvas.getAbsoluteTop();
