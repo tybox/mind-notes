@@ -78,6 +78,13 @@
 	text-align: center;
 }
 
+.context-menu {
+	border: 1px #ccc solid;	
+}
+.context-menu .gwt-MenuBar-vertical .gwt-MenuItem {
+	padding: 2px 36px 2px 6px;
+}	
+
 .mceExternalToolbar {
 	top: -88px;
 }

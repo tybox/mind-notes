@@ -12,6 +12,8 @@ import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ContextMenuEvent;
+import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.user.client.ui.Composite;
@@ -21,14 +23,15 @@ import com.google.gwt.user.client.ui.SimplePanel;
 public class NodeWidget extends Composite implements NodeView,
 		LayoutTreeElement {
 
-	// external dependencies
+	// external dependencies (to be DI'd)
 	private Set<Arrow> _arrows;
 	private NodeContainer _container;
 	private Listener _listener;
+	private TinyEditor _textEditor;
+	private NodeContextMenu _contextMenu;
 
 	// node contents
-	private HTML _label;
-	private TinyEditor _textEditor;
+	private HTML _content;
 
 	// node tree relatives
 	private List<NodeWidget> _children;
@@ -46,46 +49,65 @@ public class NodeWidget extends Composite implements NodeView,
 
 	public NodeWidget() {
 
-		ClickHandler handler = new ClickHandler() {
+		ClickHandler clickHandler = new ClickHandler() {
 
 			@Override
 			public void onClick(ClickEvent event) {
 				if (!isEditing()) {
 					_listener.nodeClickedGesture(NodeWidget.this);
 				}
+			}
+		};
+		final DoubleClickHandler doubleClickHandler = new DoubleClickHandler() {
 
+			@Override
+			public void onDoubleClick(DoubleClickEvent event) {
+				if (_listener != null) {
+					_listener.nodeDoubleClickedGesture(NodeWidget.this);
+				}
+			}
+		};
+		final ContextMenuHandler contextMenuHandler = new ContextMenuHandler() {
+
+			@Override
+			public void onContextMenu(ContextMenuEvent event) {
+				if (isEditing())
+					return;
+				event.stopPropagation();
+				event.preventDefault();
+				_listener.nodeClickedGesture(NodeWidget.this);
+
+				if (_contextMenu != null) {
+					_contextMenu.showContextMenu(event.getNativeEvent()
+							.getClientX(), event.getNativeEvent().getClientY());
+				}
 			}
 		};
 
 		_arrows = new HashSet<Arrow>();
 
-		_label = new HTML() {
+		_content = new HTML() {
 			{
-				addDomHandler(new DoubleClickHandler() {
-
-					@Override
-					public void onDoubleClick(DoubleClickEvent event) {
-						if (_listener != null) {
-							_listener.nodeDoubleClickedGesture(NodeWidget.this);
-						}
-					}
-				}, DoubleClickEvent.getType());
+				addDomHandler(doubleClickHandler, DoubleClickEvent.getType());
+				addDomHandler(contextMenuHandler, ContextMenuEvent.getType());
 			}
 		};
-		_label.setStylePrimaryName("node");
-		_label.addStyleDependentName("text");
-		_label.addClickHandler(handler);
+		_content.setStylePrimaryName("node");
+		_content.addStyleDependentName("text");
+		_content.addClickHandler(clickHandler);
 
 		_children = new ArrayList<NodeWidget>();
 
 		SimplePanel panel = new SimplePanel();
-		panel.add(_label);
+		panel.add(_content);
 		initWidget(panel);
 
 		setStylePrimaryName("mindmap");
 		addStyleDependentName("node");
 
-		addDomHandler(handler, ClickEvent.getType());
+		addDomHandler(clickHandler, ClickEvent.getType());
+		addDomHandler(doubleClickHandler, DoubleClickEvent.getType());
+		addDomHandler(contextMenuHandler, ContextMenuEvent.getType());
 	}
 
 	protected boolean isEditing() {
@@ -103,9 +125,11 @@ public class NodeWidget extends Composite implements NodeView,
 	@Override
 	public NodeView createChild() {
 		NodeWidget child = new NodeWidget();
+		child.setLayoutParent(this);
 		child.setContainer(_container);
 		child.setTextEditor(_textEditor);
-		child.setLayoutParent(this);
+		child.setContextMenu(_contextMenu);
+
 		_arrows.add(new Arrow(this, child));
 		_children.add(child);
 		if (_container != null)
@@ -162,7 +186,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public void setText(String text) {
-		_label.setHTML(text);
+		_content.setHTML(text);
 	}
 
 	public int getBubbleWidth() {
@@ -262,7 +286,7 @@ public class NodeWidget extends Composite implements NodeView,
 		// to avoid weird behavior of using the formatter when the widget is
 		// not visible
 
-		_textEditor.attach(_label.getElement());
+		_textEditor.attach(_content.getElement());
 
 		// DeferredCommand.addCommand(new Command() {
 		//
@@ -284,8 +308,8 @@ public class NodeWidget extends Composite implements NodeView,
 
 		if (_listener != null) {
 			// TODO use isDirty;
-			_listener.nodeTextEditedGesture(this, _label.getHTML(),
-					_label.getHTML());
+			_listener.nodeTextEditedGesture(this, _content.getHTML(),
+					_content.getHTML());
 
 		}
 	}
@@ -395,6 +419,14 @@ public class NodeWidget extends Composite implements NodeView,
 
 	public Set<Arrow> getArrows() {
 		return _arrows;
+	}
+
+	public void setContextMenu(NodeContextMenu contextMenu) {
+		_contextMenu = contextMenu;
+	}
+
+	public NodeContextMenu getContextMenu() {
+		return _contextMenu;
 	}
 
 }
