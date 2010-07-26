@@ -1,14 +1,12 @@
 package mindnotes.client.ui;
 
+import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.ui.text.TinyEditor;
-import mindnotes.shared.model.Node;
 
 import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -20,23 +18,21 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MindMapWidget extends Composite implements MindMapView,
-		NodeContainer, RequiresResize, PopupContainer {
+		NodeContainer, RequiresResize, PopupContainer, ButtonContainer {
 
-	private AbsolutePanel _viewportPanel;
+	private ActionButtons _actionButtons;
 
-	private ScrollPanel _scrollPanel;
-	private ArrowsWidget _arrowsWidget;
-	private ActionsPanel _actionsPanel;
 	private Listener _listener;
-	private NodeWidget _actionsPanelView;
-
+	private NodeLayout _layout;
 	private NodeWidget _rootNode;
 
-	private NodeLayout _layout;
-
 	private MindMapSelectionDialog _mindMapSelectionDialog;
-
+	private AbsolutePanel _viewportPanel;
+	private ScrollPanel _scrollPanel;
+	private ArrowsWidget _arrowsWidget;
 	private MindNotesUI _window;
+
+	private boolean _layoutValid;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -73,10 +69,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 		});
 
 		_layout = new NodeLayout();
-		_actionsPanel = new ActionsPanel(this);
-		_actionsPanel.setVisible(false);
+		_actionButtons = new ActionButtons();
 
-		_actionsPanel.setListener(new ActionsPanel.Listener() {
+		_actionButtons.setListener(new ActionButtons.Listener() {
 
 			@Override
 			public void deleteClicked() {
@@ -142,7 +137,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_viewportPanel = new AbsolutePanel();
 		_viewportPanel.add(_arrowsWidget, 0, 0);
 		_viewportPanel.add(_rootNode, 500, 500);
-		_viewportPanel.add(_actionsPanel, 0, 0);
 
 		_scrollPanel = new ScrollPanel(_viewportPanel);
 		// _scrollPanel.setPixelSize(600, 500);
@@ -150,8 +144,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_scrollPanel.setHorizontalScrollPosition(250);
 		_scrollPanel.setAlwaysShowScrollBars(true);
 		_viewportPanel.setPixelSize(1000, 1000);
-		_viewportPanel.addStyleName("checkers-bg");
+		// _viewportPanel.addStyleName("checkers-bg");
 		initWidget(_scrollPanel);
+
+		_actionButtons.setContainer(this);
+		_actionButtons.setNodeContainer(this);
 
 	}
 
@@ -167,10 +164,12 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_arrowsWidget.render();
 	}
 
+	@Override
 	public int getNodeRelativeTop(NodeWidget node) {
 		return node.getBubbleTop() - _viewportPanel.getAbsoluteTop();
 	}
 
+	@Override
 	public int getNodeRelativeLeft(NodeWidget node) {
 		return node.getBubbleLeft() - _viewportPanel.getAbsoluteLeft();
 	}
@@ -180,10 +179,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	@Override
-	public void showActionsPanel(NodeView view, Node node) {
-		// TODO maybe move this to ActionsPanel
-		_actionsPanelView = (NodeWidget) view;
-		_actionsPanel.showNextTo((NodeWidget) view);
+	public void showActions(NodeView view, ActionOptions options) {
+		_actionButtons.showNextTo((NodeWidget) view, options);
 	}
 
 	@Override
@@ -192,14 +189,13 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	@Override
-	public void hideActionsPanel() {
-		_actionsPanelView = null;
-		_actionsPanel.setVisible(false);
+	public void hideActions() {
+		_actionButtons.hideButtons();
 	}
 
 	@Override
 	public void onResize() {
-
+		_layoutValid = false;
 		updateLayout();
 	}
 
@@ -226,6 +222,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	public void updateLayout() {
+		if (_layoutValid)
+			return;
 		_layout.doLayout(_rootNode);
 
 		// use top level node's suggested width and height as a suggested size
@@ -248,17 +246,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		redraw();
 
-		// XXX why is this in deferred command?
-		DeferredCommand.addCommand(new Command() {
-
-			@Override
-			public void execute() {
-				if (_actionsPanelView != null) {
-					_actionsPanel.showNextTo(_actionsPanelView);
-				}
-
-			}
-		});
+		_actionButtons.updateButtonLayout();
+		_layoutValid = true;
 
 	}
 
@@ -275,6 +264,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public void onNodeLayoutInvalidated(NodeWidget node) {
+		_layoutValid = false;
 		updateLayout();
 	}
 
@@ -331,6 +321,18 @@ public class MindMapWidget extends Composite implements MindMapView,
 		int y = anchor.getAbsoluteTop() - _viewportPanel.getAbsoluteTop() + top;
 		_viewportPanel.add(popup, x, y);
 		popup.setVisible(true);
+
+	}
+
+	@Override
+	public void addButton(Widget widget) {
+		_viewportPanel.add(widget);
+
+	}
+
+	@Override
+	public void setButtonPosition(Widget button, int x, int y) {
+		_viewportPanel.setWidgetPosition(button, x, y);
 
 	}
 }

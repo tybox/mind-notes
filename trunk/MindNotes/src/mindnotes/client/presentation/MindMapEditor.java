@@ -185,8 +185,8 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setUserInfo(result.getEmail(), result
-						.getLogoutURL());
+				_mindMapView.setUserInfo(result.getEmail(),
+						result.getLogoutURL());
 
 			}
 		});
@@ -420,9 +420,11 @@ public class MindMapEditor {
 			} else {
 				nodeView.setSelectionState(SelectionState.CURRENT);
 			}
-			_mindMapView.showActionsPanel(nodeView, node);
+
+			// TODO save the copy of actionoptionsimpl for future use
+			_mindMapView.showActions(nodeView, new ActionOptionsImpl(node));
 		} else {
-			_mindMapView.hideActionsPanel();
+			_mindMapView.hideActions();
 		}
 	}
 

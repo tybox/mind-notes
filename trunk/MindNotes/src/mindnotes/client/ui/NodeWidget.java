@@ -209,8 +209,7 @@ public class NodeWidget extends Composite implements NodeView,
 		return _state;
 	}
 
-	@Override
-	public void setSelectionState(SelectionState state) {
+	public void setSelectionState(SelectionState state, boolean invalidateLayout) {
 		if (state == _state)
 			return;
 		_state = state;
@@ -237,9 +236,14 @@ public class NodeWidget extends Composite implements NodeView,
 			exitTextEditing();
 		}
 
-		if (_container != null)
+		if (invalidateLayout && _container != null)
 			_container.onNodeLayoutInvalidated(this);
 
+	}
+
+	@Override
+	public void setSelectionState(SelectionState state) {
+		setSelectionState(state, true);
 	}
 
 	private void setParentSelected() {
@@ -247,7 +251,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-selected");
 		removeStyleDependentName("node-current");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
+			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
 		}
 	}
 
@@ -256,7 +260,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-selected");
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
+			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
 		}
 	}
 
@@ -265,7 +269,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-current");
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
+			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
 		}
 	}
 
@@ -275,7 +279,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
 			if (child.getSelectionState() == SelectionState.PARENT_SELECTED) {
-				child.setSelectionState(SelectionState.DESELECTED);
+				child.setSelectionState(SelectionState.DESELECTED, false);
 			}
 		}
 	}
