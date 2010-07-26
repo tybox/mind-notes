@@ -8,4 +8,8 @@ public interface NodeContainer {
 
 	public void onNodeLayoutInvalidated(NodeWidget node);
 
+	public abstract int getNodeRelativeLeft(NodeWidget node);
+
+	public abstract int getNodeRelativeTop(NodeWidget node);
+
 }

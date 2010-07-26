@@ -1,7 +1,5 @@
 package mindnotes.client.presentation;
 
-import mindnotes.shared.model.Node;
-
 public interface MindMapView {
 
 	public interface Listener {
@@ -29,9 +27,9 @@ public interface MindMapView {
 
 	public NodeView getRootNodeView();
 
-	public void showActionsPanel(NodeView view, Node node);
+	public void showActions(NodeView view, ActionOptions options);
 
-	public void hideActionsPanel();
+	public void hideActions();
 
 	public void updateLayout();
 

@@ -20,7 +20,7 @@ public class NodeLayout {
 	 * Some margins for the layout; TODO make this configurable someday
 	 */
 	private static final int HORIZONTAL_MARGIN = 48;
-	private static final int VERTICAL_MARGIN = 24;
+	private static final int VERTICAL_MARGIN = 32;
 
 	/**
 	 * Layout works from bottom to top; layout mechanism for each element works
