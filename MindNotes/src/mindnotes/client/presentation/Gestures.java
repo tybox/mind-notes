@@ -55,9 +55,13 @@ public class Gestures implements MindMapView.Listener {
 	}
 
 	@Override
-	public void addGesture() {
-		_mindMapEditor.add();
+	public void addUpGesture() {
+		_mindMapEditor.addUp();
+	}
 
+	@Override
+	public void addDownGesture() {
+		_mindMapEditor.addDown();
 	}
 
 	@Override

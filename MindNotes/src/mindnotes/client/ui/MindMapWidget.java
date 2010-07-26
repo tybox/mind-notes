@@ -89,13 +89,18 @@ public class MindMapWidget extends Composite implements MindMapView,
 			}
 
 			@Override
-			public void addClicked() {
-				_listener.addGesture();
+			public void expandClicked() {
+				_listener.expandGesture();
 			}
 
 			@Override
-			public void expandClicked() {
-				_listener.expandGesture();
+			public void addUpClicked() {
+				_listener.addUpGesture();
+			}
+
+			@Override
+			public void addDownClicked() {
+				_listener.addDownGesture();
 			}
 		});
 

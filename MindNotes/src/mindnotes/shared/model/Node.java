@@ -39,6 +39,22 @@ public class Node implements Serializable {
 		}
 	}
 
+	public void insertBefore(Node newNode, Node before) {
+		if (_childNodes.contains(newNode))
+			return;
+		int index = _childNodes.indexOf(before);
+		_childNodes.add(index >= 0 ? index : 0, newNode);
+		newNode.setParent(this);
+	}
+
+	public void insertAfter(Node newNode, Node after) {
+		if (_childNodes.contains(newNode))
+			return;
+		int index = _childNodes.indexOf(after);
+		_childNodes.add(index >= 0 ? index + 1 : _childNodes.size(), newNode);
+		newNode.setParent(this);
+	}
+
 	public void removeChildNode(Node n) {
 		_childNodes.remove(n);
 		n.setParent(null);

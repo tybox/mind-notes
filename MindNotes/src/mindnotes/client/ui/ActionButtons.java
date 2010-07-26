@@ -27,11 +27,13 @@ public class ActionButtons {
 
 	public interface Listener {
 
-		public void addClicked();
-
 		public void addRightClicked();
 
 		public void addLeftClicked();
+
+		public void addUpClicked();
+
+		public void addDownClicked();
 
 		public void deleteClicked();
 
@@ -48,6 +50,8 @@ public class ActionButtons {
 	private PushButton _deleteButton;
 	private PushButton _addLeftButton;
 	private PushButton _addRightButton;
+	private PushButton _addUpButton;
+	private PushButton _addDownButton;
 
 	// resources
 	private Resources _resources = GWT.create(Resources.class);
@@ -58,6 +62,9 @@ public class ActionButtons {
 		_resources.buttonStyles().ensureInjected();
 		_addLeftButton = createButton(_resources.plusIcon());
 		_addRightButton = createButton(_resources.plusIcon());
+		_addUpButton = createButton(_resources.plusIcon());
+		_addDownButton = createButton(_resources.plusIcon());
+
 		_deleteButton = createButton(_resources.deleteIcon());
 		_deleteButton.addStyleName(_resources.buttonStyles().button());
 
@@ -78,6 +85,22 @@ public class ActionButtons {
 				public void onClick(ClickEvent event) {
 					if (_listener != null)
 						_listener.addRightClicked();
+				}
+			});
+			_addUpButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					if (_listener != null)
+						_listener.addUpClicked();
+				}
+			});
+			_addDownButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					if (_listener != null)
+						_listener.addDownClicked();
 				}
 			});
 			_deleteButton.addClickHandler(new ClickHandler() {
@@ -120,6 +143,8 @@ public class ActionButtons {
 		_container = container;
 		_container.addButton(_addLeftButton);
 		_container.addButton(_addRightButton);
+		_container.addButton(_addUpButton);
+		_container.addButton(_addDownButton);
 		_container.addButton(_deleteButton);
 	}
 
@@ -139,6 +164,8 @@ public class ActionButtons {
 		_deleteButton.setVisible(false);
 		_addLeftButton.setVisible(false);
 		_addRightButton.setVisible(false);
+		_addUpButton.setVisible(false);
+		_addDownButton.setVisible(false);
 	}
 
 	public void updateButtonLayout() {
@@ -159,5 +186,11 @@ public class ActionButtons {
 		_addRightButton.setVisible(_options.canAddRight());
 		_container.setButtonPosition(_addRightButton, x + w + 5, y + (h - 20)
 				/ 2);
+		_addUpButton.setVisible(_options.canHaveSiblings());
+		_container.setButtonPosition(_addUpButton, x + (w - 20) / 2, y - 24);
+		_addDownButton.setVisible(_options.canHaveSiblings());
+		_container.setButtonPosition(_addDownButton, x + (w - 20) / 2, y + h
+				+ 5);
+
 	}
 }

@@ -11,8 +11,6 @@ public interface MindMapView {
 
 		public void addRightGesture();
 
-		public void addGesture();
-
 		public void expandGesture();
 
 		public void keyboardShortcut(int keyCode, boolean meta,
@@ -21,6 +19,10 @@ public interface MindMapView {
 		public void saveToCloudGesture();
 
 		public void loadFromCloudGesture();
+
+		public void addUpGesture();
+
+		public void addDownGesture();
 	}
 
 	public void setListener(Listener l);
