@@ -20,6 +20,10 @@ public interface NodeView {
 
 	public NodeView createChild();
 
+	public NodeView createChildBefore(NodeView view);
+
+	public NodeView createChildAfter(NodeView view);
+
 	public void removeChild(NodeView display);
 
 	public void removeAll();

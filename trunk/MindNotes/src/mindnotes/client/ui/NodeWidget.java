@@ -124,6 +124,22 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public NodeView createChild() {
+		return createChildAtIndex(_children.size());
+	}
+
+	@Override
+	public NodeView createChildBefore(NodeView view) {
+		int index = _children.indexOf(view);
+		return createChildAtIndex(index >= 0 ? index : _children.size());
+	}
+
+	@Override
+	public NodeView createChildAfter(NodeView view) {
+		int index = _children.indexOf(view);
+		return createChildAtIndex(index >= 0 ? index + 1 : _children.size());
+	}
+
+	private NodeWidget createChildAtIndex(int index) {
 		NodeWidget child = new NodeWidget();
 		child.setLayoutParent(this);
 		child.setContainer(_container);
@@ -131,7 +147,7 @@ public class NodeWidget extends Composite implements NodeView,
 		child.setContextMenu(_contextMenu);
 
 		_arrows.add(new Arrow(this, child));
-		_children.add(child);
+		_children.add(index, child);
 		if (_container != null)
 			_container.addNode(child);
 		if (_container != null)

@@ -41,6 +41,30 @@ public class MindMapEditor {
 
 	}
 
+	private class AddSiblingAction implements Action {
+
+		private Node _createdNode;
+		private boolean _above;
+
+		public AddSiblingAction(boolean above) {
+			_above = above;
+		}
+
+		@Override
+		public void doAction() {
+			Node current = _selection.getCurrentNode();
+			_createdNode = insertChild(current.getParent(), current, _above);
+
+			setCurrentNode(_createdNode);
+		}
+
+		@Override
+		public void undoAction() {
+			deleteNode(_createdNode);
+		}
+
+	}
+
 	private class CutAction implements Action {
 
 		private Node _cutNode;
@@ -218,6 +242,30 @@ public class MindMapEditor {
 
 	}
 
+	private Node insertChild(Node parent, Node current, boolean above) {
+		Node child = new Node();
+		child.setText("New node");
+		child.setNodeLocation(current.getNodeLocation());
+
+		if (above) {
+			parent.insertBefore(child, current);
+		} else {
+			parent.insertAfter(child, current);
+		}
+
+		NodeView parentView = _nodeViews.get(parent);
+		NodeView currentView = _nodeViews.get(current);
+		NodeView childView;
+		if (above) {
+			childView = parentView.createChildBefore(currentView);
+		} else {
+			childView = parentView.createChildAfter(currentView);
+		}
+
+		setUpNodeView(childView, child);
+		return child;
+	}
+
 	private void deleteNode(Node node) {
 		if (node.getParent() == null)
 			return;
@@ -284,6 +332,14 @@ public class MindMapEditor {
 
 	public void addRight() {
 		doUndoableAction(new AddAction(NodeLocation.RIGHT));
+	}
+
+	public void addUp() {
+		doUndoableAction(new AddSiblingAction(true));
+	}
+
+	public void addDown() {
+		doUndoableAction(new AddSiblingAction(false));
 	}
 
 	public void cut() {
