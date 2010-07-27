@@ -2,7 +2,7 @@ package mindnotes.shared.model;
 
 import java.io.Serializable;
 
-public class MindMap implements Serializable {
+public class MindMap implements Serializable, MindMapBuilder {
 
 	/**
 	 * 
@@ -41,6 +41,17 @@ public class MindMap implements Serializable {
 
 	public String getTitle() {
 		return _title;
+	}
+
+	@Override
+	public NodeBuilder createRootNode() {
+		return _rootNode;
+	}
+
+	@Override
+	public void copyTo(MindMapBuilder mmb) {
+		mmb.setTitle(getTitle());
+		getRootNode().copyTo(mmb.createRootNode());
 	}
 
 }
