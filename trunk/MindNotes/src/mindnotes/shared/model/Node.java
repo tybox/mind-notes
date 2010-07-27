@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node implements Serializable {
+import mindnotes.shared.model.MindMapBuilder.NodeBuilder;
+
+public class Node implements Serializable, NodeBuilder {
 
 	private static final long serialVersionUID = 3281037573267611972L;
 
@@ -90,5 +92,22 @@ public class Node implements Serializable {
 
 	public void setExpanded(boolean expanded) {
 		_expanded = expanded;
+	}
+
+	@Override
+	public NodeBuilder createNode() {
+		Node n = new Node();
+		addChildNode(n);
+		return n;
+	}
+
+	@Override
+	public void copyTo(NodeBuilder nb) {
+		nb.setExpanded(isExpanded());
+		nb.setNodeLocation(getNodeLocation());
+		nb.setText(getText());
+		for (Node child : _childNodes) {
+			child.copyTo(nb.createNode());
+		}
 	}
 }
