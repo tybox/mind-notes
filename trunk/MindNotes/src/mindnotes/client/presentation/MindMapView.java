@@ -27,6 +27,8 @@ public interface MindMapView {
 		public void saveLocalGesture();
 
 		public void newMapGesture();
+
+		public void titleChanged(String title);
 	}
 
 	public void setListener(Listener l);

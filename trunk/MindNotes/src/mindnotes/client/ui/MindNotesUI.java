@@ -69,8 +69,13 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	}
 
 	@UiHandler("newButton")
-	public void onnewClicked(ClickEvent event) {
+	public void onNewClicked(ClickEvent event) {
 		mindMapWidget.newClicked();
+	}
+
+	@UiHandler("titleLabel")
+	public void onTitleClicked(ClickEvent event) {
+		mindMapWidget.askForDocumentTitle(titleLabel.getText());
 	}
 
 	public MindMapView getMindMapView() {

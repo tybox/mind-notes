@@ -56,6 +56,7 @@
 			font-weight:bold;
 			color: #eee;
 			font-size: large;
+			cursor: pointer;
 		}
 
 		
@@ -73,7 +74,7 @@
 				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}" ui:field="cloudBarPanel">
 					<g:InlineLabel ui:field="greetLabel"></g:InlineLabel>
 					<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>
-					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Load</g:Anchor>
+					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Open</g:Anchor>
 					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
 					<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
 					<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
@@ -93,7 +94,31 @@
 						<p><a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">View source</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
-					
+						<h2>Iteration 4</h2>
+						<p>
+							<strong>Local Storage</strong>
+						</p>
+						<ul>
+							<li>You can now save your maps locally using HTML5 local storage.</li>
+							<li>The "Open" link in the top right corner allows you to open maps from cloud, open local maps, and delete maps</li>
+						</ul>
+						<p>
+							<strong>Rich text editing</strong>
+						</p>
+						<ul>
+							<li>TinyMCE is now integrated into the app, providing first-class rich text editing.</li>
+						</ul>
+						<p>
+							<strong>UI improvements</strong>
+							<ul>
+							<li>Creating nodes and selecting them is less laggy (still a little bit too much jumpy for my taste)</li>
+							<li>You can now change the mind map title and it is constantly visible in the window.</li>
+							<li>There are neat buttons with icons instead text buttons for node actions.</li>
+							<li>You can now add siblings directly from sibling node selection</li>
+							<li>There is a context menu that contains options for the node is meant to contain the most complete of node actions.</li>
+							<li>When selecting a node, all child nodes of that node also get highlighted in a different color.</li>
+						</ul>
+						</p>						
 						<h2>Iteration 3</h2>
 						<p>
 							<strong>Cloud Storage</strong>

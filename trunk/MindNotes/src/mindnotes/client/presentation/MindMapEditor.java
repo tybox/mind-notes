@@ -500,7 +500,7 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(Void result) {
-
+				Window.alert("Successfully saved.");
 			}
 		});
 	}
@@ -580,7 +580,7 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(Void result) {
-				Window.alert("Success!");
+				Window.alert("Successfully saved.");
 			}
 		});
 
@@ -595,12 +595,12 @@ public class MindMapEditor {
 				final MindMap mm = new MindMap();
 				mm.setTitle("New Untitled Mind Map");
 				Node n = new Node();
-				n.setText("<b>Hello</b>");
+				n.setText("<b>New Mind Map</b>");
 				Node n1 = new Node();
-				n1.setText("<b>World 1-1</b>");
+				n1.setText("<b>A bubble</b>");
 				n1.setNodeLocation(NodeLocation.LEFT);
 				Node n2 = new Node();
-				n2.setText("<b>World 1-2</b>");
+				n2.setText("<b>Another bubble</b>");
 				n2.setNodeLocation(NodeLocation.RIGHT);
 				n.addChildNode(n1);
 				n.addChildNode(n2);
@@ -608,6 +608,11 @@ public class MindMapEditor {
 				setMindMap(mm);
 			}
 		});
+	}
+
+	public void setTitle(String title) {
+		_mindMap.setTitle(title);
+		_mindMapView.setTitle(title);
 	}
 
 }
