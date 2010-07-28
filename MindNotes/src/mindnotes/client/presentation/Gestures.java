@@ -100,6 +100,11 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.newMindMap();
 	}
 
+	@Override
+	public void titleChanged(String title) {
+		_mindMapEditor.setTitle(title);
+	}
+
 	public static class NodeGestures implements NodeView.Listener {
 
 		private Node _node;

@@ -7,6 +7,8 @@ import mindnotes.client.presentation.NodeView;
 import mindnotes.client.ui.text.TinyEditor;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -325,11 +327,28 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public String askForDocumentTitle() {
+		return askForDocumentTitle("Untitled map");
+
+	}
+
+	public String askForDocumentTitle(String oldTitle) {
 		// TODO make this a neat DialogBox
+		final String title = Window
+				.prompt("Enter the title of your mind map:\n(A proper dialog is on the way)",
+						oldTitle);
 
-		return Window.prompt("Enter the title of your mind map:",
-				"Untitled Mind Map");
+		DeferredCommand.addCommand(new Command() {
 
+			@Override
+			public void execute() {
+				if (_listener != null) {
+					_listener.titleChanged(title);
+				}
+
+			}
+		});
+
+		return title;
 	}
 
 	public void setEditorWindow(MindNotesUI window) {
