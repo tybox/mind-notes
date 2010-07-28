@@ -16,6 +16,8 @@ import mindnotes.shared.services.UserInfoService;
 import mindnotes.shared.services.UserInfoServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -309,7 +311,9 @@ public class MindMapEditor {
 	}
 
 	private void generateView() {
+		_mindMapView.setTitle(_mindMap.getTitle());
 		NodeView rootNodeView = _mindMapView.getRootNodeView();
+
 		rootNodeView.removeAll();
 
 		setUpNodeView(rootNodeView, _mindMap.getRootNode());
@@ -418,6 +422,11 @@ public class MindMapEditor {
 			public void mindMapChosen(MindMapInfo map, boolean local) {
 				load(map, local);
 			}
+
+			@Override
+			public void mindMapRemove(MindMapInfo map, boolean local) {
+				remove(map, local);
+			}
 		});
 
 		// show the selection (most probably a dialog) to the
@@ -448,6 +457,23 @@ public class MindMapEditor {
 			@Override
 			public void onSuccess(List<MindMapInfo> result) {
 				selectionView.setLocalMindMaps(result);
+			}
+		});
+	}
+
+	protected void remove(MindMapInfo map, boolean local) {
+		Storage s = local ? getLocalStorage() : getCloudStorage();
+		s.remove(map, new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// XXX what should happen here?
+				throw new RuntimeException(caught);
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+
 			}
 		});
 	}
@@ -558,6 +584,30 @@ public class MindMapEditor {
 			}
 		});
 
+	}
+
+	public void newMindMap() {
+
+		DeferredCommand.addCommand(new Command() {
+
+			@Override
+			public void execute() {
+				final MindMap mm = new MindMap();
+				mm.setTitle("New Untitled Mind Map");
+				Node n = new Node();
+				n.setText("<b>Hello</b>");
+				Node n1 = new Node();
+				n1.setText("<b>World 1-1</b>");
+				n1.setNodeLocation(NodeLocation.LEFT);
+				Node n2 = new Node();
+				n2.setText("<b>World 1-2</b>");
+				n2.setNodeLocation(NodeLocation.RIGHT);
+				n.addChildNode(n1);
+				n.addChildNode(n2);
+				mm.setRootNode(n);
+				setMindMap(mm);
+			}
+		});
 	}
 
 }

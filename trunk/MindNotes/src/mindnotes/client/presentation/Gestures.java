@@ -95,6 +95,11 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.saveLocal();
 	}
 
+	@Override
+	public void newMapGesture() {
+		_mindMapEditor.newMindMap();
+	}
+
 	public static class NodeGestures implements NodeView.Listener {
 
 		private Node _node;

@@ -8,6 +8,8 @@ public interface MindMapSelectionView {
 
 	public interface Listener {
 		public void mindMapChosen(MindMapInfo map, boolean local);
+
+		public void mindMapRemove(MindMapInfo document, boolean local);
 	}
 
 	public void setListener(Listener listener);

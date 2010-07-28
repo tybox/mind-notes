@@ -8,6 +8,7 @@ import java.util.Map;
 import mindnotes.shared.model.MindMap;
 import mindnotes.shared.model.MindMapInfo;
 
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -65,9 +66,27 @@ public class LocalMapStorage implements Storage {
 	}
 
 	@Override
-	public void loadMindMap(MindMapInfo map, AsyncCallback<MindMap> callback) {
-		// TODO Auto-generated method stub
+	public void loadMindMap(final MindMapInfo map,
+			final AsyncCallback<MindMap> callback) {
+		DeferredCommand.addCommand(new Command() {
 
+			@Override
+			public void execute() {
+				try {
+					String realKey = MINDMAP_KEY_PREFIX + map.getKey()
+							+ MINDMAP_KEY_CONTENT_SUFFIX;
+					String json = _storage.getItem(realKey);
+					JSONMindMapBuilder jmmb = new JSONMindMapBuilder(JSONParser
+							.parse(json).isObject());
+					MindMap mm = new MindMap();
+					jmmb.copyTo(mm);
+					callback.onSuccess(mm);
+				} catch (Throwable t) {
+					callback.onFailure(t);
+				}
+
+			}
+		});
 	}
 
 	@Override
@@ -77,32 +96,41 @@ public class LocalMapStorage implements Storage {
 
 			@Override
 			public void execute() {
-				if (_storage == null) {
-					_storage = com.google.code.gwt.storage.client.Storage
-							.getLocalStorage();
-				}
-				int k = 0;
-
 				try {
-					k = Integer.parseInt(_storage.getItem(SEQUENCE_KEY));
-				} catch (NumberFormatException nfe) {
-				} catch (NullPointerException npe) {
+					if (_storage == null) {
+						_storage = com.google.code.gwt.storage.client.Storage
+								.getLocalStorage();
+					}
+					int k = 0;
+
+					try {
+						k = Integer.parseInt(_storage.getItem(SEQUENCE_KEY));
+					} catch (NumberFormatException nfe) {
+					} catch (NullPointerException npe) {
+					}
+					k++;
+
+					JSONMindMapBuilder jmmb = new JSONMindMapBuilder();
+					map.copyTo(jmmb);
+
+					_storage.setItem(SEQUENCE_KEY, Integer.toString(k));
+					_storage.setItem(MINDMAP_KEY_PREFIX + k
+							+ MINDMAP_KEY_TITLE_SUFFIX,
+							map.getTitle() == null ? "" : map.getTitle());
+					_storage.setItem(MINDMAP_KEY_PREFIX + k
+							+ MINDMAP_KEY_CONTENT_SUFFIX, jmmb.getJSON());
+
+					callback.onSuccess(null);
+				} catch (Throwable t) {
+					callback.onFailure(t);
 				}
-				k++;
-
-				JSONMindMapBuilder jmmb = new JSONMindMapBuilder();
-				map.copyTo(jmmb);
-
-				_storage.setItem(SEQUENCE_KEY, Integer.toString(k));
-				_storage.setItem(MINDMAP_KEY_PREFIX + k
-						+ MINDMAP_KEY_TITLE_SUFFIX, map.getTitle() == null ? ""
-						: map.getTitle());
-				_storage.setItem(MINDMAP_KEY_PREFIX + k
-						+ MINDMAP_KEY_CONTENT_SUFFIX, jmmb.getJSON());
-
-				callback.onSuccess(null);
-
 			}
 		});
+	}
+
+	@Override
+	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback) {
+		// TODO Auto-generated method stub
+
 	}
 }

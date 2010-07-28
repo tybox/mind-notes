@@ -30,4 +30,10 @@ public class CloudStorage implements Storage {
 		_mindmapStorage.saveMindmap(map, callback);
 	}
 
+	@Override
+	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

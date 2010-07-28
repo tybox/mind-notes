@@ -10,6 +10,14 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+/**
+ * Local storage method that utilizes browser database storage.
+ * 
+ * Currently tragically broken, use LocalMapStorage instead.
+ * 
+ * @author dominik
+ * 
+ */
 public class LocalSQLStorage implements Storage {
 
 	JavaScriptObject _database;
@@ -151,5 +159,11 @@ public class LocalSQLStorage implements Storage {
 		}
 	}-*/;
 	/* @formatter:on */
+
+	@Override
+	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
