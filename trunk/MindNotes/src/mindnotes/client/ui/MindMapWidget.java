@@ -13,6 +13,7 @@ import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -155,6 +156,20 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_actionButtons.setContainer(this);
 		_actionButtons.setNodeContainer(this);
 
+		_mindMapSelectionDialog = new MindMapSelectionDialog();
+		_mindMapSelectionDialog.setPositionCallback(new PositionCallback() {
+
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int maxLeft = Window.getClientWidth() - offsetWidth;
+				int left = _window.loadButton.getAbsoluteLeft();
+				int top = MindMapWidget.this.getAbsoluteTop();
+				if (left > maxLeft)
+					left = maxLeft;
+				_mindMapSelectionDialog.setPopupPosition(left, top);
+			}
+		});
+
 	}
 
 	@Override
@@ -284,6 +299,13 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	}
 
+	public void saveLocalClicked() {
+		if (_listener != null) {
+			_listener.saveLocalGesture();
+		}
+
+	}
+
 	public void loadFromCloudClicked() {
 		if (_listener != null) {
 			_listener.loadFromCloudGesture();
@@ -293,9 +315,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public MindMapSelectionView getMindMapSelectionView() {
-		if (_mindMapSelectionDialog == null) {
-			_mindMapSelectionDialog = new MindMapSelectionDialog();
-		}
+
 		return _mindMapSelectionDialog;
 	}
 
@@ -340,4 +360,5 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_viewportPanel.setWidgetPosition(button, x, y);
 
 	}
+
 }

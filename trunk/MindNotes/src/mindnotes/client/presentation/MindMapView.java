@@ -23,6 +23,8 @@ public interface MindMapView {
 		public void addUpGesture();
 
 		public void addDownGesture();
+
+		public void saveLocalGesture();
 	}
 
 	public void setListener(Listener l);

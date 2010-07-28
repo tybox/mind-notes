@@ -115,4 +115,12 @@ public class JSONMindMapBuilder implements MindMapBuilder {
 		}
 	}
 
+	public JSONObject getJSONObject() {
+		return _map;
+	}
+
+	public String getJSON() {
+		return _map.toString();
+	}
+
 }
