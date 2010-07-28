@@ -8,12 +8,16 @@ import mindnotes.shared.model.MindMapInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 
@@ -26,6 +30,8 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 
 	private PositionCallback _positionCallback;
 	private PopupPanel _panel;
+
+	private Resources _resources = GWT.create(Resources.class);
 
 	private class ListSelectionHandler implements ClickHandler {
 
@@ -46,6 +52,32 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 
 	}
 
+	public class ListRemoveHandler implements ClickHandler {
+
+		private MindMapInfo _document;
+		private boolean _local;
+
+		public ListRemoveHandler(MindMapInfo mmi, boolean local) {
+			_document = mmi;
+			_local = local;
+		}
+
+		@Override
+		public void onClick(ClickEvent event) {
+			if (_listener != null)
+				_listener.mindMapRemove(_document, _local);
+			_panel.hide();
+		}
+	}
+
+	interface Resources extends ClientBundle {
+		ImageResource removeIcon();
+	}
+
+	interface Styles extends CssResource {
+		String removeImg();
+	}
+
 	private static MindMapSelectionDialogUiBinder uiBinder = GWT
 			.create(MindMapSelectionDialogUiBinder.class);
 
@@ -55,6 +87,7 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 
 	public MindMapSelectionDialog() {
 		_panel = uiBinder.createAndBindUi(this);
+
 		_panel.setAutoHideEnabled(true);
 	}
 
@@ -68,6 +101,9 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 
 	@UiField
 	protected DeckPanel localMapsDeck;
+
+	@UiField
+	protected Styles style;
 
 	private Listener _listener;
 
@@ -108,6 +144,11 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 			link.setStylePrimaryName("mindmap-list-link");
 			link.addClickHandler(new ListSelectionHandler(doc, local));
 			table.setWidget(i, 0, link);
+
+			Image removeLink = new Image(_resources.removeIcon());
+			removeLink.addClickHandler(new ListRemoveHandler(doc, local));
+			removeLink.getElement().addClassName(style.removeImg());
+			table.setWidget(i, 1, removeLink);
 			i++;
 		}
 

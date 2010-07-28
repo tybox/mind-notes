@@ -4,9 +4,6 @@
 	xmlns:mn='urn:import:mindnotes.client.ui'
 	xmlns:txt='urn:import:mindnotes.client.ui.text'>
 	<ui:style>
-		.bordered {
-			border: 1px #000 solid;
-		}
 		
 		.sidebar {
 			padding: 12px;
@@ -18,15 +15,16 @@
 		}
 		
 		.header {
-			border-bottom: 1px #f00 solid;
-			background: #222228;
+						
 			margin-bottom: 12px;
-			color: #fffaf1;
-			height: 60px;
+			
 		}
 		
-		.header h1 {
+		.header-h1 {
 			margin-top: 0px;
+			margin-left: 12px;
+			font-size: 28px;
+			font-weight: bold;
 		}
 		
 		.toprightlinks {
@@ -48,18 +46,30 @@
 		}
 		
 		.topbar {
+			background: #222228;
+			color: #fffaf1;
 			width: 100%;
 		}
+		
+		.title {
+			padding: 10px 12px 12px 24px;
+			font-weight:bold;
+			color: #eee;
+			font-size: large;
+		}
+
+		
 	</ui:style>
 	<g:DockLayoutPanel unit='PX' ui:field="dockLayoutPanel">
 		<g:north size='40'>
 			<g:HorizontalPanel addStyleNames="{style.topbar}">
-				<g:HTML addStyleNames="{style.header}">
-					<h1 class="header-h1">
+				<g:HTMLPanel addStyleNames="{style.header}">
+					<span class="{style.header-h1}">
 						Mind Notes
-						<span style="font-size: smaller">(28.07.2010)</span>
-					</h1>
-				</g:HTML>
+						<span style="font-size: 21px">(28.07.2010)</span>
+					</span>
+					<g:InlineLabel ui:field="titleLabel" addStyleNames="{style.title}" />
+				</g:HTMLPanel>
 				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}" ui:field="cloudBarPanel">
 					<g:InlineLabel ui:field="greetLabel"></g:InlineLabel>
 					<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>

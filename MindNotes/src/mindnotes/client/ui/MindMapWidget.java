@@ -219,6 +219,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 		updateLayout();
 	}
 
+	public void setTitle(String title) {
+		_window.setMindMapTitle(title);
+	}
+
 	/**
 	 * Also called by arrowmaker
 	 */
@@ -359,6 +363,12 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public void setButtonPosition(Widget button, int x, int y) {
 		_viewportPanel.setWidgetPosition(button, x, y);
 
+	}
+
+	public void newClicked() {
+		if (_listener != null) {
+			_listener.newMapGesture();
+		}
 	}
 
 }

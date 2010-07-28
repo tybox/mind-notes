@@ -25,6 +25,8 @@ public interface MindMapView {
 		public void addDownGesture();
 
 		public void saveLocalGesture();
+
+		public void newMapGesture();
 	}
 
 	public void setListener(Listener l);
@@ -42,4 +44,6 @@ public interface MindMapView {
 	public String askForDocumentTitle();
 
 	public void setUserInfo(String email, String logoutURL);
+
+	void setTitle(String title);
 }

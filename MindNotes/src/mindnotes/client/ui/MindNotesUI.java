@@ -41,6 +41,10 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	Anchor saveLocalButton;
 	@UiField
 	Panel cloudBarPanel;
+	@UiField
+	Label titleLabel;
+	@UiField
+	Anchor newButton;
 
 	public MindNotesUI() {
 
@@ -64,6 +68,11 @@ public class MindNotesUI extends Composite implements RequiresResize,
 		mindMapWidget.saveLocalClicked();
 	}
 
+	@UiHandler("newButton")
+	public void onnewClicked(ClickEvent event) {
+		mindMapWidget.newClicked();
+	}
+
 	public MindMapView getMindMapView() {
 		return mindMapWidget;
 	}
@@ -85,6 +94,10 @@ public class MindNotesUI extends Composite implements RequiresResize,
 		logoutLink.setVisible(visible);
 		greetLabel.setVisible(visible);
 		saveButton.setVisible(visible);
+	}
+
+	public void setMindMapTitle(String title) {
+		titleLabel.setText(title);
 	}
 
 }

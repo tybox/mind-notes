@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
+	<ui:style type='mindnotes.client.ui.MindMapSelectionDialog.Styles'>
 		.popup {
 			border: 1px #ccc solid;
 			border-top: none;
@@ -32,6 +32,11 @@
 			font-weight: bold;
 			font-size: smaller;
 			color: #888;
+		}
+		.removeImg {
+			position: relative;
+			top: 3px;
+			cursor: pointer;
 		}
 	</ui:style>
 	<g:PopupPanel addStyleNames="{style.popup}">
