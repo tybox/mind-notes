@@ -7,12 +7,14 @@ import mindnotes.shared.model.MindMapInfo;
 public interface MindMapSelectionView {
 
 	public interface Listener {
-		public void mindMapChosen(MindMapInfo map);
+		public void mindMapChosen(MindMapInfo map, boolean local);
 	}
 
 	public void setListener(Listener listener);
 
 	public void setMindMaps(List<MindMapInfo> mindmaps);
+
+	public void setLocalMindMaps(List<MindMapInfo> mindmaps);
 
 	public void askForCloudDocumentSelection();
 

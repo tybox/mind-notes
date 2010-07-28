@@ -12,38 +12,36 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 
-public class MindMapSelectionDialog extends DialogBox implements
-		MindMapSelectionView {
+public class MindMapSelectionDialog implements MindMapSelectionView {
 
-	protected Widget _selectedWidget;
+	private static final int DECK_WAIT = 0;
+	private static final int DECK_EMPTY = 1;
+	private static final int DECK_NA = 2;
+	private static final int DECK_TABLE = 3;
 
-	protected MindMapInfo _selectedDocument;
+	private PositionCallback _positionCallback;
+	private PopupPanel _panel;
 
 	private class ListSelectionHandler implements ClickHandler {
 
 		private MindMapInfo _document;
-		private Widget _widget;
+		private boolean _local;
 
-		public ListSelectionHandler(MindMapInfo mmi, Widget w) {
+		public ListSelectionHandler(MindMapInfo mmi, boolean local) {
 			_document = mmi;
-			_widget = w;
+			_local = local;
 		}
 
 		@Override
 		public void onClick(ClickEvent event) {
-			_selectedDocument = _document;
-			if (_selectedWidget != null) {
-				_selectedWidget.removeStyleDependentName("selected");
-			}
-			_selectedWidget = _widget;
-			_selectedWidget.addStyleDependentName("selected");
-			okButton.setEnabled(true);
+			if (_listener != null)
+				_listener.mindMapChosen(_document, _local);
+			_panel.hide();
 		}
 
 	}
@@ -52,44 +50,24 @@ public class MindMapSelectionDialog extends DialogBox implements
 			.create(MindMapSelectionDialogUiBinder.class);
 
 	interface MindMapSelectionDialogUiBinder extends
-			UiBinder<Widget, MindMapSelectionDialog> {
+			UiBinder<PopupPanel, MindMapSelectionDialog> {
 	}
 
 	public MindMapSelectionDialog() {
-		add(uiBinder.createAndBindUi(this));
-		okButton.setEnabled(false);
-		okButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				if (_listener != null && _selectedDocument != null)
-					_listener.mindMapChosen(_selectedDocument);
-				MindMapSelectionDialog.this.hide();
-			}
-		});
-
-		cancelButton.addClickHandler(new ClickHandler() {
-
-			@Override
-			public void onClick(ClickEvent event) {
-				MindMapSelectionDialog.this.hide();
-			}
-		});
-
-		setText("Document Selection (Cloud)");
+		_panel = uiBinder.createAndBindUi(this);
+		_panel.setAutoHideEnabled(true);
 	}
 
 	@UiField
-	protected Button okButton;
-
-	@UiField
-	protected Button cancelButton;
-
-	@UiField
-	protected HTML dialogText;
-
-	@UiField
 	protected FlexTable availableDocumentsTable;
+	@UiField
+	protected FlexTable availableLocalDocumentsTable;
+
+	@UiField
+	protected DeckPanel cloudMapsDeck;
+
+	@UiField
+	protected DeckPanel localMapsDeck;
 
 	private Listener _listener;
 
@@ -101,41 +79,73 @@ public class MindMapSelectionDialog extends DialogBox implements
 	@Override
 	public void setMindMaps(List<MindMapInfo> mindmaps) {
 
-		availableDocumentsTable.clear();
+		fillTable(availableDocumentsTable, mindmaps, false);
 
-		boolean empty = mindmaps.isEmpty();
+	}
 
-		cancelButton.setVisible(!empty);
-		okButton.setEnabled(empty);
+	/**
+	 * @param mindmaps
+	 */
+	private void fillTable(FlexTable table, List<MindMapInfo> mindmaps,
+			boolean local) {
 
-		dialogText
-				.setHTML(empty ? "There are no documents stored in the cloud yet. Go ahead and make one! <br /> click <strong>Save To Cloud</strong> later."
-						: "Please select a document to open:");
+		table.clear();
+
+		if (mindmaps == null) {
+			(local ? localMapsDeck : cloudMapsDeck).showWidget(DECK_NA);
+			return;
+		}
+		if (mindmaps.isEmpty()) {
+			(local ? localMapsDeck : cloudMapsDeck).showWidget(DECK_EMPTY);
+			return;
+		}
+		(local ? localMapsDeck : cloudMapsDeck).showWidget(DECK_TABLE);
 
 		// populate the table with values for mindmaps
 		int i = 0;
 		for (MindMapInfo doc : mindmaps) {
 			Anchor link = new Anchor(doc.getTitle());
 			link.setStylePrimaryName("mindmap-list-link");
-			link.addClickHandler(new ListSelectionHandler(doc, link));
-			availableDocumentsTable.setWidget(i, 1, link);
+			link.addClickHandler(new ListSelectionHandler(doc, local));
+			table.setWidget(i, 0, link);
 			i++;
 		}
 
 	}
 
 	@Override
+	public void setLocalMindMaps(List<MindMapInfo> mindmaps) {
+		fillTable(availableLocalDocumentsTable, mindmaps, true);
+	}
+
+	@Override
 	public void askForCloudDocumentSelection() {
+		cloudMapsDeck.showWidget(DECK_WAIT);
+		localMapsDeck.showWidget(DECK_WAIT);
+
+		if (_positionCallback == null) {
+			_positionCallback = new PositionCallback() {
+
+				@Override
+				public void setPosition(int offsetWidth, int offsetHeight) {
+					_panel.setPopupPosition(
+							(Window.getClientWidth() - offsetWidth) / 2,
+							(Window.getClientHeight() - offsetHeight) / 2);
+
+				}
+			};
+		}
 		// center the dialog window
-		setPopupPositionAndShow(new PositionCallback() {
-
-			@Override
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				setPopupPosition((Window.getClientWidth() - offsetWidth) / 2,
-						(Window.getClientHeight() - offsetHeight) / 2);
-
-			}
-		});
+		_panel.setPopupPositionAndShow(_positionCallback);
 
 	}
+
+	public void setPositionCallback(PositionCallback positionCallback) {
+		_positionCallback = positionCallback;
+	}
+
+	public void setPopupPosition(int left, int top) {
+		_panel.setPopupPosition(left, top);
+	}
+
 }

@@ -2,21 +2,57 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style>
+		.popup {
+			border: 1px #ccc solid;
+			border-top: none;
+			
+		}
+		.scrolls {
+			min-width: 200px;
+			max-height: 200px;
+		}		
 		.dialog-content {
-			margin: 18px;
+			margin: 6px;
 		}
 		.buttonbar {
 			text-align: right;
 		}
+		.list {
+			margin: 6px 6px 12px 6px;
+		}
+		.wait {
+			text-align: center;
+			color: #ccc;
+			font-size: small;
+		}
+		.err {
+			text-align: center;
+		}
+		.heading {
+			font-weight: bold;
+			font-size: smaller;
+			color: #888;
+		}
 	</ui:style>
-	<g:VerticalPanel>
-		<g:HTML ui:field="dialogText">Please select a document to open:</g:HTML>
-		<g:FlexTable ui:field="availableDocumentsTable">
-						
-		</g:FlexTable>
-		<g:FlowPanel addStyleNames="{style.buttonbar}">
-			<g:Button ui:field="cancelButton">Cancel</g:Button>
-			<g:Button ui:field="okButton">OK</g:Button>
-		</g:FlowPanel>
+	<g:PopupPanel addStyleNames="{style.popup}">
+	<g:ScrollPanel addStyleNames="{style.scrolls}">
+	<g:VerticalPanel addStyleNames="{style.dialog-content}">
+		<g:HTML addStyleNames="{style.heading}">CLOUD STORAGE</g:HTML>
+		<g:DeckPanel ui:field="cloudMapsDeck" addStyleNames="{style.list}">
+			<g:HTML>Please wait...</g:HTML>
+			<g:HTML>No mindmaps stored in the cloud</g:HTML>
+			<g:HTML>Cloud not available</g:HTML>
+			<g:FlexTable ui:field="availableDocumentsTable"></g:FlexTable>
+		</g:DeckPanel>
+		<g:HTML addStyleNames="{style.heading}">LOCAL STORAGE</g:HTML>
+		<g:DeckPanel ui:field="localMapsDeck" addStyleNames="{style.list}">
+			<g:HTML addStyleNames="{style.wait}">Please wait...</g:HTML>
+			<g:HTML>No mindmaps stored locally</g:HTML>
+			<g:HTML>Local storage not available</g:HTML>
+			<g:FlexTable ui:field="availableLocalDocumentsTable"></g:FlexTable>
+		</g:DeckPanel>
 	</g:VerticalPanel>
+	</g:ScrollPanel>
+	</g:PopupPanel>
+	
 </ui:UiBinder> 

@@ -4,17 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mindnotes.client.storage.CloudStorage;
+import mindnotes.client.storage.LocalMapStorage;
+import mindnotes.client.storage.Storage;
 import mindnotes.shared.model.MindMap;
 import mindnotes.shared.model.MindMapInfo;
 import mindnotes.shared.model.Node;
 import mindnotes.shared.model.NodeLocation;
-import mindnotes.shared.services.MindmapStorageService;
-import mindnotes.shared.services.MindmapStorageServiceAsync;
 import mindnotes.shared.services.UserInfo;
 import mindnotes.shared.services.UserInfoService;
 import mindnotes.shared.services.UserInfoServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class MindMapEditor {
@@ -181,8 +183,9 @@ public class MindMapEditor {
 	private Selection _selection;
 	private UndoStack _undoStack;
 
-	MindmapStorageServiceAsync _mindmapStorage = GWT
-			.create(MindmapStorageService.class);
+	private Storage _cloudStorage;
+	private Storage _localStorage;
+
 	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
 
 	public MindMapEditor(MindMapView mindMapView) {
@@ -193,6 +196,11 @@ public class MindMapEditor {
 		_mindMapView.setListener(new Gestures(this));
 		_selection = new Selection();
 		_clipboard = new Selection();
+		_cloudStorage = new CloudStorage();
+		if (com.google.code.gwt.storage.client.Storage.isSupported()) {
+			_localStorage = new LocalMapStorage();
+		}
+
 	}
 
 	/**
@@ -369,13 +377,13 @@ public class MindMapEditor {
 		setUpNodeView(childView, newNode);
 	}
 
-	public void loadFromCloud(MindMapInfo map) {
-		_mindmapStorage.loadMindmap(map.getKey(), new AsyncCallback<MindMap>() {
+	public void load(MindMapInfo map, boolean local) {
+		Storage s = local ? getLocalStorage() : getCloudStorage();
+		s.loadMindMap(map, new AsyncCallback<MindMap>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
 				throw new RuntimeException(caught);
-
 			}
 
 			@Override
@@ -384,42 +392,64 @@ public class MindMapEditor {
 					setMindMap(result);
 				else
 					throw new NullPointerException("result is null");
-
 			}
 		});
 	}
 
+	private Storage getLocalStorage() {
+		if (_localStorage == null) {
+			_localStorage = new LocalMapStorage();
+		}
+		return _localStorage;
+	}
+
+	private Storage getCloudStorage() {
+		return _cloudStorage;
+	}
+
 	public void loadFromCloudWithDialog() {
 
-		_mindmapStorage
-				.getAvailableMindmaps(new AsyncCallback<List<MindMapInfo>>() {
+		final MindMapSelectionView selectionView = _mindMapView
+				.getMindMapSelectionView();
 
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO what happens on failure? make nice dialogs
+		selectionView.setListener(new MindMapSelectionView.Listener() {
 
-					}
+			@Override
+			public void mindMapChosen(MindMapInfo map, boolean local) {
+				load(map, local);
+			}
+		});
 
-					@Override
-					public void onSuccess(List<MindMapInfo> result) {
-						MindMapSelectionView selectionView = _mindMapView
-								.getMindMapSelectionView();
-						selectionView.setMindMaps(result);
-						selectionView
-								.setListener(new MindMapSelectionView.Listener() {
+		// show the selection (most probably a dialog) to the
+		// user
+		selectionView.askForCloudDocumentSelection();
 
-									@Override
-									public void mindMapChosen(MindMapInfo map) {
-										loadFromCloud(map);
-									}
-								});
+		_cloudStorage.getStoredMaps(new AsyncCallback<List<MindMapInfo>>() {
 
-						// show the selection (most probably a dialog) to the
-						// user
-						selectionView.askForCloudDocumentSelection();
-					}
-				});
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO what happens on failure? make nice dialogs
 
+			}
+
+			@Override
+			public void onSuccess(List<MindMapInfo> result) {
+				selectionView.setMindMaps(result);
+			}
+		});
+		_localStorage.getStoredMaps(new AsyncCallback<List<MindMapInfo>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO what happens on failure? make nice dialogs
+
+			}
+
+			@Override
+			public void onSuccess(List<MindMapInfo> result) {
+				selectionView.setLocalMindMaps(result);
+			}
+		});
 	}
 
 	public void paste() {
@@ -434,7 +464,7 @@ public class MindMapEditor {
 			_mindMap.setTitle(title);
 		}
 
-		_mindmapStorage.saveMindmap(_mindMap, new AsyncCallback<Void>() {
+		_cloudStorage.saveMindMap(_mindMap, new AsyncCallback<Void>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -509,6 +539,25 @@ public class MindMapEditor {
 
 	public void exitTextMode() {
 		setCurrentNode(_selection.getCurrentNode(), false);
+	}
+
+	public void saveLocal() {
+
+		getLocalStorage().saveMindMap(_mindMap, new AsyncCallback<Void>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.toString();
+
+				throw new RuntimeException(caught);
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				Window.alert("Success!");
+			}
+		});
+
 	}
 
 }

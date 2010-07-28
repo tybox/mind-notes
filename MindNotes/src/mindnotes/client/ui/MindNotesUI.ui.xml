@@ -56,19 +56,20 @@
 			<g:HorizontalPanel addStyleNames="{style.topbar}">
 				<g:HTML addStyleNames="{style.header}">
 					<h1 class="header-h1">
-						Mind Notes App
-						<span style="font-size: smaller">(20.07.2010)</span>
+						Mind Notes
+						<span style="font-size: smaller">(28.07.2010)</span>
 					</h1>
 				</g:HTML>
 				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}" ui:field="cloudBarPanel">
 					<g:InlineLabel ui:field="greetLabel"></g:InlineLabel>
-					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Load from
-						cloud</g:Anchor>
-					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to
-						cloud</g:Anchor>
+					<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>
+					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Load</g:Anchor>
+					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
+					<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
 					<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
 
 				</g:FlowPanel>
+
 			</g:HorizontalPanel>
 
 		</g:north>

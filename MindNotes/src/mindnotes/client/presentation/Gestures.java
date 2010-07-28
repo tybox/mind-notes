@@ -90,6 +90,11 @@ public class Gestures implements MindMapView.Listener {
 
 	}
 
+	@Override
+	public void saveLocalGesture() {
+		_mindMapEditor.saveLocal();
+	}
+
 	public static class NodeGestures implements NodeView.Listener {
 
 		private Node _node;
