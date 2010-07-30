@@ -39,13 +39,13 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public MindMap loadMindmap(String key) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = pm.newQuery(DSMindMap.class);
-		query.setFilter("key == keyParam");
-		query.declareParameters("com.google.appengine.api.datastore.Key keyParam");
-		List<DSMindMap> result = null;
+		Query query = createSingleSelectQuery(pm);
+
 		try {
-			result = (List<DSMindMap>) query.execute(KeyFactory
+			@SuppressWarnings("unchecked")
+			List<DSMindMap> result = (List<DSMindMap>) query.execute(KeyFactory
 					.stringToKey(key));
+
 			if (!result.isEmpty()) {
 				return result.get(0).getMap();
 			}
@@ -57,6 +57,25 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public void removeMindmap(String key) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		Query q = createSingleSelectQuery(pm);
+		try {
+			q.deletePersistentAll(KeyFactory.stringToKey(key));
+		} finally {
+			pm.close();
+		}
+	}
+
+	private Query createSingleSelectQuery(PersistenceManager pm) {
+		Query query = pm.newQuery(DSMindMap.class);
+		query.setFilter("key == keyParam");
+		query
+				.declareParameters("com.google.appengine.api.datastore.Key keyParam");
+		return query;
+	}
+
+	@Override
 	public List<MindMapInfo> getAvailableMindmaps() {
 		String userID = getCurrentUserID();
 
@@ -65,11 +84,14 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 				.newQuery("select key, title from mindnotes.server.DSMindMap where userID == userIDParam parameters String userIDParam");
 
 		try {
+			@SuppressWarnings("unchecked")
 			List<Object[]> result = (List<Object[]>) query.execute(userID);
 			List<MindMapInfo> mminfos = new LinkedList<MindMapInfo>();
 			for (Object[] resultRow : result) {
-				mminfos.add(new MindMapInfo(KeyFactory
-						.keyToString((Key) resultRow[0]), (String) resultRow[1]));
+				mminfos
+						.add(new MindMapInfo(KeyFactory
+								.keyToString((Key) resultRow[0]),
+								(String) resultRow[1]));
 			}
 			return mminfos;
 		} finally {
@@ -89,4 +111,5 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 
 		return user.getUserId();
 	}
+
 }

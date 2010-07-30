@@ -15,4 +15,6 @@ public interface MindmapStorageService extends RemoteService {
 	public MindMap loadMindmap(String key);
 
 	public List<MindMapInfo> getAvailableMindmaps();
+
+	public void removeMindmap(String key);
 }
