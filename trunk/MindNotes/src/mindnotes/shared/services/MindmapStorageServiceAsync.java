@@ -15,4 +15,6 @@ public interface MindmapStorageServiceAsync {
 
 	void saveMindmap(MindMap map, AsyncCallback<Void> callback);
 
+	void removeMindmap(String key, AsyncCallback<Void> callback);
+
 }

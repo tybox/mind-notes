@@ -219,8 +219,8 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setUserInfo(result.getEmail(),
-						result.getLogoutURL());
+				_mindMapView.setUserInfo(result.getEmail(), result
+						.getLogoutURL());
 
 			}
 		});
@@ -473,7 +473,7 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(Void result) {
-
+				Window.alert("Removed successfuly.");
 			}
 		});
 	}

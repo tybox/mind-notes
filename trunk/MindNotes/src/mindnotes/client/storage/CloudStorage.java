@@ -31,9 +31,8 @@ public class CloudStorage implements Storage {
 	}
 
 	@Override
-	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback) {
-		// TODO Auto-generated method stub
-
+	public void remove(MindMapInfo map, AsyncCallback<Void> callback) {
+		_mindmapStorage.removeMindmap(map.getKey(), callback);
 	}
 
 }

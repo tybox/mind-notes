@@ -49,12 +49,12 @@ public class LocalMapStorage implements Storage {
 					if (!key.startsWith(MINDMAP_KEY_PREFIX))
 						continue;
 					if (key.endsWith(MINDMAP_KEY_TITLE_SUFFIX)) {
-						String realkey = key.substring(
-								MINDMAP_KEY_PREFIX.length(), key.length()
-										- MINDMAP_KEY_TITLE_SUFFIX.length());
+						String realkey = key.substring(MINDMAP_KEY_PREFIX
+								.length(), key.length()
+								- MINDMAP_KEY_TITLE_SUFFIX.length());
 
-						map.put(realkey,
-								new MindMapInfo(realkey, _storage.getItem(key)));
+						map.put(realkey, new MindMapInfo(realkey, _storage
+								.getItem(key)));
 					}
 
 				}
@@ -130,7 +130,10 @@ public class LocalMapStorage implements Storage {
 
 	@Override
 	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback) {
-		// TODO Auto-generated method stub
+		_storage.removeItem(MINDMAP_KEY_PREFIX + map.getKey()
+				+ MINDMAP_KEY_CONTENT_SUFFIX);
+		_storage.removeItem(MINDMAP_KEY_PREFIX + map.getKey()
+				+ MINDMAP_KEY_TITLE_SUFFIX);
 
 	}
 }
