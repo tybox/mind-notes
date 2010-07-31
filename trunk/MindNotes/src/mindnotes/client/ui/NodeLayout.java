@@ -38,7 +38,9 @@ public class NodeLayout {
 	 * @param element
 	 */
 	public void doLayout(LayoutTreeElement element) {
-
+		if (element.isLayoutValid()) {
+			return; // nothing changed, nothing to do;
+		}
 		// there are two groups of elements: one on the left, one on the right
 
 		// go through the list of children and find out:
@@ -108,6 +110,7 @@ public class NodeLayout {
 
 		Box bounds = new Box(left, top, right - left, bottom - top);
 		element.setBranchBounds(bounds);
+		element.setLayoutValid(true);
 
 	}
 }
