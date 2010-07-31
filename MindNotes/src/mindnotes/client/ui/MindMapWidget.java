@@ -1,6 +1,5 @@
 package mindnotes.client.ui;
 
-import mindnotes.client.CallCounter;
 import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
@@ -255,9 +254,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public void updateLayout() {
 		if (_layoutValid)
 			return;
-		CallCounter.get().reset();
 		_layout.doLayout(_rootNode);
-		CallCounter.get().print();
 		// use top level node's suggested width and height as a suggested size
 		// for the whole tree.
 		Box bounds = _rootNode.getBranchBounds();
