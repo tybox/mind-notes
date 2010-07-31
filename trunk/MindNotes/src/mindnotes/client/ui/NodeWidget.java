@@ -46,6 +46,8 @@ public class NodeWidget extends Composite implements NodeView,
 
 	// node state
 	private SelectionState _state;
+	private Box _elementBounds;
+	private Box _absoluteBounds;
 
 	public NodeWidget() {
 
@@ -201,16 +203,6 @@ public class NodeWidget extends Composite implements NodeView,
 		setLayoutValid(false);
 	}
 
-	public int getBubbleWidth() {
-
-		// / XXX dirty hack; 4 is for the border
-		return getElement().getClientWidth() + 4;
-	}
-
-	public int getBubbleHeight() {
-		return getElement().getClientHeight() + 4;
-	}
-
 	@Override
 	public void setListener(Listener listener) {
 		_listener = listener;
@@ -313,12 +305,16 @@ public class NodeWidget extends Composite implements NodeView,
 		}
 	}
 
-	public int getBubbleTop() {
-		return getAbsoluteTop();
+	public Box getAbsoluteElementBounds() {
+		return _absoluteBounds == null ? getNativeAbsoluteElementBounds()
+				: _absoluteBounds;
 	}
 
-	public int getBubbleLeft() {
-		return getAbsoluteLeft();
+	public Box getNativeAbsoluteElementBounds() {
+		_absoluteBounds = new Box(getAbsoluteLeft(), getAbsoluteTop(),
+				getElement().getClientWidth() + 4, getElement()
+						.getClientHeight() + 4);
+		return _absoluteBounds;
 	}
 
 	@Override
@@ -356,8 +352,15 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public Box getElementBounds() {
-		return new Box(0, 0, getElement().getClientWidth(), getElement()
-				.getClientHeight());
+		return _elementBounds == null ? getNativeElementBounds()
+				: _elementBounds;
+	}
+
+	public Box getNativeElementBounds() {
+		_elementBounds = new Box(0, 0, getElement().getClientWidth(),
+				getElement().getClientHeight());
+		return _elementBounds;
+
 	}
 
 	@Override
@@ -395,6 +398,8 @@ public class NodeWidget extends Composite implements NodeView,
 												// notify container
 				_container.onNodeLayoutInvalidated(this);
 			}
+			_elementBounds = null;
+			_absoluteBounds = null;
 		}
 	}
 

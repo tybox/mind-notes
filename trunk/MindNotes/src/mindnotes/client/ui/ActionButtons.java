@@ -176,8 +176,8 @@ public class ActionButtons {
 		int x, y, w, h;
 		x = _nodeContainer.getNodeRelativeLeft(_widget);
 		y = _nodeContainer.getNodeRelativeTop(_widget);
-		w = _widget.getBubbleWidth();
-		h = _widget.getBubbleHeight();
+		w = _widget.getElementBounds().w;
+		h = _widget.getElementBounds().h;
 
 		_deleteButton.setVisible(_options.canDelete());
 		_container.setButtonPosition(_deleteButton, x + w - 22, y + h + 5);

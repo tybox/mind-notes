@@ -187,17 +187,21 @@ public class MindMapWidget extends Composite implements MindMapView,
 	 * Push a redraw request to the underlying canvas widgets.
 	 */
 	public void redraw() {
+		long l = System.currentTimeMillis();
 		_arrowsWidget.render();
+		System.out
+				.println("Render: " + (System.currentTimeMillis() - l) + "ms");
 	}
 
 	@Override
 	public int getNodeRelativeTop(NodeWidget node) {
-		return node.getBubbleTop() - _viewportPanel.getAbsoluteTop();
+		// TODO maybe those methods could use cached values instead of DOM calls
+		return node.getAbsoluteTop() - _viewportPanel.getAbsoluteTop();
 	}
 
 	@Override
 	public int getNodeRelativeLeft(NodeWidget node) {
-		return node.getBubbleLeft() - _viewportPanel.getAbsoluteLeft();
+		return node.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft();
 	}
 
 	public AbsolutePanel getViewportPanel() {
