@@ -56,4 +56,8 @@ public interface MindMapView {
 	void setTitle(String title);
 
 	public void showMessage(String string);
+
+	public abstract void resumeLayout();
+
+	public abstract void holdLayout();
 }

@@ -38,6 +38,7 @@ public class NodeLayout {
 	 * @param element
 	 */
 	public void doLayout(LayoutTreeElement element) {
+
 		// there are two groups of elements: one on the left, one on the right
 
 		// go through the list of children and find out:

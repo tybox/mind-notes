@@ -245,8 +245,10 @@ public class MindMapEditor {
 
 		node.addChildNode(child);
 
+		_mindMapView.holdLayout();
 		NodeView childView = _nodeViews.get(node).createChild();
 		setUpNodeView(childView, child);
+		_mindMapView.resumeLayout();
 		return child;
 
 	}
@@ -261,7 +263,7 @@ public class MindMapEditor {
 		} else {
 			parent.insertAfter(child, current);
 		}
-
+		_mindMapView.holdLayout();
 		NodeView parentView = _nodeViews.get(parent);
 		NodeView currentView = _nodeViews.get(current);
 		NodeView childView;
@@ -272,6 +274,7 @@ public class MindMapEditor {
 		}
 
 		setUpNodeView(childView, child);
+		_mindMapView.resumeLayout();
 		return child;
 	}
 
@@ -311,11 +314,12 @@ public class MindMapEditor {
 
 	private void generateView() {
 		_mindMapView.setTitle(_mindMap.getTitle());
+
 		NodeView rootNodeView = _mindMapView.getRootNodeView();
-
 		rootNodeView.removeAll();
-
+		_mindMapView.holdLayout();
 		setUpNodeView(rootNodeView, _mindMap.getRootNode());
+		_mindMapView.resumeLayout();
 	}
 
 	private void setUpNodeView(NodeView nodeView, Node node) {
@@ -509,7 +513,7 @@ public class MindMapEditor {
 
 	private void setCurrentNode(Node node, boolean enterTextMode) {
 		Node oldCurrentNode = _selection.getCurrentNode();
-
+		_mindMapView.holdLayout();
 		// check if the new current node is different from the last one
 		if (oldCurrentNode != node) {
 			// update old current node ui
@@ -536,6 +540,7 @@ public class MindMapEditor {
 		} else {
 			_mindMapView.hideActions();
 		}
+		_mindMapView.resumeLayout();
 	}
 
 	public void setMindMap(MindMap mindMap) {
