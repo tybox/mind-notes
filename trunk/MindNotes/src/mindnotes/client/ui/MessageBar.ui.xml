@@ -1,0 +1,36 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.popup {
+			-moz-border-radius-bottomleft: 5px;
+			-webkit-border-bottom-left-radius: 5px;
+			-moz-border-radius-bottomright: 5px;
+			-webkit-border-bottom-right-radius: 5px;
+			font-size: 14px;
+			font-weight: bold;
+			color: #222;
+			background: #999;
+			max-height: 24px;
+			border: 1px transparent;
+			padding: 1px 7px 2px 7px;
+		}
+		.link:hover {
+			color: #ffd;
+		}
+		.link {
+			color: #fff;
+			padding: 0 0 0 5px;
+			
+			/* ARE YOU EFFING KIDDING ME - we have to do this for links now? */
+			cursor: pointer;
+			text-decoration: underline;
+		}
+	</ui:style>
+	<g:PopupPanel ui:field="popup" addStyleNames="{style.popup}">
+		<g:FlowPanel>
+			<g:InlineHTML ui:field="messageBox"></g:InlineHTML>
+			<g:InlineHyperlink ui:field="closeLink" addStyleNames="{style.link}">Hide</g:InlineHyperlink>
+		</g:FlowPanel>
+	</g:PopupPanel>
+</ui:UiBinder> 

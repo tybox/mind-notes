@@ -29,6 +29,12 @@ public interface MindMapView {
 		public void newMapGesture();
 
 		public void titleChanged(String title);
+
+		public void pasteGesture();
+
+		public void cutGesture();
+
+		public void copyGesture();
 	}
 
 	public void setListener(Listener l);
@@ -48,4 +54,6 @@ public interface MindMapView {
 	public void setUserInfo(String email, String logoutURL);
 
 	void setTitle(String title);
+
+	public void showMessage(String string);
 }

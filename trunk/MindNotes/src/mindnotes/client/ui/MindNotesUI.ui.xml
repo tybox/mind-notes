@@ -111,14 +111,21 @@
 						<p>
 							<strong>UI improvements</strong>
 							<ul>
-							<li>Creating nodes and selecting them is less laggy (still a little bit too much jumpy for my taste)</li>
-							<li>You can now change the mind map title and it is constantly visible in the window.</li>
-							<li>There are neat buttons with icons instead text buttons for node actions.</li>
-							<li>You can now add siblings directly from sibling node selection</li>
-							<li>There is a context menu that contains options for the node is meant to contain the most complete of node actions.</li>
-							<li>When selecting a node, all child nodes of that node also get highlighted in a different color.</li>
-						</ul>
+								<li>Creating nodes and selecting them is less laggy (still a little bit too much jumpy for my taste)</li>
+								<li>You can now change the mind map title and it is constantly visible in the window.</li>
+								<li>There are neat buttons with icons instead text buttons for node actions.</li>
+								<li>You can now add siblings directly from sibling node selection</li>
+								<li>There is a context menu that contains options for the node is meant to contain the most complete of node actions.</li>
+								<li>When selecting a node, all child nodes of that node also get highlighted in a different color.</li>
+							</ul>
+						</p>
+						<p>
+							<strong>App cache</strong>
+							<ul>
+								<li>App cache manifest is now dynamically generated during compile time.</li>
+							</ul>
 						</p>						
+												
 						<h2>Iteration 3</h2>
 						<p>
 							<strong>Cloud Storage</strong>
