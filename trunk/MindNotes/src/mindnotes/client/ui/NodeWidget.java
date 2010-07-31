@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import mindnotes.client.CallCounter;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.presentation.SelectionState;
 import mindnotes.client.ui.text.TinyEditor;
@@ -336,12 +335,10 @@ public class NodeWidget extends Composite implements NodeView,
 	}
 
 	public int getBubbleTop() {
-		CallCounter.get().register("NodeWidget.getBubbleTop()");
 		return getAbsoluteTop();
 	}
 
 	public int getBubbleLeft() {
-		CallCounter.get().register("NodeWidget.getBubbleLeft()");
 		return getAbsoluteLeft();
 	}
 
@@ -380,7 +377,6 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public Box getElementBounds() {
-		CallCounter.get().register("NodeWidget.getElementBounds()");
 		return new Box(0, 0, getElement().getClientWidth(), getElement()
 				.getClientHeight());
 	}
