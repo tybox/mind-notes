@@ -150,8 +150,7 @@ public class NodeWidget extends Composite implements NodeView,
 		_children.add(index, child);
 		if (_container != null)
 			_container.addNode(child);
-		if (_container != null)
-			_container.onNodeLayoutInvalidated(this);
+		setLayoutValid(false);
 		return child;
 	}
 
@@ -168,8 +167,7 @@ public class NodeWidget extends Composite implements NodeView,
 			}
 		}
 		_children.clear();
-		if (_container != null)
-			_container.onNodeLayoutInvalidated(this);
+		setLayoutValid(false);
 	}
 
 	@Override
@@ -180,8 +178,7 @@ public class NodeWidget extends Composite implements NodeView,
 			if (_container != null)
 				_container.removeNode(child);
 			_children.remove(child);
-			if (_container != null)
-				_container.onNodeLayoutInvalidated(this);
+			setLayoutValid(false);
 		}
 
 	}
@@ -196,13 +193,12 @@ public class NodeWidget extends Composite implements NodeView,
 	public void setLocation(NodeLocation location) {
 		_nodeLocation = location;
 		setLayoutValid(false);
-		if (_container != null)
-			_container.onNodeLayoutInvalidated(this);
 	}
 
 	@Override
 	public void setText(String text) {
 		_content.setHTML(text);
+		setLayoutValid(false);
 	}
 
 	public int getBubbleWidth() {
@@ -225,7 +221,8 @@ public class NodeWidget extends Composite implements NodeView,
 		return _state;
 	}
 
-	public void setSelectionState(SelectionState state, boolean invalidateLayout) {
+	@Override
+	public void setSelectionState(SelectionState state) {
 		if (state == _state)
 			return;
 		_state = state;
@@ -252,14 +249,6 @@ public class NodeWidget extends Composite implements NodeView,
 			exitTextEditing();
 		}
 
-		if (invalidateLayout && _container != null)
-			_container.onNodeLayoutInvalidated(this);
-
-	}
-
-	@Override
-	public void setSelectionState(SelectionState state) {
-		setSelectionState(state, true);
 	}
 
 	private void setParentSelected() {
@@ -267,7 +256,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-selected");
 		removeStyleDependentName("node-current");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
 		}
 	}
 
@@ -276,7 +265,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-selected");
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
 		}
 	}
 
@@ -285,7 +274,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-current");
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED, false);
+			child.setSelectionState(SelectionState.PARENT_SELECTED);
 		}
 	}
 
@@ -295,7 +284,7 @@ public class NodeWidget extends Composite implements NodeView,
 		removeStyleDependentName("node-parent-selected");
 		for (NodeWidget child : _children) {
 			if (child.getSelectionState() == SelectionState.PARENT_SELECTED) {
-				child.setSelectionState(SelectionState.DESELECTED, false);
+				child.setSelectionState(SelectionState.DESELECTED);
 			}
 		}
 	}
@@ -308,24 +297,14 @@ public class NodeWidget extends Composite implements NodeView,
 
 		_textEditor.attach(_content.getElement());
 
-		// DeferredCommand.addCommand(new Command() {
-		//
-		// @Override
-		// public void execute() {
-		// _textEditor.setFocus(true);
-		// }
-		// });
-
-		if (_container != null) {
-			_container.onNodeLayoutInvalidated(this);
-		}
+		setLayoutValid(false);
 
 	}
 
 	private void exitTextEditing() {
 
 		_textEditor.detach();
-
+		setLayoutValid(false);
 		if (_listener != null) {
 			// TODO use isDirty;
 			_listener.nodeTextEditedGesture(this, _content.getHTML(),
@@ -405,6 +384,18 @@ public class NodeWidget extends Composite implements NodeView,
 	@Override
 	public void setLayoutValid(boolean valid) {
 		_layoutValid = valid;
+
+		if (valid == false) {
+			LayoutTreeElement layoutParent = getLayoutParent();
+
+			if (layoutParent != null) {
+				layoutParent.setLayoutValid(false);
+			} else if (_container != null) { // if this node has no layout
+												// parent,
+												// notify container
+				_container.onNodeLayoutInvalidated(this);
+			}
+		}
 	}
 
 	@Override
@@ -426,8 +417,7 @@ public class NodeWidget extends Composite implements NodeView,
 		for (NodeWidget child : _children) {
 			child.setBranchVisible(_expanded);
 		}
-		if (_container != null)
-			_container.onNodeLayoutInvalidated(this);
+		setLayoutValid(false);
 	}
 
 	private void setBranchVisible(boolean visible) {
@@ -435,6 +425,7 @@ public class NodeWidget extends Composite implements NodeView,
 		for (NodeWidget child : _children) {
 			child.setBranchVisible(visible);
 		}
+		setLayoutValid(false);
 	}
 
 	public Set<Arrow> getArrows() {

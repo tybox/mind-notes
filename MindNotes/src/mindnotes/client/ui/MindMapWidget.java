@@ -248,7 +248,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public void addNode(NodeWidget node) {
-		_viewportPanel.add(node);
+		_viewportPanel.add(node, 0, 0);
 	}
 
 	public void updateLayout() {

@@ -314,12 +314,14 @@ public class MindMapEditor {
 
 	private void generateView() {
 		_mindMapView.setTitle(_mindMap.getTitle());
-
+		_mindMapView.holdLayout();
 		NodeView rootNodeView = _mindMapView.getRootNodeView();
 		rootNodeView.removeAll();
-		_mindMapView.holdLayout();
+
 		setUpNodeView(rootNodeView, _mindMap.getRootNode());
+
 		_mindMapView.resumeLayout();
+
 	}
 
 	private void setUpNodeView(NodeView nodeView, Node node) {
