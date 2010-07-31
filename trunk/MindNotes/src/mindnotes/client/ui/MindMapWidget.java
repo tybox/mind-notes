@@ -1,5 +1,6 @@
 package mindnotes.client.ui;
 
+import mindnotes.client.CallCounter;
 import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
@@ -38,6 +39,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private boolean _layoutValid;
 
 	private MessageBar _messageBar;
+
+	private boolean _holdLayoutUpdates;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -252,8 +255,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public void updateLayout() {
 		if (_layoutValid)
 			return;
+		CallCounter.get().reset();
 		_layout.doLayout(_rootNode);
-
+		CallCounter.get().print();
 		// use top level node's suggested width and height as a suggested size
 		// for the whole tree.
 		Box bounds = _rootNode.getBranchBounds();
@@ -293,7 +297,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 	@Override
 	public void onNodeLayoutInvalidated(NodeWidget node) {
 		_layoutValid = false;
-		updateLayout();
+		if (!_holdLayoutUpdates) {
+			updateLayout();
+		}
 	}
 
 	public NodeWidget getRootNodeWidget() {
@@ -398,6 +404,19 @@ public class MindMapWidget extends Composite implements MindMapView,
 			_messageBar = new MessageBar();
 		}
 		_messageBar.showMessage(string);
+	}
+
+	@Override
+	public void holdLayout() {
+		_holdLayoutUpdates = true;
+	}
+
+	@Override
+	public void resumeLayout() {
+		_holdLayoutUpdates = false;
+		if (!_layoutValid) {
+			updateLayout();
+		}
 	}
 
 }
