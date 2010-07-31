@@ -35,33 +35,38 @@ public class LocalMapStorage implements Storage {
 
 			@Override
 			public void execute() {
-				if (_storage == null) {
-					_storage = com.google.code.gwt.storage.client.Storage
-							.getLocalStorage();
-				}
-
-				Map<String, MindMapInfo> map = new HashMap<String, MindMapInfo>();
-
-				// iterate over all existing keys; look for title keys;
-				// fill out a list of available keys.
-				for (int i = 0; i < _storage.getLength(); i++) {
-					String key = _storage.key(i);
-					if (!key.startsWith(MINDMAP_KEY_PREFIX))
-						continue;
-					if (key.endsWith(MINDMAP_KEY_TITLE_SUFFIX)) {
-						String realkey = key.substring(MINDMAP_KEY_PREFIX
-								.length(), key.length()
-								- MINDMAP_KEY_TITLE_SUFFIX.length());
-
-						map.put(realkey, new MindMapInfo(realkey, _storage
-								.getItem(key)));
+				try {
+					if (_storage == null) {
+						_storage = com.google.code.gwt.storage.client.Storage
+								.getLocalStorage();
 					}
 
+					Map<String, MindMapInfo> map = new HashMap<String, MindMapInfo>();
+
+					// iterate over all existing keys; look for title keys;
+					// fill out a list of available keys.
+					for (int i = 0; i < _storage.getLength(); i++) {
+						String key = _storage.key(i);
+						if (!key.startsWith(MINDMAP_KEY_PREFIX))
+							continue;
+						if (key.endsWith(MINDMAP_KEY_TITLE_SUFFIX)) {
+							String realkey = key.substring(
+									MINDMAP_KEY_PREFIX.length(), key.length()
+											- MINDMAP_KEY_TITLE_SUFFIX.length());
+
+							map.put(realkey,
+									new MindMapInfo(realkey, _storage
+											.getItem(key)));
+						}
+
+					}
+
+					callback.onSuccess(new ArrayList<MindMapInfo>(map.values()));
+				} catch (Throwable t) {
+					callback.onFailure(t);
 				}
-
-				callback.onSuccess(new ArrayList<MindMapInfo>(map.values()));
-
 			}
+
 		});
 	}
 

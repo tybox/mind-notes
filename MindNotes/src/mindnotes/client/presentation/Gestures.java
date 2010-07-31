@@ -105,6 +105,21 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.setTitle(title);
 	}
 
+	@Override
+	public void pasteGesture() {
+		_mindMapEditor.paste();
+	}
+
+	@Override
+	public void cutGesture() {
+		_mindMapEditor.cut();
+	}
+
+	@Override
+	public void copyGesture() {
+		_mindMapEditor.copy();
+	}
+
 	public static class NodeGestures implements NodeView.Listener {
 
 		private Node _node;

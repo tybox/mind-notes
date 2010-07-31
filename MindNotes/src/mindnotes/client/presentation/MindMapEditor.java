@@ -18,7 +18,6 @@ import mindnotes.shared.services.UserInfoServiceAsync;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class MindMapEditor {
@@ -219,8 +218,8 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setUserInfo(result.getEmail(), result
-						.getLogoutURL());
+				_mindMapView.setUserInfo(result.getEmail(),
+						result.getLogoutURL());
 
 			}
 		});
@@ -437,8 +436,7 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO what happens on failure? make nice dialogs
-
+				selectionView.setMindMaps(null);
 			}
 
 			@Override
@@ -450,8 +448,7 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO what happens on failure? make nice dialogs
-
+				selectionView.setLocalMindMaps(null);
 			}
 
 			@Override
@@ -467,13 +464,14 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// XXX what should happen here?
-				throw new RuntimeException(caught);
+				_mindMapView
+						.showMessage("Oops! There was an error during deleting. Try again later.");
 			}
 
 			@Override
 			public void onSuccess(Void result) {
-				Window.alert("Removed successfuly.");
+				/* successfully is a funny word. */
+				_mindMapView.showMessage("Removed successfully.");
 			}
 		});
 	}
@@ -494,13 +492,13 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// XXX what should happen here?
-				throw new RuntimeException(caught);
+				_mindMapView
+						.showMessage("Oops! There was an error during saving. Try saving locally for now.");
 			}
 
 			@Override
 			public void onSuccess(Void result) {
-				Window.alert("Successfully saved.");
+				_mindMapView.showMessage("Succesfully saved.");
 			}
 		});
 	}
@@ -573,14 +571,13 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				caught.toString();
-
-				throw new RuntimeException(caught);
+				_mindMapView
+						.showMessage("Oops! Local save was not successful. Check if local saving is supported!");
 			}
 
 			@Override
 			public void onSuccess(Void result) {
-				Window.alert("Successfully saved.");
+				_mindMapView.showMessage("Successfully saved on this device.");
 			}
 		});
 
@@ -615,4 +612,10 @@ public class MindMapEditor {
 		_mindMapView.setTitle(title);
 	}
 
+	public void copy() {
+		/* take note that copy (contrary to paste or cut) is not undoable*/
+		Node n = new Node();
+		_selection.getCurrentNode().copyTo(n);
+		_clipboard.setCurrentNode(n);
+	}
 }

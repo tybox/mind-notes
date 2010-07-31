@@ -37,6 +37,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	private boolean _layoutValid;
 
+	private MessageBar _messageBar;
+
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
 
@@ -116,7 +118,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 			@Override
 			public void onMenuPaste() {
-				// TODO Auto-generated method stub
+				_listener.pasteGesture();
 
 			}
 
@@ -128,12 +130,12 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 			@Override
 			public void onMenuCut() {
-
+				_listener.cutGesture();
 			}
 
 			@Override
 			public void onMenuCopy() {
-				// TODO Auto-generated method stub
+				_listener.copyGesture();
 
 			}
 		});
@@ -388,6 +390,14 @@ public class MindMapWidget extends Composite implements MindMapView,
 		if (_listener != null) {
 			_listener.newMapGesture();
 		}
+	}
+
+	@Override
+	public void showMessage(String string) {
+		if (_messageBar == null) {
+			_messageBar = new MessageBar();
+		}
+		_messageBar.showMessage(string);
 	}
 
 }
