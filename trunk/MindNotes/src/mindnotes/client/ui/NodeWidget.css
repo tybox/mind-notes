@@ -1,0 +1,26 @@
+.node {
+	border-bottom: 2px #333 solid;
+	font-size: 14px;
+	background-color: #fff;
+	margin: 0px;
+}
+
+.nodeText {
+	margin: 4px 12px 1px 12px;
+}
+
+.nodeSelected,
+.nodeCurrent {
+	background-color: #d7e8f5;
+	border-bottom: 2px #4882e0 solid;
+	 -webkit-border-top-right-radius: 9px;
+	 -webkit-border-top-left-radius: 9px;
+}
+
+.nodeParentSelected {
+	border-bottom: 2px #1b56b5 solid;
+}
+
+.nodeFocused {
+	border: 2px #f88 solid;
+}

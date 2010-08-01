@@ -625,4 +625,29 @@ public class MindMapEditor {
 		_selection.getCurrentNode().copyTo(n);
 		_clipboard.setCurrentNode(n);
 	}
+
+	public void navigateLeft() {
+		Node n = _selection.getCurrentNode();
+		switch (n.getNodeLocation()) {
+		case LEFT:
+			if (n.getChildCount() <= 0)
+				return;
+			setCurrentNode(n.getChildren().iterator().next());
+			break;
+		case RIGHT:
+			setCurrentNode(n.getParent());
+			break;
+		case ROOT:
+			if (n.getChildCount() <= 0)
+				return;
+			for (Node child : n.getChildren()) {
+				if (child.getNodeLocation() == NodeLocation.LEFT) {
+					setCurrentNode(child);
+					return;
+				}
+			}
+			break;
+
+		}
+	}
 }

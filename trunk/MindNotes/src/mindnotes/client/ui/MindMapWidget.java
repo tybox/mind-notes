@@ -183,16 +183,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 		return _rootNode;
 	}
 
-	/**
-	 * Push a redraw request to the underlying canvas widgets.
-	 */
-	public void redraw() {
-		long l = System.currentTimeMillis();
-		_arrowsWidget.render();
-		System.out
-				.println("Render: " + (System.currentTimeMillis() - l) + "ms");
-	}
-
 	@Override
 	public int getNodeRelativeTop(NodeWidget node) {
 		// TODO maybe those methods could use cached values instead of DOM calls
@@ -274,10 +264,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_arrowsWidget.setCanvasSize(viewportWidth, viewportHeight);
 
 		// reset widget positions
-		setBranchPositions(_rootNode, -bounds.x + (viewportWidth - bounds.w)
-				/ 2, -bounds.y + (viewportHeight - bounds.h) / 2);
+		int ox = -bounds.x + (viewportWidth - bounds.w) / 2;
+		int oy = -bounds.y + (viewportHeight - bounds.h) / 2;
+		setBranchPositions(_rootNode, ox, oy);
 
-		redraw();
+		_arrowsWidget.render(ox, oy);
 
 		_actionButtons.updateButtonLayout();
 		_layoutValid = true;

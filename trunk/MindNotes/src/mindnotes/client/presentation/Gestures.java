@@ -4,6 +4,7 @@ import mindnotes.client.presentation.KeyboardShortcuts.KeyBinding;
 import mindnotes.client.ui.NodeWidget;
 import mindnotes.shared.model.Node;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
 
 /**
@@ -157,7 +158,7 @@ public class Gestures implements MindMapView.Listener {
 	}
 
 	private void initializeKeyboardBindings() {
-		_keyboardShortcuts.addBinding(new KeyBinding('z', true, false, false,
+		_keyboardShortcuts.addBinding(new KeyBinding('Z', true, false, false,
 				new Command() {
 
 					@Override
@@ -165,7 +166,7 @@ public class Gestures implements MindMapView.Listener {
 						_mindMapEditor.undo();
 					}
 				}));
-		_keyboardShortcuts.addBinding(new KeyBinding('x', true, false, false,
+		_keyboardShortcuts.addBinding(new KeyBinding('X', true, false, false,
 				new Command() {
 
 					@Override
@@ -174,12 +175,21 @@ public class Gestures implements MindMapView.Listener {
 					}
 				}));
 
-		_keyboardShortcuts.addBinding(new KeyBinding('v', true, false, false,
+		_keyboardShortcuts.addBinding(new KeyBinding('V', true, false, false,
 				new Command() {
 
 					@Override
 					public void execute() {
 						_mindMapEditor.paste();
+					}
+				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_LEFT, false,
+				false, false, new Command() {
+
+					@Override
+					public void execute() {
+						_mindMapEditor.navigateLeft();
+
 					}
 				}));
 	}
