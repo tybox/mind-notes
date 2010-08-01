@@ -10,18 +10,43 @@ import mindnotes.client.presentation.SelectionState;
 import mindnotes.client.ui.text.TinyEditor;
 import mindnotes.shared.model.NodeLocation;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 public class NodeWidget extends Composite implements NodeView,
 		LayoutTreeElement {
+
+	interface Resources extends ClientBundle {
+		@Source("NodeWidget.css")
+		NodeStyle style();
+	}
+
+	interface NodeStyle extends CssResource {
+		String node();
+
+		String nodeText();
+
+		String nodeSelected();
+
+		String nodeParentSelected();
+
+		String nodeCurrent();
+
+		String nodeFocused();
+	}
+
+	// ClientBundle resources
+	Resources _resources = GWT.create(Resources.class);
 
 	// external dependencies (to be DI'd)
 	private Set<Arrow> _arrows;
@@ -47,9 +72,10 @@ public class NodeWidget extends Composite implements NodeView,
 	// node state
 	private SelectionState _state;
 	private Box _elementBounds;
-	private Box _absoluteBounds;
 
 	public NodeWidget() {
+
+		_resources.style().ensureInjected();
 
 		ClickHandler clickHandler = new ClickHandler() {
 
@@ -94,8 +120,7 @@ public class NodeWidget extends Composite implements NodeView,
 				addDomHandler(contextMenuHandler, ContextMenuEvent.getType());
 			}
 		};
-		_content.setStylePrimaryName("node");
-		_content.addStyleDependentName("text");
+		_content.setStyleName(_resources.style().nodeText());
 		_content.addClickHandler(clickHandler);
 
 		_children = new ArrayList<NodeWidget>();
@@ -104,8 +129,7 @@ public class NodeWidget extends Composite implements NodeView,
 		panel.add(_content);
 		initWidget(panel);
 
-		setStylePrimaryName("mindmap");
-		addStyleDependentName("node");
+		setStyleName(_resources.style().node());
 
 		addDomHandler(clickHandler, ClickEvent.getType());
 		addDomHandler(doubleClickHandler, DoubleClickEvent.getType());
@@ -218,67 +242,40 @@ public class NodeWidget extends Composite implements NodeView,
 		if (state == _state)
 			return;
 		_state = state;
+		setStyleName(_resources.style().node());
 		switch (state) {
 		case DESELECTED:
-			setDeselected();
 			break;
 		case SELECTED:
-			setSelected();
+			addStyleName(_resources.style().nodeSelected());
 			break;
 		case CURRENT:
-			setCurrent();
+			addStyleName(_resources.style().nodeCurrent());
 			break;
 		case PARENT_SELECTED:
-			setParentSelected();
+			addStyleName(_resources.style().nodeParentSelected());
 			break;
 		case TEXT_EDITING:
-			setCurrent();
+			addStyleName(_resources.style().nodeCurrent());
 			enterTextEditing();
 			break;
+		}
+		if (state == SelectionState.DESELECTED) {
+			for (NodeWidget child : _children) {
+				if (child.getSelectionState() == SelectionState.PARENT_SELECTED) {
+					child.setSelectionState(SelectionState.DESELECTED);
+				}
+			}
+		} else {
+			for (NodeWidget child : _children) {
+				child.setSelectionState(SelectionState.PARENT_SELECTED);
+			}
 		}
 
 		if (state != SelectionState.TEXT_EDITING) {
 			exitTextEditing();
 		}
 
-	}
-
-	private void setParentSelected() {
-		addStyleDependentName("node-parent-selected");
-		removeStyleDependentName("node-selected");
-		removeStyleDependentName("node-current");
-		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
-		}
-	}
-
-	private void setCurrent() {
-		addStyleDependentName("node-current");
-		removeStyleDependentName("node-selected");
-		removeStyleDependentName("node-parent-selected");
-		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
-		}
-	}
-
-	private void setSelected() {
-		addStyleDependentName("node-selected");
-		removeStyleDependentName("node-current");
-		removeStyleDependentName("node-parent-selected");
-		for (NodeWidget child : _children) {
-			child.setSelectionState(SelectionState.PARENT_SELECTED);
-		}
-	}
-
-	private void setDeselected() {
-		removeStyleDependentName("node-selected");
-		removeStyleDependentName("node-current");
-		removeStyleDependentName("node-parent-selected");
-		for (NodeWidget child : _children) {
-			if (child.getSelectionState() == SelectionState.PARENT_SELECTED) {
-				child.setSelectionState(SelectionState.DESELECTED);
-			}
-		}
 	}
 
 	private void enterTextEditing() {
@@ -303,18 +300,6 @@ public class NodeWidget extends Composite implements NodeView,
 					_content.getHTML());
 
 		}
-	}
-
-	public Box getAbsoluteElementBounds() {
-		return _absoluteBounds == null ? getNativeAbsoluteElementBounds()
-				: _absoluteBounds;
-	}
-
-	public Box getNativeAbsoluteElementBounds() {
-		_absoluteBounds = new Box(getAbsoluteLeft(), getAbsoluteTop(),
-				getElement().getClientWidth() + 4, getElement()
-						.getClientHeight() + 4);
-		return _absoluteBounds;
 	}
 
 	@Override
@@ -358,7 +343,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 	public Box getNativeElementBounds() {
 		_elementBounds = new Box(0, 0, getElement().getClientWidth(),
-				getElement().getClientHeight());
+				getElement().getClientHeight() + 1);
 		return _elementBounds;
 
 	}
@@ -399,7 +384,6 @@ public class NodeWidget extends Composite implements NodeView,
 				_container.onNodeLayoutInvalidated(this);
 			}
 			_elementBounds = null;
-			_absoluteBounds = null;
 		}
 	}
 

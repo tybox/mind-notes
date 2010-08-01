@@ -20,13 +20,13 @@ public class ClassicArrowRenderer implements ArrowRenderer {
 			return;
 		// find coords of top-left corners of two nodes
 
-		Box fromBox = arrow.from.getAbsoluteElementBounds();
-		Box toBox = arrow.to.getAbsoluteElementBounds();
+		Box fromBox = arrow.from.getElementBounds();
+		Box toBox = arrow.to.getElementBounds();
 
-		fx = fromBox.x - ox;
-		fy = fromBox.y - oy;
-		tx = toBox.x - ox;
-		ty = toBox.y - oy;
+		fx = fromBox.x + ox;
+		fy = fromBox.y + oy;
+		tx = toBox.x + ox + arrow.to.getOffsetX();
+		ty = toBox.y + oy + arrow.to.getOffsetY();
 
 		// shift the coords to point at the nearest two corners
 		if (fx < tx) {

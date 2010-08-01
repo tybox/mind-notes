@@ -22,8 +22,6 @@ public class ArrowsWidget extends Composite {
 	private Canvas _canvas;
 	private MindMapWidget _mindMapWidget;
 	private ArrowRenderer _renderer;
-	private int _ox;
-	private int _oy;
 
 	public ArrowsWidget(MindMapWidget mindMapWidget) {
 
@@ -41,7 +39,8 @@ public class ArrowsWidget extends Composite {
 			}
 		});
 
-		_renderer = new ClassicArrowRenderer();
+		// _renderer = new ClassicArrowRenderer();
+		_renderer = new BezierArrowRenderer();
 		_renderer.setCanvas(_canvas);
 
 		initWidget(_canvas);
@@ -52,28 +51,29 @@ public class ArrowsWidget extends Composite {
 			_mindMapWidget.onClick();
 	}
 
-	public void render() {
+	public void render(int ox, int oy) {
 		if (!isAttached())
 			return;
 
 		_canvas.clear();
-		_ox = _canvas.getAbsoluteLeft();
-		_oy = _canvas.getAbsoluteTop();
-		renderArrowsForNodeWidget(_mindMapWidget.getRootNodeWidget());
+		renderArrowsForNodeWidget(ox, oy, _mindMapWidget.getRootNodeWidget());
 	}
 
-	public void renderArrowsForNodeWidget(NodeWidget node) {
+	public void renderArrowsForNodeWidget(int ox, int oy, NodeWidget node) {
+
+		int nox = ox + node.getOffsetX();
+		int noy = oy + node.getOffsetY();
 
 		for (Arrow arrow : node.getArrows()) {
 			// TODO optimize arrow rendering by caching coordinates instead of
 			// querying DOM each time
 
-			_renderer.renderArrow(_ox, _oy, arrow);
+			_renderer.renderArrow(nox, noy, arrow);
 		}
 
 		// do the same recursively for children
 		for (NodeWidget child : node.getNodeChildren()) {
-			renderArrowsForNodeWidget(child);
+			renderArrowsForNodeWidget(nox, noy, child);
 		}
 
 	}

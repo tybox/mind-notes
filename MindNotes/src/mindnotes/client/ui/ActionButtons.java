@@ -16,6 +16,8 @@ public class ActionButtons {
 	public interface Resources extends ClientBundle {
 		ImageResource plusIcon();
 
+		@Source("removeIcon.gif")
+		// (sic!)
 		ImageResource deleteIcon();
 
 		Styles buttonStyles();
@@ -161,6 +163,7 @@ public class ActionButtons {
 	}
 
 	public void hideButtons() {
+		_widget = null;
 		_deleteButton.setVisible(false);
 		_addLeftButton.setVisible(false);
 		_addRightButton.setVisible(false);

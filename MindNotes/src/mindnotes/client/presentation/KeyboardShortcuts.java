@@ -19,15 +19,16 @@ import com.google.gwt.user.client.Command;
 public class KeyboardShortcuts {
 
 	public static class KeyBinding {
-		private char _key;
+		private int _key;
 		private boolean _shift;
 		private boolean _ctrl;
 		private boolean _alt;
 		private Command _command;
 
-		public KeyBinding(char key, boolean ctrl, boolean shift, boolean alt,
+		public KeyBinding(int key, boolean ctrl, boolean shift, boolean alt,
 				Command cmd) {
-			_key = Character.toUpperCase(key);
+
+			_key = key;
 			_ctrl = ctrl;
 			_shift = shift;
 			_alt = alt;
@@ -35,8 +36,7 @@ public class KeyboardShortcuts {
 
 		}
 
-		public boolean matches(char key, boolean ctrl, boolean shift,
-				boolean alt) {
+		public boolean matches(int key, boolean ctrl, boolean shift, boolean alt) {
 			return key == _key && _ctrl == ctrl && _shift == shift
 					&& _alt == alt;
 		}
@@ -45,7 +45,7 @@ public class KeyboardShortcuts {
 			return _command;
 		}
 
-		public char getKey() {
+		public int getKey() {
 			return _key;
 		}
 
@@ -54,9 +54,9 @@ public class KeyboardShortcuts {
 			return bindingCode(_key, _ctrl, _shift, _alt);
 		}
 
-		public static int bindingCode(char key, boolean ctrl, boolean shift,
+		public static int bindingCode(int key, boolean ctrl, boolean shift,
 				boolean alt) {
-			return key + (ctrl ? 1 : 0) + (shift ? 2 : 0) + (alt ? 4 : 0);
+			return key << 3 + (ctrl ? 1 : 0) + (shift ? 2 : 0) + (alt ? 4 : 0);
 		}
 	}
 
@@ -72,10 +72,12 @@ public class KeyboardShortcuts {
 
 	public void onShortcutPressed(int key, boolean ctrl, boolean shift,
 			boolean alt) {
-		char ckey = Character.toUpperCase((char) key);
-		KeyBinding binding = _bindings.get(KeyBinding.bindingCode(ckey, ctrl,
+		if (Character.isLetter((char) key)) {
+			key = Character.toUpperCase((char) key);
+		}
+		KeyBinding binding = _bindings.get(KeyBinding.bindingCode(key, ctrl,
 				shift, alt));
-		if (binding != null && binding.matches(ckey, ctrl, shift, alt)) {
+		if (binding != null && binding.matches(key, ctrl, shift, alt)) {
 			binding.getCommand().execute();
 		}
 
