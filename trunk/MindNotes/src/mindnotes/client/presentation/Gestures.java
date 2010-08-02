@@ -155,6 +155,11 @@ public class Gestures implements MindMapView.Listener {
 			_editor.exitTextMode();
 		}
 
+		@Override
+		public void nodeMouseDownGesture(NodeWidget nodeWidget) {
+			_editor.setCurrentNode(_node);
+		}
+
 	}
 
 	private void initializeKeyboardBindings() {

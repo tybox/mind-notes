@@ -11,12 +11,12 @@ import mindnotes.client.ui.text.TinyEditor;
 import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
@@ -77,15 +77,16 @@ public class NodeWidget extends Composite implements NodeView,
 
 		_resources.style().ensureInjected();
 
-		ClickHandler clickHandler = new ClickHandler() {
+		MouseDownHandler mouseDownHandler = new MouseDownHandler() {
 
 			@Override
-			public void onClick(ClickEvent event) {
+			public void onMouseDown(MouseDownEvent event) {
 				if (!isEditing()) {
-					_listener.nodeClickedGesture(NodeWidget.this);
+					_listener.nodeMouseDownGesture(NodeWidget.this);
 				}
 			}
 		};
+
 		final DoubleClickHandler doubleClickHandler = new DoubleClickHandler() {
 
 			@Override
@@ -121,7 +122,7 @@ public class NodeWidget extends Composite implements NodeView,
 			}
 		};
 		_content.setStyleName(_resources.style().nodeText());
-		_content.addClickHandler(clickHandler);
+		_content.addMouseDownHandler(mouseDownHandler);
 
 		_children = new ArrayList<NodeWidget>();
 
@@ -131,7 +132,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 		setStyleName(_resources.style().node());
 
-		addDomHandler(clickHandler, ClickEvent.getType());
+		addDomHandler(mouseDownHandler, MouseDownEvent.getType());
 		addDomHandler(doubleClickHandler, DoubleClickEvent.getType());
 		addDomHandler(contextMenuHandler, ContextMenuEvent.getType());
 	}

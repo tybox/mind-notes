@@ -1,6 +1,29 @@
+@external action-button-up-hovering, action-button-up,action-button-down, action-button-down-hovering;
+.action-button-up-hovering,
+.action-button-down-hovering, 
+.action-button-down {
+	border: 1px solid;
+	border-color: #9cf #69e #69e #7af;
+  	background: url("mindnotes/gwt/standard/images/hborder.png") repeat-x 0px -27px;
+  	
+}
+
+.action-button-down-hovering, 
+.action-button-down {
+
+	border: 1px inset;
+  	border-color: #9cf #69e #69e #7af;
+}
+
+.action-button-up {
+	border: 1px solid transparent;
+}
+
 .button {
 	width: 16px;
 	height: 16px;
-	padding: 2px;
+	padding: 0	;
 	margin: 0;
+	-webkit-border-radius: 2px;
 }
+

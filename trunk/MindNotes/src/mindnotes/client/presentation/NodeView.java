@@ -14,6 +14,8 @@ public interface NodeView {
 				String newText);
 
 		public void nodeEditFinishedGesture(NodeWidget nodeWidget);
+
+		public void nodeMouseDownGesture(NodeWidget nodeWidget);
 	}
 
 	public void setListener(Listener listener);
