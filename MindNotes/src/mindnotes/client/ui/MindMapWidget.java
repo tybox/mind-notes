@@ -62,10 +62,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 							"MacIntel") ? nativeEvent.getMetaKey()
 							: nativeEvent.getCtrlKey();
 
-					boolean shortcut = meta || nativeEvent.getShiftKey()
-							|| nativeEvent.getAltKey();
-
-					if (_listener != null && shortcut) {
+					if (_listener != null) {
 						_listener.keyboardShortcut(nativeEvent.getKeyCode(),
 								meta, nativeEvent.getShiftKey(),
 								nativeEvent.getAltKey());
@@ -144,6 +141,13 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_rootNode.setContextMenu(contextMenu);
 		_rootNode.setContainer(this);
 		TinyEditor textEditor = new TinyEditor();
+		textEditor.setListener(new TinyEditor.Listener() {
+
+			@Override
+			public void onEditorExitGesture() {
+				_listener.editorExitGesture();
+			}
+		});
 		_rootNode.setTextEditor(textEditor);
 
 		_viewportPanel = new AbsolutePanel();

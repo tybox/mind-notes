@@ -35,6 +35,8 @@ public interface MindMapView {
 		public void cutGesture();
 
 		public void copyGesture();
+
+		public void editorExitGesture();
 	}
 
 	public void setListener(Listener l);

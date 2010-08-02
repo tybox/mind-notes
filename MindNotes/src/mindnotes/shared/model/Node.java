@@ -74,7 +74,7 @@ public class Node implements Serializable, NodeBuilder {
 		return _childNodes.contains(n);
 	}
 
-	public Iterable<Node> getChildren() {
+	public List<Node> getChildren() {
 		return _childNodes;
 	}
 

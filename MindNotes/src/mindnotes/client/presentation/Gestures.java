@@ -192,6 +192,58 @@ public class Gestures implements MindMapView.Listener {
 
 					}
 				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_RIGHT, false,
+				false, false, new Command() {
+
+					@Override
+					public void execute() {
+						_mindMapEditor.navigateRight();
+
+					}
+				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_UP, false,
+				false, false, new Command() {
+
+					@Override
+					public void execute() {
+
+						_mindMapEditor.navigateUp();
+
+					}
+				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_DOWN, false,
+				false, false, new Command() {
+
+					@Override
+					public void execute() {
+
+						_mindMapEditor.navigateDown();
+
+					}
+				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_DELETE,
+				false, false, false, new Command() {
+
+					@Override
+					public void execute() {
+						_mindMapEditor.deleteSelection();
+
+					}
+				}));
+		_keyboardShortcuts.addBinding(new KeyBinding(KeyCodes.KEY_ENTER, false,
+				false, false, new Command() {
+
+					@Override
+					public void execute() {
+						_mindMapEditor.enterTextMode(null);
+
+					}
+				}));
+	}
+
+	@Override
+	public void editorExitGesture() {
+		_mindMapEditor.exitTextMode();
 	}
 
 }
