@@ -564,7 +564,15 @@ public class MindMapEditor {
 		_undoStack.undo();
 	}
 
+	/**
+	 * Opens the text editor for the given node. If node is null, opens text
+	 * editor for the current node.
+	 * 
+	 * @param node
+	 */
 	public void enterTextMode(Node node) {
+		if (node == null)
+			node = _selection.getCurrentNode();
 		setCurrentNode(node, true);
 	}
 
@@ -627,27 +635,86 @@ public class MindMapEditor {
 	}
 
 	public void navigateLeft() {
+		navigateToSide(NodeLocation.LEFT);
+	}
+
+	public void navigateRight() {
+		navigateToSide(NodeLocation.RIGHT);
+	}
+
+	/**
+	 * Change current node from previous one to one of the nodes on the left or
+	 * right. A node which is left or right to the current node is either one of
+	 * its children or its parent.
+	 * 
+	 * @param where
+	 */
+	private void navigateToSide(NodeLocation where) {
 		Node n = _selection.getCurrentNode();
-		switch (n.getNodeLocation()) {
-		case LEFT:
+		if (n.getNodeLocation() == where) {
+			// we are going deeper into children, f.e. moving left from a node
+			// that is on the left
 			if (n.getChildCount() <= 0)
 				return;
 			setCurrentNode(n.getChildren().iterator().next());
-			break;
-		case RIGHT:
-			setCurrentNode(n.getParent());
-			break;
-		case ROOT:
+
+		} else if (n.getNodeLocation() == NodeLocation.ROOT) {
+			// moving from the root, which has no parent and children in either
+			// direction
 			if (n.getChildCount() <= 0)
 				return;
 			for (Node child : n.getChildren()) {
-				if (child.getNodeLocation() == NodeLocation.LEFT) {
+				if (child.getNodeLocation() == where) {
 					setCurrentNode(child);
 					return;
 				}
 			}
-			break;
+		} else {
+			// moving towards the parent (moving right on left-sided node)
+			setCurrentNode(n.getParent());
+		}
 
+	}
+
+	public void navigateUp() {
+		Node n = _selection.getCurrentNode();
+		if (n.getNodeLocation() == NodeLocation.ROOT)
+			return;
+		Node parent = n.getParent();
+		int index = parent.getChildren().indexOf(n);
+		if (index > 0) {
+
+			// search siblings for the first sibling after current node that is
+			// on the same side
+			for (int i = index - 1; i >= 0; i--) {
+				Node candidate = parent.getChildren().get(i);
+				if (candidate.getNodeLocation() == n.getNodeLocation()) {
+					setCurrentNode(candidate);
+					return;
+				}
+
+			}
+		}
+	}
+
+	public void navigateDown() {
+		Node n = _selection.getCurrentNode();
+		if (n.getNodeLocation() == NodeLocation.ROOT)
+			return;
+		Node parent = n.getParent();
+		int index = parent.getChildren().indexOf(n);
+		if (index < parent.getChildCount() - 1) {
+
+			// search siblings for the first sibling after current node that is
+			// on the same side
+			for (int i = index + 1; i < parent.getChildCount(); i++) {
+				Node candidate = parent.getChildren().get(i);
+				if (candidate.getNodeLocation() == n.getNodeLocation()) {
+					setCurrentNode(candidate);
+					return;
+				}
+
+			}
 		}
 	}
 }

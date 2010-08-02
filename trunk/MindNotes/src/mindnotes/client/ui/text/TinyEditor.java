@@ -1,13 +1,20 @@
 package mindnotes.client.ui.text;
 
+import mindnotes.client.ui.text.TinyConfig.SetupCallback;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 
-public class TinyEditor {
+public class TinyEditor implements SetupCallback {
 	private JavaScriptObject _nativeEditor;
-	private TinyConfig _config = new TinyConfig();
+	private TinyConfig _config = new TinyConfig(this);
 	private Element _div = null;
+	private Listener _listener;
+
+	public interface Listener {
+		public void onEditorExitGesture();
+	}
 
 	public TinyEditor() {
 	}
@@ -59,5 +66,27 @@ public class TinyEditor {
 	private native void focusTiny(String id) /*-{
 		$wnd.tinymce.execCommand('mceFocus', false, id);
 	}-*/;
+
+	public void exitEditor() {
+		if (_listener != null) {
+			_listener.onEditorExitGesture();
+		}
+	}
+
+	// @formatter:off
+	@Override
+	public native void onSetup(JavaScriptObject ed) /*-{
+		var tinyEditor = this;
+		ed.onKeyDown.add(function(ed, evt) {
+			if (evt.keyCode == 27) { //escape
+				tinyEditor.@mindnotes.client.ui.text.TinyEditor::exitEditor()();
+			}
+		});
+	}-*/;
+	// @formatter:on
+
+	public void setListener(Listener listener) {
+		_listener = listener;
+	}
 
 }

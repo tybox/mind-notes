@@ -9,6 +9,10 @@
 	margin: 4px 12px 1px 12px;
 }
 
+.nodeText p {
+	margin: 2px 0;
+}
+
 .nodeSelected,
 .nodeCurrent {
 	background-color: #d7e8f5;
