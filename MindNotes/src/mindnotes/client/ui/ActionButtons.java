@@ -5,6 +5,8 @@ import mindnotes.client.presentation.ActionOptions;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -123,8 +125,17 @@ public class ActionButtons {
 	 * 
 	 */
 	private PushButton createButton(ImageResource icon) {
-		PushButton b = new PushButton(new Image(icon));
+		final PushButton b = new PushButton(new Image(icon));
+		b.setStylePrimaryName("action-button");
 		b.addStyleName(_resources.buttonStyles().button());
+		b.setTabIndex(-1);
+		b.addMouseDownHandler(new MouseDownHandler() {
+
+			@Override
+			public void onMouseDown(MouseDownEvent event) {
+				b.setFocus(false);
+			}
+		});
 		return b;
 	}
 

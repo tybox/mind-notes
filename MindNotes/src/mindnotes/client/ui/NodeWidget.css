@@ -5,6 +5,12 @@
 	margin: 0px;
 }
 
+.node:hover {
+	background-color: #e4eCf5;
+	-webkit-border-top-right-radius: 9px;
+	-webkit-border-top-left-radius: 9px;
+}
+
 .nodeText {
 	margin: 4px 12px 1px 12px;
 }
@@ -20,6 +26,10 @@
 	 -webkit-border-top-right-radius: 9px;
 	 -webkit-border-top-left-radius: 9px;
 }
+.nodeSelected:hover,
+.nodeCurrent:hover {
+	background-color: #c0d6ed;
+	}
 
 .nodeParentSelected {
 	border-bottom: 2px #1b56b5 solid;
