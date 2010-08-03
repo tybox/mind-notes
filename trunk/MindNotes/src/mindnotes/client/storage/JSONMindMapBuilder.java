@@ -1,5 +1,6 @@
 package mindnotes.client.storage;
 
+import mindnotes.shared.model.EmbeddedObject;
 import mindnotes.shared.model.MindMapBuilder;
 import mindnotes.shared.model.NodeLocation;
 
@@ -15,16 +16,20 @@ public class JSONMindMapBuilder implements MindMapBuilder {
 
 		JSONObject _node;
 		JSONArray _children;
+		JSONArray _objects;
 
 		public JSONNodeBuilder() {
 			_node = new JSONObject();
 			_children = new JSONArray();
 			_node.put("children", _children);
+			_objects = new JSONArray();
+			_node.put("objects", _objects);
 		}
 
 		public JSONNodeBuilder(JSONObject node) {
 			_node = node;
 			_children = _node.get("children").isArray();
+			_objects = _node.get("objects").isArray();
 		}
 
 		@Override
@@ -47,6 +52,22 @@ public class JSONMindMapBuilder implements MindMapBuilder {
 			for (int i = 0; i < _children.size(); i++) {
 				new JSONNodeBuilder(_children.get(i).isObject()).copyTo(nb
 						.createNode());
+			}
+
+			for (int i = 0; i < _objects.size(); i++) {
+				JSONObject jo = _objects.get(i).isObject();
+				EmbeddedObject eo = new EmbeddedObject();
+				try {
+					eo.setType(jo.get("type").isString().stringValue());
+				} catch (NullPointerException e) {
+					eo.setType(null);
+				}
+				try {
+					eo.setData(jo.get("data").isString().stringValue());
+				} catch (NullPointerException e) {
+					eo.setData(null);
+				}
+				nb.addObject(eo);
 			}
 		}
 
@@ -76,6 +97,14 @@ public class JSONMindMapBuilder implements MindMapBuilder {
 
 		public JSONValue getJSONObject() {
 			return _node;
+		}
+
+		@Override
+		public void addObject(EmbeddedObject object) {
+			JSONObject jo = new JSONObject();
+			jo.put("type", new JSONString(object.getType()));
+			jo.put("data", new JSONString(object.getData()));
+			_objects.set(_objects.size(), jo);
 		}
 
 	}

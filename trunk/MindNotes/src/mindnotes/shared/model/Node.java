@@ -12,10 +12,29 @@ public class Node implements Serializable, NodeBuilder {
 
 	private List<Node> _childNodes;
 	private String _text;
+	private List<EmbeddedObject> _objects;
 
 	private Node _parent;
 	private NodeLocation _nodeLocation;
 	private boolean _expanded;
+
+	public Node() {
+		_childNodes = new ArrayList<Node>();
+		_objects = new ArrayList<EmbeddedObject>();
+		_expanded = true;
+	}
+
+	public List<EmbeddedObject> getObjects() {
+		return _objects;
+	}
+
+	public void addObject(EmbeddedObject object) {
+		_objects.add(object);
+	}
+
+	public void removeObject(EmbeddedObject object) {
+		_objects.remove(object);
+	}
 
 	public void setParent(Node parent) {
 		_parent = parent;
@@ -23,11 +42,6 @@ public class Node implements Serializable, NodeBuilder {
 
 	public Node getParent() {
 		return _parent;
-	}
-
-	public Node() {
-		_childNodes = new ArrayList<Node>();
-		_expanded = true;
 	}
 
 	public int getChildCount() {
@@ -108,6 +122,9 @@ public class Node implements Serializable, NodeBuilder {
 		nb.setText(getText());
 		for (Node child : _childNodes) {
 			child.copyTo(nb.createNode());
+		}
+		for (EmbeddedObject eo : _objects) {
+			nb.addObject((EmbeddedObject) eo.makeClone());
 		}
 	}
 }

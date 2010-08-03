@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import mindnotes.client.presentation.EmbeddedObjectView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.presentation.SelectionState;
+import mindnotes.client.ui.embedded.EmbeddedObjectContainer;
 import mindnotes.client.ui.text.TinyEditor;
 import mindnotes.shared.model.NodeLocation;
 
@@ -22,6 +24,7 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
 
 public class NodeWidget extends Composite implements NodeView,
 		LayoutTreeElement {
@@ -73,7 +76,7 @@ public class NodeWidget extends Composite implements NodeView,
 	private SelectionState _state;
 	private Box _elementBounds;
 
-	private YouTubePlayer _videoPlayer;
+	private FlowPanel _objectContainer;
 
 	public NodeWidget() {
 
@@ -128,13 +131,10 @@ public class NodeWidget extends Composite implements NodeView,
 
 		_children = new ArrayList<NodeWidget>();
 
-		_videoPlayer = new YouTubePlayer();
-		_videoPlayer.setVisible(false);
+		_objectContainer = new FlowPanel();
+		_objectContainer.add(_content);
 
-		FlowPanel panel = new FlowPanel();
-		panel.add(_content);
-		panel.add(_videoPlayer);
-		initWidget(panel);
+		initWidget(_objectContainer);
 
 		setStyleName(_resources.style().node());
 
@@ -290,7 +290,7 @@ public class NodeWidget extends Composite implements NodeView,
 		// setHTML after making rich text editor visible
 		// to avoid weird behavior of using the formatter when the widget is
 		// not visible
-
+		_textEditor.setLayoutHost(this);
 		_textEditor.attach(_content.getElement());
 
 		setLayoutValid(false);
@@ -305,7 +305,6 @@ public class NodeWidget extends Composite implements NodeView,
 			// TODO use isDirty;
 			_listener.nodeTextEditedGesture(this, _content.getHTML(),
 					_content.getHTML());
-
 		}
 	}
 
@@ -381,6 +380,7 @@ public class NodeWidget extends Composite implements NodeView,
 		_layoutValid = valid;
 
 		if (valid == false) {
+			_elementBounds = null;
 			LayoutTreeElement layoutParent = getLayoutParent();
 
 			if (layoutParent != null) {
@@ -390,7 +390,7 @@ public class NodeWidget extends Composite implements NodeView,
 												// notify container
 				_container.onNodeLayoutInvalidated(this);
 			}
-			_elementBounds = null;
+
 		}
 	}
 
@@ -437,9 +437,18 @@ public class NodeWidget extends Composite implements NodeView,
 	}
 
 	@Override
-	public void setVideo(String id) {
-		_videoPlayer.setVisible(true);
-		_videoPlayer.showPlayer(id);
+	public EmbeddedObjectView createEmbeddedObject(String type, String data) {
+		EmbeddedObjectContainer eoc = new EmbeddedObjectContainer(type, data);
+		eoc.setLayoutHost(this);
+		_objectContainer.add(eoc);
+		setLayoutValid(false);
+		return eoc;
+	}
+
+	@Override
+	public void removeEmbeddedObject(EmbeddedObjectView view) {
+		_objectContainer.remove((Widget) view);
+		setLayoutValid(false);
 	}
 
 }

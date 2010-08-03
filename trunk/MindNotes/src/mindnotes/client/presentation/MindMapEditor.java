@@ -7,6 +7,7 @@ import java.util.Map;
 import mindnotes.client.storage.CloudStorage;
 import mindnotes.client.storage.LocalMapStorage;
 import mindnotes.client.storage.Storage;
+import mindnotes.shared.model.EmbeddedObject;
 import mindnotes.shared.model.MindMap;
 import mindnotes.shared.model.MindMapInfo;
 import mindnotes.shared.model.Node;
@@ -337,6 +338,39 @@ public class MindMapEditor {
 			setUpNodeView(nodeView.createChild(), child);
 		}
 
+		for (EmbeddedObject object : node.getObjects()) {
+			addEmbeddedObjectView(node, object);
+		}
+
+	}
+
+	/**
+	 * @param object
+	 */
+	private void addEmbeddedObject(Node node, EmbeddedObject object) {
+		node.addObject(object);
+		addEmbeddedObjectView(node, object);
+	}
+
+	/**
+	 * @param node
+	 * @param object
+	 */
+	private void addEmbeddedObjectView(final Node node,
+			final EmbeddedObject object) {
+		final NodeView nodeView = _nodeViews.get(node);
+		final EmbeddedObjectView videoView = nodeView.createEmbeddedObject(
+				object.getType(), object.getData());
+
+		// who said Java doesn't have closures?
+		videoView.setListener(new EmbeddedObjectView.Listener() {
+
+			@Override
+			public void onEmbeddedObjectViewRemove() {
+				node.removeObject(object);
+				nodeView.removeEmbeddedObject(videoView);
+			}
+		});
 	}
 
 	public void add() {
@@ -719,6 +753,9 @@ public class MindMapEditor {
 	}
 
 	public void insertYouTubeVideo(String id) {
-		_nodeViews.get(_selection.getCurrentNode()).setVideo(id);
+		final EmbeddedObject video = new EmbeddedObject("youtube", id);
+		addEmbeddedObject(_selection.getCurrentNode(), video);
+
 	}
+
 }

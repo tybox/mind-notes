@@ -3,6 +3,7 @@ package mindnotes.client;
 import java.util.Iterator;
 
 import mindnotes.client.storage.JSONMindMapBuilder;
+import mindnotes.shared.model.EmbeddedObject;
 import mindnotes.shared.model.MindMap;
 import mindnotes.shared.model.Node;
 import mindnotes.shared.model.NodeLocation;
@@ -38,7 +39,7 @@ public class PersistenceTest extends GWTTestCase {
 		Node n2 = node(n1, "n2", false, NodeLocation.RIGHT);
 		node(n1, "n3", false, NodeLocation.RIGHT);
 		node(n2, "n3", false, NodeLocation.RIGHT);
-
+		n2.addObject(new EmbeddedObject("yt", "dfcsdf"));
 		node(m.getRootNode(), "sadas", true, NodeLocation.LEFT);
 		node(m.getRootNode(), null, true, NodeLocation.LEFT);
 		node(m.getRootNode(), "dsdsd", true, null);
@@ -71,6 +72,13 @@ public class PersistenceTest extends GWTTestCase {
 		Iterator<Node> i2 = n2.getChildren().iterator();
 		while (i1.hasNext()) {
 			compareNode(i1.next(), i2.next());
+		}
+
+		assertEquals(n1.getObjects().size(), n2.getObjects().size());
+		Iterator<EmbeddedObject> ie1 = n1.getObjects().iterator();
+		Iterator<EmbeddedObject> ie2 = n2.getObjects().iterator();
+		while (ie1.hasNext()) {
+			assertEquals(ie1.next(), ie2.next());
 		}
 	}
 
