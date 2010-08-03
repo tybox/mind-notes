@@ -37,6 +37,8 @@ public interface MindMapView {
 		public void copyGesture();
 
 		public void editorExitGesture();
+
+		public void ytVideoInsertGesture(String id);
 	}
 
 	public void setListener(Listener l);

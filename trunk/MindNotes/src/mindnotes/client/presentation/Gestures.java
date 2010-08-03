@@ -251,4 +251,9 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.exitTextMode();
 	}
 
+	@Override
+	public void ytVideoInsertGesture(String id) {
+		_mindMapEditor.insertYouTubeVideo(id);
+	}
+
 }

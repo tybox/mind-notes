@@ -147,6 +147,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 			public void onEditorExitGesture() {
 				_listener.editorExitGesture();
 			}
+
+			@Override
+			public void onYTVideoInserted(String id) {
+				_listener.ytVideoInsertGesture(id);
+			}
 		});
 		_rootNode.setTextEditor(textEditor);
 

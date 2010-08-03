@@ -44,4 +44,6 @@ public interface NodeView {
 
 	public void delete();
 
+	public void setVideo(String id);
+
 }

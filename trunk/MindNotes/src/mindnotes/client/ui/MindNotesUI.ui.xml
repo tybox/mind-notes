@@ -94,6 +94,29 @@
 						<p><a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">View source</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
+						<h2>Iteration 5</h2>
+						<p>
+							<strong>Additional content</strong>
+						</p>
+						<ul>
+							<li>Pasting a YouTube link causes a video to appear.</li>
+						</ul>
+						<p>
+							<strong>Cubic curve arrows &amp; new L&amp;F</strong>
+						</p>
+						<ul>
+							<li>Arrows are now rendered using cubic splines</li>
+							<li>The maps have a different look and feel.</li>
+						</ul>
+						<p>
+							<strong>L&amp;F advances</strong>
+						</p>
+						<ul>
+							<li>Action buttons now look different</li>
+							<li>There are more keyboard shortcuts.</li>
+							<li>Nodes feel more responsive (style changes on hover)</li>
+							<li>The node layout &amp; rendering is now much faster.</li>
+						</ul>
 						<h2>Iteration 4</h2>
 						<p>
 							<strong>Local Storage</strong>
