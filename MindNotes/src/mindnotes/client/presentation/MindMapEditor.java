@@ -717,4 +717,8 @@ public class MindMapEditor {
 			}
 		}
 	}
+
+	public void insertYouTubeVideo(String id) {
+		_nodeViews.get(_selection.getCurrentNode()).setVideo(id);
+	}
 }

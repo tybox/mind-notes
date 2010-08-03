@@ -20,8 +20,8 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.SimplePanel;
 
 public class NodeWidget extends Composite implements NodeView,
 		LayoutTreeElement {
@@ -72,6 +72,8 @@ public class NodeWidget extends Composite implements NodeView,
 	// node state
 	private SelectionState _state;
 	private Box _elementBounds;
+
+	private YouTubePlayer _videoPlayer;
 
 	public NodeWidget() {
 
@@ -126,8 +128,12 @@ public class NodeWidget extends Composite implements NodeView,
 
 		_children = new ArrayList<NodeWidget>();
 
-		SimplePanel panel = new SimplePanel();
+		_videoPlayer = new YouTubePlayer();
+		_videoPlayer.setVisible(false);
+
+		FlowPanel panel = new FlowPanel();
 		panel.add(_content);
+		panel.add(_videoPlayer);
 		initWidget(panel);
 
 		setStyleName(_resources.style().node());
@@ -428,6 +434,12 @@ public class NodeWidget extends Composite implements NodeView,
 
 	public NodeContextMenu getContextMenu() {
 		return _contextMenu;
+	}
+
+	@Override
+	public void setVideo(String id) {
+		_videoPlayer.setVisible(true);
+		_videoPlayer.showPlayer(id);
 	}
 
 }
