@@ -1,5 +1,7 @@
 package mindnotes.client.ui.text;
 
+import mindnotes.client.ui.LayoutTreeElement;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
@@ -9,6 +11,7 @@ public class TinyEditor {
 	private Element _div = null;
 	private Listener _listener;
 	private JavaScriptObject _nativeConfig;
+	private LayoutTreeElement _layoutHost;
 
 	public interface Listener {
 		public void onEditorExitGesture();
@@ -35,12 +38,12 @@ public class TinyEditor {
 			theme_advanced_buttons3: "",
 			paste_preprocess : function(pl, o) {
 
-			    var matches = /http:\/\/(?:www\.)?youtube\.\w\w\w?\/watch\?v=([a-zA-Z0-9\-]*)/.exec(o.content);
+			    var matches = /http:\/\/(?:www\.)?youtube\.\w\w\w?\/watch\?v=([a-zA-Z0-9_\-]*)/.exec(o.content);
 			    if (matches != null) {
 
 			    	// look for the backref match
 			    	var id = matches[1];
-					o.content =""; // paste nothing
+					//o.content =""; // paste nothing
 					te.@mindnotes.client.ui.text.TinyEditor::onYTVideoInserted(Ljava/lang/String;)(id);
 			    }
 
@@ -48,11 +51,31 @@ public class TinyEditor {
 
 			setup: function(ed) {
 				te.@mindnotes.client.ui.text.TinyEditor::onSetup(Lcom/google/gwt/core/client/JavaScriptObject;)(ed);
+
 			}
 
 		};
 	}-*/;
 	/* @formatter:on */
+
+	// @formatter:off
+	public native void onSetup(JavaScriptObject ed) /*-{
+		var tinyEditor = this;
+		ed.onInit.add(function(e){
+			tinyEditor.@mindnotes.client.ui.text.TinyEditor::onInitialized()();
+		})
+		ed.onKeyDown.add(function(e, evt) {
+			if (evt.keyCode == 27) { //escape
+				tinyEditor.@mindnotes.client.ui.text.TinyEditor::exitEditor()();
+			}
+		});
+	}-*/;
+	// @formatter:on
+
+	private void onInitialized() {
+		if (getLayoutHost() != null)
+			getLayoutHost().setLayoutValid(false);
+	}
 
 	public void attach(Element div) {
 		if (_div != null) {
@@ -108,17 +131,6 @@ public class TinyEditor {
 		}
 	}
 
-	// @formatter:off
-	public native void onSetup(JavaScriptObject ed) /*-{
-		var tinyEditor = this;
-		ed.onKeyDown.add(function(ed, evt) {
-			if (evt.keyCode == 27) { //escape
-				tinyEditor.@mindnotes.client.ui.text.TinyEditor::exitEditor()();
-			}
-		});
-	}-*/;
-	// @formatter:on
-
 	public void setListener(Listener listener) {
 		_listener = listener;
 	}
@@ -127,6 +139,14 @@ public class TinyEditor {
 		if (_listener != null) {
 			_listener.onYTVideoInserted(id);
 		}
+	}
+
+	public void setLayoutHost(LayoutTreeElement layoutHost) {
+		_layoutHost = layoutHost;
+	}
+
+	public LayoutTreeElement getLayoutHost() {
+		return _layoutHost;
 	}
 
 }

@@ -44,6 +44,8 @@ public interface NodeView {
 
 	public void delete();
 
-	public void setVideo(String id);
+	public EmbeddedObjectView createEmbeddedObject(String type, String data);
+
+	public void removeEmbeddedObject(EmbeddedObjectView view);
 
 }

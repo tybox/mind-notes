@@ -67,7 +67,7 @@
 				<g:HTMLPanel addStyleNames="{style.header}">
 					<span class="{style.header-h1}">
 						Mind Notes
-						<span style="font-size: 21px">(28.07.2010)</span>
+						<span style="font-size: 21px">(02.08.2010)</span>
 					</span>
 					<g:InlineLabel ui:field="titleLabel" addStyleNames="{style.title}" />
 				</g:HTMLPanel>

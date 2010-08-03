@@ -19,6 +19,8 @@ public interface MindMapBuilder {
 
 		public void copyTo(NodeBuilder nb);
 
+		void addObject(EmbeddedObject object);
+
 	}
 
 	public void setTitle(String title);
