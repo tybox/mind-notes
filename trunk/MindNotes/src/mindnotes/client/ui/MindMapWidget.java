@@ -5,7 +5,13 @@ import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.ui.text.TinyEditor;
+import mindnotes.shared.model.NodeLocation;
 
+import com.allen_sauer.gwt.dnd.client.DragEndEvent;
+import com.allen_sauer.gwt.dnd.client.DragHandler;
+import com.allen_sauer.gwt.dnd.client.DragStartEvent;
+import com.allen_sauer.gwt.dnd.client.PickupDragController;
+import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -32,7 +38,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private MindMapSelectionDialog _mindMapSelectionDialog;
 	private AbsolutePanel _viewportPanel;
 	private ScrollPanel _scrollPanel;
-	private ArrowsWidget _arrowsWidget;
+	private CanvasRenderWidget _arrowsWidget;
 	private MindNotesUI _window;
 
 	private boolean _layoutValid;
@@ -40,6 +46,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private MessageBar _messageBar;
 
 	private boolean _holdLayoutUpdates;
+
+	private PickupDragController _dragController;
+
+	private MindMapDropController _dropController;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -108,7 +118,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 			}
 		});
 
-		_arrowsWidget = new ArrowsWidget(this);
+		_arrowsWidget = new CanvasRenderWidget(this);
 		_arrowsWidget.setPixelSize(1000, 1000);
 
 		_rootNode = new NodeWidget();
@@ -157,7 +167,52 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		_viewportPanel = new AbsolutePanel();
 		_viewportPanel.add(_arrowsWidget, 0, 0);
-		_viewportPanel.add(_rootNode, 500, 500);
+		_dragController = new PickupDragController(_viewportPanel, false);
+		_dragController.setBehaviorDragProxy(false);
+		_dragController.setBehaviorDragStartSensitivity(4);
+
+		_dropController = new MindMapDropController(this);
+		_dragController.registerDropController(_dropController);
+		addNode(_rootNode);
+
+		_dragController.addDragHandler(new DragHandler() {
+
+			private NodeWidget _dragged;
+			private int _index;
+			private NodeWidget _parentNodeWidget;
+
+			@Override
+			public void onPreviewDragStart(DragStartEvent event)
+					throws VetoDragException {
+
+			}
+
+			@Override
+			public void onPreviewDragEnd(DragEndEvent event)
+					throws VetoDragException {
+
+			}
+
+			@Override
+			public void onDragStart(DragStartEvent event) {
+				hideActions();
+				_dragged = (NodeWidget) event.getContext().draggable;
+				_parentNodeWidget = _dragged.getParentNodeWidget();
+				_index = _parentNodeWidget.indexOfChild(_dragged);
+				_dragged.getParentNodeWidget().removeChild(_dragged);
+				_viewportPanel.add(_dragged, 0, 0);
+			}
+
+			@Override
+			public void onDragEnd(DragEndEvent event) {
+				if (event.getContext().finalDropController == null) {
+					_viewportPanel.remove(_dragged);
+					_parentNodeWidget.addChildAtIndex(_dragged, _index);
+					showActions();
+				}
+
+			}
+		});
 
 		_scrollPanel = new ScrollPanel(_viewportPanel);
 		// _scrollPanel.setPixelSize(600, 500);
@@ -212,6 +267,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_actionButtons.showNextTo((NodeWidget) view, options);
 	}
 
+	public void showActions() {
+		_actionButtons.show();
+	}
+
 	@Override
 	public void setListener(Listener l) {
 		_listener = l;
@@ -251,7 +310,14 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public void addNode(NodeWidget node) {
+
 		_viewportPanel.add(node, 0, 0);
+		for (NodeWidget child : node.getNodeChildren()) {
+			addNode(child);
+		}
+		if (node.getLocation() != NodeLocation.ROOT) {
+			_dragController.makeDraggable(node, node.getContentWidget());
+		}
 	}
 
 	public void updateLayout() {
@@ -420,4 +486,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 		}
 	}
 
+	public GhostNode getGhostNode() {
+		return _dropController.getGhostNode();
+	}
 }

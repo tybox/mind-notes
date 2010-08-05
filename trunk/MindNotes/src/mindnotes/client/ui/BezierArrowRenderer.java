@@ -14,17 +14,7 @@ public class BezierArrowRenderer implements ArrowRenderer {
 
 	}
 
-	@Override
-	public void renderArrow(int ox, int oy, Arrow arrow) {
-		// ignore arrows to/from hidden nodes
-		if (!(arrow.from.isVisible() && arrow.to.isVisible()))
-			return;
-
-		// get all coords we need
-		Box f = arrow.from.getElementBounds();
-		Box t = arrow.to.getElementBounds();
-		int tox = arrow.to.getOffsetX() + ox;
-		int toy = arrow.to.getOffsetY() + oy;
+	public void renderArrow(int fox, int foy, int tox, int toy, Box f, Box t) {
 
 		// decide what kind of line do we have to draw
 
@@ -35,16 +25,16 @@ public class BezierArrowRenderer implements ArrowRenderer {
 		// overlap themselves on the x axis.
 
 		int x1, y1, x2, y2;
-		if (ox + f.x + f.w < tox + t.x) { // from___to
-			x1 = f.x + f.w + ox;
+		if (fox + f.x + f.w < tox + t.x) { // from___to
+			x1 = f.x + f.w + fox;
 			x2 = t.x + tox;
-			y1 = f.y + f.h + oy;
+			y1 = f.y + f.h + foy;
 			y2 = t.y + t.h + toy;
 		} else { // to___from
 			x1 = t.x + t.w + tox;
-			x2 = f.x + ox;
+			x2 = f.x + fox;
 			y1 = t.y + t.h + toy;
-			y2 = f.y + f.h + oy;
+			y2 = f.y + f.h + foy;
 		}
 
 		_canvas.setStrokeStyle("#111");
@@ -52,6 +42,22 @@ public class BezierArrowRenderer implements ArrowRenderer {
 		_canvas.moveTo(x1, y1);
 		_canvas.cubicCurveTo(x1 + CURVENESS, y1, x2 - CURVENESS, y2, x2, y2);
 		_canvas.stroke();
+	}
+
+	@Override
+	public void renderArrow(int ox, int oy, Arrow arrow) {
+		// ignore arrows to/from hidden nodes
+		if (!(arrow.from.isVisible() && arrow.to.isVisible()))
+			return;
+
+		// get all coords we need
+		Box f = arrow.from.getElementBounds();
+		Box t = arrow.to.getElementBounds();
+
+		int tox = arrow.to.getOffsetX() + ox;
+		int toy = arrow.to.getOffsetY() + oy;
+
+		renderArrow(ox, oy, tox, toy, f, t);
 	}
 
 }

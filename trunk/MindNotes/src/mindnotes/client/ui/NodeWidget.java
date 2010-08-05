@@ -62,7 +62,10 @@ public class NodeWidget extends Composite implements NodeView,
 	private HTML _content;
 
 	// node tree relatives
+	private TemporaryInsertList<LayoutTreeElement> _layoutChildren;
+
 	private List<NodeWidget> _children;
+
 	private NodeWidget _parent;
 
 	// layout data
@@ -130,6 +133,7 @@ public class NodeWidget extends Composite implements NodeView,
 		_content.addMouseDownHandler(mouseDownHandler);
 
 		_children = new ArrayList<NodeWidget>();
+		_layoutChildren = new TemporaryInsertList<LayoutTreeElement>(_children);
 
 		_objectContainer = new FlowPanel();
 		_objectContainer.add(_content);
@@ -172,8 +176,7 @@ public class NodeWidget extends Composite implements NodeView,
 		return createChildAtIndex(index >= 0 ? index + 1 : _children.size());
 	}
 
-	private NodeWidget createChildAtIndex(int index) {
-		NodeWidget child = new NodeWidget();
+	protected void addChildAtIndex(NodeWidget child, int index) {
 		child.setLayoutParent(this);
 		child.setContainer(_container);
 		child.setTextEditor(_textEditor);
@@ -184,6 +187,11 @@ public class NodeWidget extends Composite implements NodeView,
 		if (_container != null)
 			_container.addNode(child);
 		setLayoutValid(false);
+	}
+
+	private NodeWidget createChildAtIndex(int index) {
+		NodeWidget child = new NodeWidget();
+		addChildAtIndex(child, index);
 		return child;
 	}
 
@@ -324,7 +332,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public List<? extends LayoutTreeElement> getLayoutChildren() {
-		return _children;
+		return _layoutChildren;
 	}
 
 	public List<NodeWidget> getNodeChildren() {
@@ -451,4 +459,21 @@ public class NodeWidget extends Composite implements NodeView,
 		setLayoutValid(false);
 	}
 
+	public Widget getContentWidget() {
+		return _content;
+	}
+
+	public int indexOfChild(NodeWidget widget) {
+		return _children.indexOf(widget);
+	}
+
+	public void addTemporaryLayoutChild(int index, LayoutTreeElement child) {
+		_layoutChildren.setTemporaryInsert(index, child);
+		setLayoutValid(false);
+	}
+
+	public void removeTemporaryLayoutChild() {
+		_layoutChildren.clearInsert();
+		setLayoutValid(false);
+	}
 }
