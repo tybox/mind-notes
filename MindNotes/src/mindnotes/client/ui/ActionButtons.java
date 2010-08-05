@@ -207,4 +207,8 @@ public class ActionButtons {
 				+ 5);
 
 	}
+
+	public void show() {
+		updateButtonLayout();
+	}
 }

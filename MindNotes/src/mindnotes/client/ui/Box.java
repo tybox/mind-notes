@@ -14,6 +14,13 @@ public class Box {
 		this.h = h;
 	}
 
+	public Box(Box b) {
+		this.x = b.x;
+		this.y = b.y;
+		this.w = b.w;
+		this.h = b.h;
+	}
+
 	@Override
 	public String toString() {
 		return "[" + x + " " + y + " " + " " + w + " " + h + "]";
