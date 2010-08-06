@@ -19,6 +19,8 @@ public class TemporaryInsertList<T> implements List<T> {
 	public void setTemporaryInsert(int index, T element) {
 		_insert = element;
 		_insertIndex = index;
+		if (_insertIndex > _originalList.size())
+			_insertIndex = _originalList.size();
 	}
 
 	public void clearInsert() {
@@ -106,7 +108,7 @@ public class TemporaryInsertList<T> implements List<T> {
 
 			@Override
 			public boolean hasNext() {
-				return _originalIterator.hasNext() || (_i == _insertIndex - 1);
+				return _originalIterator.hasNext() || (_i == _insertIndex);
 			}
 
 			@Override
@@ -203,6 +205,7 @@ public class TemporaryInsertList<T> implements List<T> {
 		return _originalList.toArray();
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
 	public <T> T[] toArray(T[] a) {
 		clearInsert();

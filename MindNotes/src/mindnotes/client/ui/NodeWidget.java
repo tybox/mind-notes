@@ -183,6 +183,9 @@ public class NodeWidget extends Composite implements NodeView,
 		child.setContextMenu(_contextMenu);
 
 		_arrows.add(new Arrow(this, child));
+
+		if (index > _children.size())
+			index = _children.size();
 		_children.add(index, child);
 		if (_container != null)
 			_container.addNode(child);
@@ -233,6 +236,7 @@ public class NodeWidget extends Composite implements NodeView,
 	@Override
 	public void setLocation(NodeLocation location) {
 		_nodeLocation = location;
+
 		setLayoutValid(false);
 	}
 
@@ -475,5 +479,37 @@ public class NodeWidget extends Composite implements NodeView,
 	public void removeTemporaryLayoutChild() {
 		_layoutChildren.clearInsert();
 		setLayoutValid(false);
+	}
+
+	public void onBranchDragged(int index, NodeLocation location) {
+		if (_listener != null) {
+			_listener.onBranchDragged(index, location);
+		}
+	}
+
+	public void onBranchDropped() {
+		if (_listener != null) {
+			_listener.onBranchDropped();
+		}
+	}
+
+	@Override
+	public void moveChild(NodeView childView, NodeView newParentView,
+			int index, NodeLocation location) {
+		NodeWidget newParentWidget = (NodeWidget) newParentView;
+
+		NodeWidget childWidget = (NodeWidget) childView;
+		removeChild(childWidget);
+		childWidget.setLocation(location, true);
+		newParentWidget.addChildAtIndex(childWidget, index);
+
+	}
+
+	private void setLocation(NodeLocation location, boolean propagate) {
+		setLocation(location);
+		if (propagate)
+			for (NodeWidget child : _children) {
+				child.setLocation(location, true);
+			}
 	}
 }

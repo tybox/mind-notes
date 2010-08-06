@@ -3,6 +3,7 @@ package mindnotes.client.presentation;
 import mindnotes.client.presentation.KeyboardShortcuts.KeyBinding;
 import mindnotes.client.ui.NodeWidget;
 import mindnotes.shared.model.Node;
+import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.Command;
@@ -158,6 +159,17 @@ public class Gestures implements MindMapView.Listener {
 		@Override
 		public void nodeMouseDownGesture(NodeWidget nodeWidget) {
 			_editor.setCurrentNode(_node);
+		}
+
+		@Override
+		public void onBranchDragged(int index, NodeLocation location) {
+			_editor.setDragDropChild(_node, index, location);
+		}
+
+		@Override
+		public void onBranchDropped() {
+			_editor.setDragDropParent(_node);
+			_editor.doDragDropAction();
 		}
 
 	}

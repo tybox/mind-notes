@@ -92,6 +92,15 @@ public class Node implements Serializable, NodeBuilder {
 		return _childNodes;
 	}
 
+	public void setNodeLocation(NodeLocation nodeLocation, boolean propagate) {
+		_nodeLocation = nodeLocation;
+		if (propagate)
+			for (Node child : getChildren()) {
+				child.setNodeLocation(nodeLocation, propagate);
+			}
+	}
+
+	@Override
 	public void setNodeLocation(NodeLocation nodeLocation) {
 		_nodeLocation = nodeLocation;
 	}
@@ -127,4 +136,5 @@ public class Node implements Serializable, NodeBuilder {
 			nb.addObject((EmbeddedObject) eo.makeClone());
 		}
 	}
+
 }
