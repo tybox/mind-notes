@@ -23,6 +23,69 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class MindMapEditor {
 
+	public class DragDropAction implements Action {
+
+		private Node _parent;
+
+		private Node _child;
+		private int _index;
+		private NodeLocation _location;
+
+		private Node _oldParent;
+		private int _oldIndex;
+		private NodeLocation _oldLocation;
+
+		public DragDropAction(Node node, int index, NodeLocation location) {
+			_child = node;
+			_index = index;
+			_location = location;
+
+		}
+
+		public void setParent(Node parent) {
+			_parent = parent;
+		}
+
+		@Override
+		public void doAction() {
+			_oldParent = _child.getParent();
+			_oldIndex = _oldParent.getChildren().indexOf(_child);
+			_oldLocation = _child.getNodeLocation();
+
+			_oldParent.removeChildNode(_child);
+
+			_child.setNodeLocation(_location, true);
+
+			_parent.addChildNode(_child);
+
+			_mindMapView.holdLayout();
+			NodeView childView = _nodeViews.get(_child);
+			_nodeViews.get(_oldParent).moveChild(childView,
+					_nodeViews.get(_parent), _index, _location);
+
+			_mindMapView.resumeLayout();
+		}
+
+		@Override
+		public void undoAction() {
+
+			_parent.removeChildNode(_child);
+
+			_child.setNodeLocation(_oldLocation);
+
+			_oldParent.addChildNode(_child);
+
+			_mindMapView.holdLayout();
+
+			NodeView childView = _nodeViews.get(_child);
+			_nodeViews.get(_parent).moveChild(childView,
+					_nodeViews.get(_oldParent), _oldIndex, _oldLocation);
+			_mindMapView.resumeLayout();
+
+		}
+
+	}
+
 	private class AddAction implements Action {
 
 		private Node _createdNode;
@@ -189,6 +252,7 @@ public class MindMapEditor {
 	private Storage _localStorage;
 
 	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
+	private DragDropAction _dragDropAction;
 
 	public MindMapEditor(MindMapView mindMapView) {
 		_nodeViews = new HashMap<Node, NodeView>();
@@ -758,4 +822,16 @@ public class MindMapEditor {
 
 	}
 
+	public void setDragDropChild(Node node, int index, NodeLocation location) {
+		_dragDropAction = new DragDropAction(node, index, location);
+	}
+
+	public void setDragDropParent(Node node) {
+		_dragDropAction.setParent(node);
+	}
+
+	public void doDragDropAction() {
+		doUndoableAction(_dragDropAction);
+		_dragDropAction = null;
+	}
 }

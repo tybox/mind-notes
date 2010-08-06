@@ -101,4 +101,13 @@ public class GhostNode implements LayoutTreeElement {
 		return _children;
 	}
 
+	public void setNodeLocation(NodeLocation location) {
+		boolean change = !(location.equals(_location));
+		_location = location;
+		if (change) {
+			setLayoutValid(false);
+		}
+
+	}
+
 }

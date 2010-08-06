@@ -1,6 +1,6 @@
 package mindnotes.client.ui;
 
-import mindnotes.shared.model.NodeLocation;
+import mindnotes.client.ui.NodeLayout.LayoutPosition;
 
 import com.allen_sauer.gwt.dnd.client.DragContext;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
@@ -8,24 +8,11 @@ import com.allen_sauer.gwt.dnd.client.drop.AbstractDropController;
 
 public class MindMapDropController extends AbstractDropController {
 
-	DropPosition _position = null;
+	LayoutPosition _position = null;
 
 	private GhostNode _ghostNode;
 
 	private final MindMapWidget _mindMapWidget;
-
-	private class DropPosition {
-		NodeWidget parent;
-		int index;
-		NodeLocation location;
-
-		@Override
-		public boolean equals(Object obj) {
-			return (obj != null) && (((DropPosition) obj).index == index)
-					&& (((DropPosition) obj).parent == parent)
-					&& (((DropPosition) obj).location == location);
-		}
-	}
 
 	public MindMapDropController(MindMapWidget mindMapWidget) {
 		super(mindMapWidget.getViewportPanel());
@@ -35,6 +22,7 @@ public class MindMapDropController extends AbstractDropController {
 
 	@Override
 	public void onEnter(DragContext context) {
+
 		super.onEnter(context);
 		_ghostNode = new GhostNode((LayoutTreeElement) context.draggable);
 		_position = null;
@@ -42,9 +30,10 @@ public class MindMapDropController extends AbstractDropController {
 
 	@Override
 	public void onLeave(DragContext context) {
+
 		super.onLeave(context);
 		_ghostNode = null;
-		_position.parent.removeTemporaryLayoutChild();
+		((NodeWidget) _position.parent).removeTemporaryLayoutChild();
 
 	}
 
@@ -52,27 +41,44 @@ public class MindMapDropController extends AbstractDropController {
 	public void onMove(DragContext context) {
 		super.onMove(context);
 
-		DropPosition position = findBestDropPosition(context);
-		if (_position == null || !_position.equals(position)) {
+		LayoutPosition position = findBestDropPosition(context);
 
+		if (_position == null || !_position.equals(position)) {
+			System.out.println("New pos: " + position.index + ", "
+					+ position.location + ", " + position.parent);
 			// remove ghost from previous node
 			if (_position != null) {
-				_position.parent.removeTemporaryLayoutChild();
+				((NodeWidget) _position.parent).removeTemporaryLayoutChild();
 			}
 
 			_position = position;
 			_ghostNode.setParent(_position.parent);
-			_position.parent.addTemporaryLayoutChild(_position.index,
-					_ghostNode);
-
+			((NodeWidget) _position.parent).addTemporaryLayoutChild(
+					_position.index, _ghostNode);
+			_ghostNode.setNodeLocation(_position.location);
 		}
 	}
 
-	private DropPosition findBestDropPosition(DragContext context) {
-		DropPosition dropPosition = new DropPosition();
-		dropPosition.parent = _mindMapWidget.getRootNodeWidget();
-		dropPosition.index = 0;
-		return dropPosition;
+	private LayoutPosition findBestDropPosition(DragContext context) {
+
+		int panelLeft = _mindMapWidget.getViewportPanel().getAbsoluteLeft();
+		int panelTop = _mindMapWidget.getViewportPanel().getAbsoluteTop();
+
+		NodeWidget root = _mindMapWidget.getRootNodeWidget();
+
+		int px = -_mindMapWidget.getLayoutOffsetX() + root.getOffsetX()
+				+ context.mouseX - panelLeft;
+		int py = -_mindMapWidget.getLayoutOffsetY() + root.getOffsetY()
+				+ context.mouseY - panelTop;
+
+		LayoutPosition position = NodeLayout.findClosestInsertPosition(root,
+				px, py);
+		while (!(position.parent instanceof NodeWidget)
+				&& position.parent != null) {
+			position.parent = position.parent.getLayoutParent();
+		}
+		return position;
+
 	}
 
 	public GhostNode getGhostNode() {
@@ -81,6 +87,17 @@ public class MindMapDropController extends AbstractDropController {
 
 	@Override
 	public void onPreviewDrop(DragContext context) throws VetoDragException {
-		throw new VetoDragException();
+		// throw new VetoDragException();
+	}
+
+	@Override
+	public void onDrop(DragContext context) {
+		super.onDrop(context);
+		if (_position.parent instanceof NodeWidget) {
+			// XXX this is hacky
+			((NodeWidget) context.draggable).onBranchDragged(_position.index,
+					_position.location);
+			((NodeWidget) _position.parent).onBranchDropped();
+		}
 	}
 }

@@ -16,6 +16,57 @@ import mindnotes.shared.model.NodeLocation;
  */
 public class NodeLayout {
 
+	public static class LayoutPosition {
+		public LayoutTreeElement parent;
+		public int index;
+		public NodeLocation location;
+
+		public LayoutPosition() {
+
+		}
+
+		public LayoutPosition(LayoutTreeElement parent, int index,
+				NodeLocation location) {
+			this.parent = parent;
+			this.index = index;
+			this.location = location;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + index;
+			result = prime * result
+					+ ((location == null) ? 0 : location.hashCode());
+			result = prime * result
+					+ ((parent == null) ? 0 : parent.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			LayoutPosition other = (LayoutPosition) obj;
+			if (index != other.index)
+				return false;
+			if (location != other.location)
+				return false;
+			if (parent == null) {
+				if (other.parent != null)
+					return false;
+			} else if (!parent.equals(other.parent))
+				return false;
+			return true;
+		}
+
+	}
+
 	/**
 	 * Some margins for the layout; TODO make this configurable someday
 	 */
@@ -37,7 +88,7 @@ public class NodeLayout {
 	 * 
 	 * @param element
 	 */
-	public void doLayout(LayoutTreeElement element) {
+	public static void doLayout(LayoutTreeElement element) {
 		if (element.isLayoutValid()) {
 			return; // nothing changed, nothing to do;
 		}
@@ -113,4 +164,47 @@ public class NodeLayout {
 		element.setLayoutValid(true);
 
 	}
+
+	public static LayoutPosition findClosestInsertPosition(
+			LayoutTreeElement root, int px, int py) {
+		// inside this element?
+		Box b = root.getElementBounds();
+		// b.x-H_M |b.x______px____b.x+b.w| b.x+b.w+H_M
+		boolean insideRoot = b.x - HORIZONTAL_MARGIN / 2 < px
+				&& px <= b.x + b.w + HORIZONTAL_MARGIN / 2;
+		// if not, it's one of the children - which side?
+		NodeLocation direction;
+
+		if (root.getLocation() == NodeLocation.ROOT) {
+
+			if (px > b.x + b.w / 2) { // |__root__| ---> px
+				direction = NodeLocation.RIGHT;
+			} else { // px <---- |__root__|
+				direction = NodeLocation.LEFT;
+			}
+		} else {
+			direction = root.getLocation();
+		}
+
+		int i = 0;
+		for (LayoutTreeElement child : root.getLayoutChildren()) {
+			Box c = child.getBranchBounds();
+			if (c.y - VERTICAL_MARGIN / 2 < py
+					&& py <= c.y + c.h + VERTICAL_MARGIN / 2) {
+				// hit
+				if (insideRoot) {
+					return new LayoutPosition(root, i, direction);
+				} else if (child.getLocation() == direction) {
+					return findClosestInsertPosition(child,
+							px + child.getOffsetX(), py + child.getOffsetY());
+				}
+			}
+			i++;
+		}
+
+		// no children fit - then assume root as the best
+		return new LayoutPosition(root, i, direction);
+
+	}
+
 }

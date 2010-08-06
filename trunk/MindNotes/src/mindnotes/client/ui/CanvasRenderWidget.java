@@ -115,7 +115,7 @@ public class CanvasRenderWidget extends Composite {
 	}
 
 	private void renderGhostNode(GhostNode root, int nox, int noy) {
-		_canvas.setStrokeStyle("#111");
+		_canvas.setStrokeStyle("#1b56b5");
 		Box b = root.getElementBounds();
 		_canvas.beginPath();
 		_canvas.moveTo(nox + b.x, noy + b.y + b.h);

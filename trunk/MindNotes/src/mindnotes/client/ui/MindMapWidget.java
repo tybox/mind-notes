@@ -5,7 +5,6 @@ import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.ui.text.TinyEditor;
-import mindnotes.shared.model.NodeLocation;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -32,7 +31,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private ActionButtons _actionButtons;
 
 	private Listener _listener;
-	private NodeLayout _layout;
 	private NodeWidget _rootNode;
 
 	private MindMapSelectionDialog _mindMapSelectionDialog;
@@ -50,6 +48,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private PickupDragController _dragController;
 
 	private MindMapDropController _dropController;
+
+	private int _ox;
+
+	private int _oy;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -82,7 +84,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 			}
 		});
 
-		_layout = new NodeLayout();
 		_actionButtons = new ActionButtons();
 
 		_actionButtons.setListener(new ActionButtons.Listener() {
@@ -315,7 +316,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 		for (NodeWidget child : node.getNodeChildren()) {
 			addNode(child);
 		}
-		if (node.getLocation() != NodeLocation.ROOT) {
+		if (node.getParentNodeWidget() != null) {
 			_dragController.makeDraggable(node, node.getContentWidget());
 		}
 	}
@@ -323,7 +324,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public void updateLayout() {
 		if (_layoutValid)
 			return;
-		_layout.doLayout(_rootNode);
+		NodeLayout.doLayout(_rootNode);
 		// use top level node's suggested width and height as a suggested size
 		// for the whole tree.
 		Box bounds = _rootNode.getBranchBounds();
@@ -338,16 +339,23 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_viewportPanel.setPixelSize(viewportWidth, viewportHeight);
 		_arrowsWidget.setCanvasSize(viewportWidth, viewportHeight);
 
-		// reset widget positions
-		int ox = -bounds.x + (viewportWidth - bounds.w) / 2;
-		int oy = -bounds.y + (viewportHeight - bounds.h) / 2;
-		setBranchPositions(_rootNode, ox, oy);
+		_ox = -bounds.x + (viewportWidth - bounds.w) / 2;
+		_oy = -bounds.y + (viewportHeight - bounds.h) / 2;
+		setBranchPositions(_rootNode, _ox, _oy);
 
-		_arrowsWidget.render(ox, oy);
+		_arrowsWidget.render(_ox, _oy);
 
 		_actionButtons.updateButtonLayout();
 		_layoutValid = true;
 
+	}
+
+	public int getLayoutOffsetX() {
+		return _ox;
+	}
+
+	public int getLayoutOffsetY() {
+		return _oy;
 	}
 
 	private void setBranchPositions(NodeWidget node, int x, int y) {
@@ -488,5 +496,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	public GhostNode getGhostNode() {
 		return _dropController.getGhostNode();
+
 	}
 }

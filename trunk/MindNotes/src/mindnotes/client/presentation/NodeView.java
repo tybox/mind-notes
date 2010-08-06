@@ -16,6 +16,10 @@ public interface NodeView {
 		public void nodeEditFinishedGesture(NodeWidget nodeWidget);
 
 		public void nodeMouseDownGesture(NodeWidget nodeWidget);
+
+		public void onBranchDropped();
+
+		public void onBranchDragged(int index, NodeLocation location);
 	}
 
 	public void setListener(Listener listener);
@@ -47,5 +51,8 @@ public interface NodeView {
 	public EmbeddedObjectView createEmbeddedObject(String type, String data);
 
 	public void removeEmbeddedObject(EmbeddedObjectView view);
+
+	public void moveChild(NodeView childView, NodeView nodeView, int index,
+			NodeLocation location);
 
 }

@@ -2,6 +2,7 @@ package mindnotes.client;
 
 import static junit.framework.Assert.assertEquals;
 import mindnotes.client.ui.NodeLayout;
+import mindnotes.client.ui.NodeLayout.LayoutPosition;
 import mindnotes.shared.model.NodeLocation;
 
 import org.junit.Test;
@@ -17,8 +18,7 @@ public class LayoutTest {
 				root, NodeLocation.LEFT);
 		root.addChild(child);
 
-		NodeLayout layout = new NodeLayout();
-		layout.doLayout(root);
+		NodeLayout.doLayout(root);
 
 		assertEquals(448, root.getBranchBounds().w);
 		assertEquals(100, root.getBranchBounds().h);
@@ -36,8 +36,7 @@ public class LayoutTest {
 				root, NodeLocation.RIGHT);
 		root.addChild(child);
 
-		NodeLayout layout = new NodeLayout();
-		layout.doLayout(root);
+		NodeLayout.doLayout(root);
 
 		assertEquals(448, root.getBranchBounds().w);
 		assertEquals(100, root.getBranchBounds().h);
@@ -58,8 +57,7 @@ public class LayoutTest {
 		root.addChild(child1);
 		child1.addChild(child2);
 
-		NodeLayout layout = new NodeLayout();
-		layout.doLayout(root);
+		NodeLayout.doLayout(root);
 
 		assertEquals(696, root.getBranchBounds().w);
 		assertEquals(100, root.getBranchBounds().h);
@@ -71,4 +69,24 @@ public class LayoutTest {
 
 	}
 
+	@Test
+	public void testFindClosestNode1() {
+		MockLayoutTreeElement root = new MockLayoutTreeElement(0, 0, 200, 100,
+				null, NodeLocation.ROOT);
+
+		MockLayoutTreeElement child = new MockLayoutTreeElement(0, 0, 200, 100,
+				root, NodeLocation.LEFT);
+		root.addChild(child);
+
+		NodeLayout.doLayout(root);
+		LayoutPosition position = NodeLayout.findClosestInsertPosition(root,
+				110, -100);
+
+		assertEquals(position.parent, root);
+		assertEquals(NodeLocation.RIGHT, position.location);
+
+		position = NodeLayout.findClosestInsertPosition(root, 30, -100);
+		assertEquals(position.parent, root);
+		assertEquals(NodeLocation.LEFT, position.location);
+	}
 }
