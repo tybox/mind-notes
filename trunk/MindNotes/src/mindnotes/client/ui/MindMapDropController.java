@@ -44,8 +44,7 @@ public class MindMapDropController extends AbstractDropController {
 		LayoutPosition position = findBestDropPosition(context);
 
 		if (_position == null || !_position.equals(position)) {
-			System.out.println("New pos: " + position.index + ", "
-					+ position.location + ", " + position.parent);
+
 			// remove ghost from previous node
 			if (_position != null) {
 				((NodeWidget) _position.parent).removeTemporaryLayoutChild();

@@ -53,6 +53,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	private int _oy;
 
+	private boolean _holdCentering;
+
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
 
@@ -197,6 +199,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 			@Override
 			public void onDragStart(DragStartEvent event) {
 				hideActions();
+				holdCentering();
 				_dragged = (NodeWidget) event.getContext().draggable;
 				_parentNodeWidget = _dragged.getParentNodeWidget();
 				_index = _parentNodeWidget.indexOfChild(_dragged);
@@ -209,8 +212,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 				if (event.getContext().finalDropController == null) {
 					_viewportPanel.remove(_dragged);
 					_parentNodeWidget.addChildAtIndex(_dragged, _index);
-					showActions();
+
 				}
+				showActions();
+				resumeCentering();
 
 			}
 		});
@@ -339,8 +344,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_viewportPanel.setPixelSize(viewportWidth, viewportHeight);
 		_arrowsWidget.setCanvasSize(viewportWidth, viewportHeight);
 
-		_ox = -bounds.x + (viewportWidth - bounds.w) / 2;
-		_oy = -bounds.y + (viewportHeight - bounds.h) / 2;
+		if (!_holdCentering) {
+			_ox = -bounds.x + (viewportWidth - bounds.w) / 2;
+			_oy = -bounds.y + (viewportHeight - bounds.h) / 2;
+		}
 		setBranchPositions(_rootNode, _ox, _oy);
 
 		_arrowsWidget.render(_ox, _oy);
@@ -348,6 +355,14 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_actionButtons.updateButtonLayout();
 		_layoutValid = true;
 
+	}
+
+	private void holdCentering() {
+		_holdCentering = true;
+	}
+
+	private void resumeCentering() {
+		_holdCentering = false;
 	}
 
 	public int getLayoutOffsetX() {

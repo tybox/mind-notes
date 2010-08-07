@@ -167,44 +167,71 @@ public class NodeLayout {
 
 	public static LayoutPosition findClosestInsertPosition(
 			LayoutTreeElement root, int px, int py) {
-		// inside this element?
+
 		Box b = root.getElementBounds();
-		// b.x-H_M |b.x______px____b.x+b.w| b.x+b.w+H_M
-		boolean insideRoot = b.x - HORIZONTAL_MARGIN / 2 < px
-				&& px <= b.x + b.w + HORIZONTAL_MARGIN / 2;
-		// if not, it's one of the children - which side?
-		NodeLocation direction;
 
-		if (root.getLocation() == NodeLocation.ROOT) {
+		boolean right = px >= (b.x + b.w / 2);
+		// mouse location
+		NodeLocation ml = right ? NodeLocation.RIGHT : NodeLocation.LEFT;
+		boolean up = py < (b.y + b.h / 2);
 
-			if (px > b.x + b.w / 2) { // |__root__| ---> px
-				direction = NodeLocation.RIGHT;
-			} else { // px <---- |__root__|
-				direction = NodeLocation.LEFT;
-			}
-		} else {
-			direction = root.getLocation();
-		}
+		boolean isRoot = root.getLocation() == NodeLocation.ROOT;
 
-		int i = 0;
-		for (LayoutTreeElement child : root.getLayoutChildren()) {
-			Box c = child.getBranchBounds();
-			if (c.y - VERTICAL_MARGIN / 2 < py
-					&& py <= c.y + c.h + VERTICAL_MARGIN / 2) {
-				// hit
-				if (insideRoot) {
-					return new LayoutPosition(root, i, direction);
-				} else if (child.getLocation() == direction) {
-					return findClosestInsertPosition(child,
-							px + child.getOffsetX(), py + child.getOffsetY());
+		if (root.getLayoutChildren().isEmpty()) {
+			if (isRoot) {
+
+				return new LayoutPosition(root, 0, ml);
+			} else {
+
+				if (ml == root.getLocation()) {
+					// we are deeper into the leaves - propose adding a child
+					return new LayoutPosition(root, 0, ml);
+				} else {
+					// we are facing the parent - propose adding a sibling
+					int index = root.getLayoutParent().getLayoutChildren()
+							.indexOf(root);
+					return new LayoutPosition(root.getLayoutParent(), index
+							+ (up ? 0 : 1), root.getLocation());
 				}
 			}
-			i++;
+		} else {
+			if (ml == root.getLocation() || isRoot) {
+
+				// we are facing the parent - ask child to decide
+				LayoutTreeElement lastChild = null;
+
+				for (LayoutTreeElement child : root.getLayoutChildren()) {
+					if (isRoot && ml != child.getLocation())
+						continue;
+					Box cb = child.getBranchBounds();
+
+					if (py - child.getOffsetY() < cb.y + cb.h) {
+						return findClosestInsertPosition(child,
+								px - child.getOffsetX(),
+								py - child.getOffsetY());
+					}
+					lastChild = child;
+				}
+
+				if (lastChild != null) {
+
+					return findClosestInsertPosition(lastChild,
+							px - lastChild.getOffsetX(),
+							py - lastChild.getOffsetY());
+				} else {
+
+					// we are on childless side of root node; suggest adding
+					return new LayoutPosition(root, 0, ml);
+				}
+
+			} else {
+
+				// we are facing the parent - propose adding a sibling
+				int index = root.getLayoutParent().getLayoutChildren()
+						.indexOf(root);
+				return new LayoutPosition(root.getLayoutParent(), index
+						+ (up ? 0 : 1), ml);
+			}
 		}
-
-		// no children fit - then assume root as the best
-		return new LayoutPosition(root, i, direction);
-
 	}
-
 }
