@@ -110,7 +110,8 @@ public class NodeLayout {
 				// desired location, because we don't know the height
 				// of all elements
 				child.setOffset(
-						elementBounds.x - HORIZONTAL_MARGIN - b.x - b.w, hLeft);
+						elementBounds.x - HORIZONTAL_MARGIN - b.x - b.w, hLeft
+								- child.getBranchBounds().y);
 				wLeft = Math.max(wLeft, b.w);
 				hLeft += b.h + VERTICAL_MARGIN;
 

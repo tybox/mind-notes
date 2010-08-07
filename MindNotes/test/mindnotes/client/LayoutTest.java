@@ -70,6 +70,33 @@ public class LayoutTest {
 	}
 
 	@Test
+	public void testLayout4() {
+		// TODO
+		MockLayoutTreeElement root = new MockLayoutTreeElement(0, 0, 200, 100,
+				null, null);
+
+		MockLayoutTreeElement child1 = new MockLayoutTreeElement(0, 0, 200,
+				100, root, NodeLocation.LEFT);
+		MockLayoutTreeElement child2 = new MockLayoutTreeElement(0, 0, 200,
+				100, child1, NodeLocation.LEFT);
+		MockLayoutTreeElement child3 = new MockLayoutTreeElement(0, 0, 200,
+				100, child1, NodeLocation.LEFT);
+		root.addChild(child1);
+		child1.addChild(child2);
+		child1.addChild(child3);
+
+		NodeLayout.doLayout(root);
+
+		assertEquals(696, root.getBranchBounds().w);
+		assertEquals(232, root.getBranchBounds().h);
+
+		assertEquals(0, child1.getOffsetY());
+		assertEquals(-66, child2.getOffsetY());
+		assertEquals(66, child3.getOffsetY());
+
+	}
+
+	@Test
 	public void testFindClosestNode1() {
 		MockLayoutTreeElement root = new MockLayoutTreeElement(0, 0, 200, 100,
 				null, NodeLocation.ROOT);
