@@ -45,6 +45,7 @@ public class MindMapDropController extends AbstractDropController {
 
 		if (_position == null || !_position.equals(position)) {
 
+			_mindMapWidget.holdLayout();
 			// remove ghost from previous node
 			if (_position != null) {
 				((NodeWidget) _position.parent).removeTemporaryLayoutChild();
@@ -55,6 +56,7 @@ public class MindMapDropController extends AbstractDropController {
 			((NodeWidget) _position.parent).addTemporaryLayoutChild(
 					_position.index, _ghostNode);
 			_ghostNode.setNodeLocation(_position.location);
+			_mindMapWidget.resumeLayout();
 		}
 	}
 
@@ -74,7 +76,10 @@ public class MindMapDropController extends AbstractDropController {
 				px, py);
 		while (!(position.parent instanceof NodeWidget)
 				&& position.parent != null) {
-			position.parent = position.parent.getLayoutParent();
+			LayoutTreeElement newParent = position.parent.getLayoutParent();
+			position.index = newParent.getLayoutChildren().indexOf(
+					position.parent);
+			position.parent = newParent;
 		}
 		return position;
 
