@@ -4,6 +4,7 @@ import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
+import mindnotes.client.ui.imagesearch.ImageSearchWidget;
 import mindnotes.client.ui.text.TinyEditor;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
@@ -20,6 +21,7 @@ import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -46,14 +48,16 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private boolean _holdLayoutUpdates;
 
 	private PickupDragController _dragController;
-
 	private MindMapDropController _dropController;
 
 	private int _ox;
-
 	private int _oy;
 
 	private boolean _holdCentering;
+
+	private PopupPanel _imageSearchPopup;
+
+	private ImageSearchWidget _imageSearchWidget;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -118,6 +122,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 			@Override
 			public void addDownClicked() {
 				_listener.addDownGesture();
+			}
+
+			@Override
+			public void actionMenuFired(int x, int y) {
+				_listener.actionMenuGesture(x, y);
 			}
 		});
 
@@ -247,6 +256,32 @@ public class MindMapWidget extends Composite implements MindMapView,
 		});
 
 	}
+
+	public void showImageSearch(int x, int y, String text) {
+		int w = 500;
+		int h = 300;
+		if (_imageSearchPopup == null) {
+			_imageSearchPopup = new PopupPanel(true);
+			_imageSearchPopup.setStylePrimaryName("image-search");
+			_imageSearchWidget = new ImageSearchWidget();
+			_imageSearchPopup.setWidget(_imageSearchWidget);
+			_imageSearchPopup.setPixelSize(w, h);
+		}
+		if (x + w > Window.getClientWidth()) {
+			x -= w + 20;
+		}
+		if (y + h > Window.getClientHeight()) {
+			y -= h + 20;
+		}
+
+		_imageSearchWidget.performSearch(stripHTML(text));
+		_imageSearchPopup.setPopupPosition(x, y);
+		_imageSearchPopup.show();
+	}
+
+	private native String stripHTML(String text)/*-{
+		return text.replace(/<\/?[^>]*>/g, '');
+	}-*/;
 
 	@Override
 	public NodeView getRootNodeView() {
@@ -512,5 +547,15 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public GhostNode getGhostNode() {
 		return _dropController.getGhostNode();
 
+	}
+
+	@Override
+	public int getRelativeTop(Widget button) {
+		return button.getAbsoluteTop() - _viewportPanel.getAbsoluteTop();
+	}
+
+	@Override
+	public int getRelativeLeft(Widget button) {
+		return button.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft();
 	}
 }

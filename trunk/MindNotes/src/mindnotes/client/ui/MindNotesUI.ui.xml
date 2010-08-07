@@ -94,6 +94,7 @@
 						<p><a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">View source</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
+						<p><strong>Browser compatibility: </strong>All features tested on Chrome 5 (Win). Safari has some issues with YouTube embedding. Firefox mostly works although it's not extensively tested. IE is not supported.</p>
 						<h2>Iteration 5</h2>
 						<p>
 							<strong>Drag &amp; Drop</strong>

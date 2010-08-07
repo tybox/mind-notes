@@ -834,4 +834,9 @@ public class MindMapEditor {
 		doUndoableAction(_dragDropAction);
 		_dragDropAction = null;
 	}
+
+	public void showImageSearch(int x, int y) {
+		_mindMapView.showImageSearch(x, y, _selection.getCurrentNode()
+				.getText());
+	}
 }

@@ -39,6 +39,8 @@ public interface MindMapView {
 		public void editorExitGesture();
 
 		public void ytVideoInsertGesture(String id);
+
+		public void actionMenuGesture(int x, int y);
 	}
 
 	public void setListener(Listener l);
@@ -64,4 +66,6 @@ public interface MindMapView {
 	public abstract void resumeLayout();
 
 	public abstract void holdLayout();
+
+	public void showImageSearch(int x, int y, String text);
 }

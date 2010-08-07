@@ -22,11 +22,15 @@ public class ActionButtons {
 		// (sic!)
 		ImageResource deleteIcon();
 
+		@Source("action_menu.gif")
+		ImageResource menuIcon();
+
 		Styles buttonStyles();
 
 		public interface Styles extends CssResource {
 			String button();
 		}
+
 	}
 
 	public interface Listener {
@@ -43,6 +47,8 @@ public class ActionButtons {
 
 		public void expandClicked();
 
+		public void actionMenuFired(int relativeLeft, int i);
+
 	}
 
 	// DI deps
@@ -56,6 +62,7 @@ public class ActionButtons {
 	private PushButton _addRightButton;
 	private PushButton _addUpButton;
 	private PushButton _addDownButton;
+	private PushButton _menuButton;
 
 	// resources
 	private Resources _resources = GWT.create(Resources.class);
@@ -68,7 +75,7 @@ public class ActionButtons {
 		_addRightButton = createButton(_resources.plusIcon());
 		_addUpButton = createButton(_resources.plusIcon());
 		_addDownButton = createButton(_resources.plusIcon());
-
+		_menuButton = createButton(_resources.menuIcon());
 		_deleteButton = createButton(_resources.deleteIcon());
 		_deleteButton.addStyleName(_resources.buttonStyles().button());
 
@@ -115,9 +122,26 @@ public class ActionButtons {
 						_listener.deleteClicked();
 				}
 			});
+			_menuButton.addClickHandler(new ClickHandler() {
+
+				@Override
+				public void onClick(ClickEvent event) {
+					showActionMenu();
+				}
+
+			});
 
 		}
 
+	}
+
+	protected void showActionMenu() {
+		if (_listener != null) {
+			_listener.actionMenuFired(
+					_menuButton.getAbsoluteLeft(),
+					_menuButton.getAbsoluteTop()
+							+ _menuButton.getOffsetHeight());
+		}
 	}
 
 	/**
@@ -159,6 +183,7 @@ public class ActionButtons {
 		_container.addButton(_addUpButton);
 		_container.addButton(_addDownButton);
 		_container.addButton(_deleteButton);
+		_container.addButton(_menuButton);
 	}
 
 	public ButtonContainer getContainer() {
@@ -180,6 +205,7 @@ public class ActionButtons {
 		_addRightButton.setVisible(false);
 		_addUpButton.setVisible(false);
 		_addDownButton.setVisible(false);
+		_menuButton.setVisible(false);
 	}
 
 	public void updateButtonLayout() {
@@ -205,6 +231,8 @@ public class ActionButtons {
 		_addDownButton.setVisible(_options.canHaveSiblings());
 		_container.setButtonPosition(_addDownButton, x + (w - 20) / 2, y + h
 				+ 5);
+		_menuButton.setVisible(true);
+		_container.setButtonPosition(_menuButton, x, y + h + 5);
 
 	}
 
