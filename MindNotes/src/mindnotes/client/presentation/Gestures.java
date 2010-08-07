@@ -268,4 +268,9 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.insertYouTubeVideo(id);
 	}
 
+	@Override
+	public void actionMenuGesture(int x, int y) {
+		_mindMapEditor.showImageSearch(x, y);
+	}
+
 }

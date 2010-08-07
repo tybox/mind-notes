@@ -1,0 +1,60 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" >
+	<ui:style type="mindnotes.client.ui.imagesearch.ImageSearchWidget.Styles">
+		.scroll {
+			max-height: 240px;
+			background: #2d2f33;
+		}
+		.panel {
+			border: 1px #ccc solid;
+			padding: 0;
+		}
+		
+		.container {
+			padding: 0 6px 0 6px;
+			text-align: justify;
+			
+		}
+	
+		.form {
+			padding: 6px 12px 6px 12px;
+			border-bottom: 1px #aaa solid;
+		}
+	
+		@external gsc-search-box, gsc-branding, gsc-input;	
+		.form .gsc-search-box {
+			width: 100%;
+		}
+		.form .gsc-input {
+			width: 95%;
+		}
+		.form .gsc-branding {
+			text-align: right;
+		}
+		.resultImg {
+			margin: 0px;
+		}
+		
+	</ui:style>
+	
+	<g:VerticalPanel addStyleNames="{style.panel}">
+		<g:HTML ui:field="searchForm" addStyleNames="{style.form}" />
+		<g:ScrollPanel alwaysShowScrollBars="false" addStyleNames="{style.scroll}" ui:field="scrollPanel">
+			<g:FlowPanel ui:field="imageContainer" addStyleNames="{style.container}" />
+		</g:ScrollPanel>
+		<g:PopupPanel ui:field="imagePreview" visible ="false">
+			
+			<g:HTMLPanel>
+				<div><g:Image ui:field="previewThumbnail"/></div>
+				<g:Anchor ui:field="previewLink"></g:Anchor>
+				<g:Label ui:field="previewDimensions"></g:Label>
+				<g:Label ui:field="previewURL"></g:Label>
+				<div>Image may be subject to copyright.</div>
+			</g:HTMLPanel>
+			
+		</g:PopupPanel>
+	</g:VerticalPanel>
+	
+	
+</ui:UiBinder> 
