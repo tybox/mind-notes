@@ -67,7 +67,7 @@
 				<g:HTMLPanel addStyleNames="{style.header}">
 					<span class="{style.header-h1}">
 						Mind Notes
-						<span style="font-size: 21px">(02.08.2010)</span>
+						<span style="font-size: 21px">(07.08.2010)</span>
 					</span>
 					<g:InlineLabel ui:field="titleLabel" addStyleNames="{style.title}" />
 				</g:HTMLPanel>
@@ -95,6 +95,14 @@
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
 						<h2>Iteration 5</h2>
+						<p>
+							<strong>Drag &amp; Drop</strong>
+							<ul>
+							<li>It finally works!</li>
+							<li>Try dragging a node to another position in the tree.</li>
+							<li>Note that you can move whole branches this way.</li>
+						</ul>
+						</p>
 						<p>
 							<strong>Additional content</strong>
 						</p>

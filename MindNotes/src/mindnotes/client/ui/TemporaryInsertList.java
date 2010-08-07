@@ -88,7 +88,7 @@ public class TemporaryInsertList<T> implements List<T> {
 
 	@Override
 	public boolean isEmpty() {
-		return _insert != null || _originalList.isEmpty();
+		return _insert == null && _originalList.isEmpty();
 	}
 
 	@Override
