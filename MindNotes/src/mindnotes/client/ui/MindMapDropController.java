@@ -45,6 +45,9 @@ public class MindMapDropController extends AbstractDropController {
 
 		if (_position == null || !_position.equals(position)) {
 
+			System.out.println("np: [" + position.index + ", "
+					+ position.location + ", " + position.parent + "]");
+
 			_mindMapWidget.holdLayout();
 			// remove ghost from previous node
 			if (_position != null) {
