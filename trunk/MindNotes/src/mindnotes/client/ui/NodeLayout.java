@@ -172,11 +172,16 @@ public class NodeLayout {
 		Box b = root.getElementBounds();
 
 		boolean right = px >= (b.x + b.w / 2);
+
 		// mouse location
 		NodeLocation ml = right ? NodeLocation.RIGHT : NodeLocation.LEFT;
 		boolean up = py < (b.y + b.h / 2);
 
 		boolean isRoot = root.getLocation() == NodeLocation.ROOT;
+
+		if (isRoot) {
+			System.out.println("Right: " + right);
+		}
 
 		if (root.getLayoutChildren().isEmpty()) {
 			if (isRoot) {
@@ -231,7 +236,7 @@ public class NodeLayout {
 				int index = root.getLayoutParent().getLayoutChildren()
 						.indexOf(root);
 				return new LayoutPosition(root.getLayoutParent(), index
-						+ (up ? 0 : 1), ml);
+						+ (up ? 0 : 1), root.getLocation());
 			}
 		}
 	}
