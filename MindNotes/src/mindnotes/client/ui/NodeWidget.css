@@ -9,6 +9,8 @@
 	background-color: #e4eCf5;
 	-webkit-border-top-right-radius: 9px;
 	-webkit-border-top-left-radius: 9px;
+	-moz-border-radius-topright: 9px;
+	-moz-border-radius-topleft: 9px;
 }
 
 .nodeText {
@@ -25,6 +27,8 @@
 	border-bottom: 2px #4882e0 solid;
 	 -webkit-border-top-right-radius: 9px;
 	 -webkit-border-top-left-radius: 9px;
+	 -moz-border-radius-topright: 9px;
+	 -moz-border-radius-topleft: 9px;
 }
 .nodeSelected:hover,
 .nodeCurrent:hover {
