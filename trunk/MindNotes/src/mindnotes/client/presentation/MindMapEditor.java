@@ -817,7 +817,7 @@ public class MindMapEditor {
 	}
 
 	public void insertYouTubeVideo(String id) {
-		final EmbeddedObject video = new EmbeddedObject("youtube", id);
+		EmbeddedObject video = new EmbeddedObject("youtube", id);
 		addEmbeddedObject(_selection.getCurrentNode(), video);
 
 	}
@@ -838,5 +838,11 @@ public class MindMapEditor {
 	public void showImageSearch(int x, int y) {
 		_mindMapView.showImageSearch(x, y, _selection.getCurrentNode()
 				.getText());
+	}
+
+	public void insertImage(String url) {
+		EmbeddedObject image = new EmbeddedObject("image", url);
+		addEmbeddedObject(_selection.getCurrentNode(), image);
+
 	}
 }

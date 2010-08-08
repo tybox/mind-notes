@@ -273,4 +273,9 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.showImageSearch(x, y);
 	}
 
+	@Override
+	public void imageInsertGesture(String url) {
+		_mindMapEditor.insertImage(url);
+	}
+
 }

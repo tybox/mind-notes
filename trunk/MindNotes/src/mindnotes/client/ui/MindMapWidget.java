@@ -257,26 +257,45 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	}
 
-	public void showImageSearch(int x, int y, String text) {
-		int w = 500;
-		int h = 300;
+	public void showImageSearch(final int x, final int y, String text) {
+
 		if (_imageSearchPopup == null) {
 			_imageSearchPopup = new PopupPanel(true);
 			_imageSearchPopup.setStylePrimaryName("image-search");
 			_imageSearchWidget = new ImageSearchWidget();
 			_imageSearchPopup.setWidget(_imageSearchWidget);
-			_imageSearchPopup.setPixelSize(w, h);
-		}
-		if (x + w > Window.getClientWidth()) {
-			x -= w + 20;
-		}
-		if (y + h > Window.getClientHeight()) {
-			y -= h + 20;
+			_imageSearchWidget.setListener(new ImageSearchWidget.Listener() {
+
+				@Override
+				public void imageChosenGesture(String url) {
+					if (_listener != null) {
+						_listener.imageInsertGesture(url);
+						_imageSearchPopup.hide();
+					}
+				}
+			});
+
 		}
 
 		_imageSearchWidget.performSearch(stripHTML(text));
-		_imageSearchPopup.setPopupPosition(x, y);
-		_imageSearchPopup.show();
+		_imageSearchPopup.setPopupPositionAndShow(new PositionCallback() {
+
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				int nx, ny;
+				if (x + offsetWidth > Window.getClientWidth()) {
+					nx = x - (offsetWidth + 20);
+				} else {
+					nx = x;
+				}
+				if (y + offsetHeight > Window.getClientHeight()) {
+					ny = y - (offsetHeight + 20);
+				} else {
+					ny = y;
+				}
+				_imageSearchPopup.setPopupPosition(nx, ny);
+			}
+		});
 	}
 
 	private native String stripHTML(String text)/*-{
