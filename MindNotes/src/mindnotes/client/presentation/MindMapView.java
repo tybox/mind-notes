@@ -41,6 +41,8 @@ public interface MindMapView {
 		public void ytVideoInsertGesture(String id);
 
 		public void actionMenuGesture(int x, int y);
+
+		public void imageInsertGesture(String url);
 	}
 
 	public void setListener(Listener l);

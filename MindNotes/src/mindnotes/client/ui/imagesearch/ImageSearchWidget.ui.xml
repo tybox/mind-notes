@@ -5,12 +5,31 @@
 		.scroll {
 			max-height: 240px;
 			background: #2d2f33;
+			border: 1px #aaa solid;
 		}
 		.panel {
-			border: 1px #ccc solid;
+			width: 500px;
+			
 			padding: 0;
 		}
 		
+		.search-button {
+			width: 60px;
+			border-bottom: 1px transparent inset;
+			padding-bottom: 2px;
+			position: relative;
+			top: 1px;
+		}
+		
+		.search-input {
+			width: 301px;
+			margin: 0;
+			border: 1px #eee inset;
+			border-bottom: 1px #fff inset;
+			border-right: none;
+			padding-top: 5px;
+			padding-bottom: 0px;
+		}
 		.container {
 			padding: 0 6px 0 6px;
 			text-align: justify;
@@ -18,39 +37,60 @@
 		}
 	
 		.form {
-			padding: 6px 12px 6px 12px;
-			border-bottom: 1px #aaa solid;
+			padding: 0;
+			position: relative;
 		}
-	
-		@external gsc-search-box, gsc-branding, gsc-input;	
-		.form .gsc-search-box {
-			width: 100%;
+		
+		@external gsc-branding;
+		.form .gsc-branding img {
+			vertical-align: middle;
+			margin-left: 2px;
 		}
-		.form .gsc-input {
-			width: 95%;
+		
+		.branding-box {
+			position: absolute;
+			right: 6px;
+			top: 3px;
 		}
-		.form .gsc-branding {
-			text-align: right;
-		}
+		
 		.resultImg {
 			margin: 0px;
+			vertical-align: middle;
 		}
+		.imageDiv {
+			text-align:center;
+		}
+		.image {
+			cursor: pointer;
+		}
+		.copyright {
+			font-size: 9px;
+			color: #9dc7f5;
+		}
+		.dimensions {
+			font-size: 9px;
+		}
+		
 		
 	</ui:style>
 	
 	<g:VerticalPanel addStyleNames="{style.panel}">
-		<g:HTML ui:field="searchForm" addStyleNames="{style.form}" />
+		<g:FlowPanel ui:field="searchForm" addStyleNames="{style.form}">
+				<g:TextBox ui:field="searchInput" addStyleNames="{style.search-input}"/>
+				<g:Button ui:field="searchButton" addStyleNames="{style.search-button}">Search</g:Button>
+				<g:HTML ui:field="brandingBox" addStyleNames="{style.branding-box}"/>
+		</g:FlowPanel>
 		<g:ScrollPanel alwaysShowScrollBars="false" addStyleNames="{style.scroll}" ui:field="scrollPanel">
 			<g:FlowPanel ui:field="imageContainer" addStyleNames="{style.container}" />
 		</g:ScrollPanel>
 		<g:PopupPanel ui:field="imagePreview" visible ="false">
 			
-			<g:HTMLPanel>
-				<div><g:Image ui:field="previewThumbnail"/></div>
-				<g:Anchor ui:field="previewLink"></g:Anchor>
-				<g:Label ui:field="previewDimensions"></g:Label>
-				<g:Label ui:field="previewURL"></g:Label>
-				<div>Image may be subject to copyright.</div>
+			<g:HTMLPanel ui:field="imagePreviewPanel">
+				<div class="{style.imageDiv}"><g:Image ui:field="previewThumbnail" addStyleNames="{style.image}"/></div>
+				<g:Anchor ui:field="previewLink" target="_blank"></g:Anchor>
+				<g:Label ui:field="previewDimensions" addStyleNames="{style.dimensions}"></g:Label>
+				<div class="{style.copyright}">Image may be subject to copyright.</div>
+				
 			</g:HTMLPanel>
 			
 		</g:PopupPanel>

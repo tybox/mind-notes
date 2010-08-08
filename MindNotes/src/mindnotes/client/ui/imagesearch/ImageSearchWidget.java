@@ -2,13 +2,22 @@ package mindnotes.client.ui.imagesearch;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -16,13 +25,14 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ImageSearchWidget extends Composite {
 
 	private JavaScriptObject _imageSearch;
-	private JavaScriptObject _searchFormElement;
 	private boolean _waiting;
 
 	private static ImageSearchWidgetUiBinder uiBinder = GWT
@@ -36,37 +46,53 @@ public class ImageSearchWidget extends Composite {
 		String resultImg();
 	}
 
-	@UiField
-	HTML searchForm;
+	public interface Listener {
 
+		public void imageChosenGesture(String url);
+
+	}
+
+	@UiField
+	FlowPanel searchForm;
+	@UiField
+	TextBox searchInput;
+	@UiField
+	Button searchButton;
+	@UiField
+	HTML brandingBox;
 	@UiField
 	FlowPanel imageContainer;
-
-	@UiField
-	PopupPanel imagePreview;
-
 	@UiField
 	Image previewThumbnail;
-
 	@UiField
 	Anchor previewLink;
-
 	@UiField
 	Label previewDimensions;
-
-	@UiField
-	Label previewURL;
-
 	@UiField
 	ScrollPanel scrollPanel;
-
 	@UiField
 	Styles style;
+	@UiField(provided = true)
+	PopupPanel imagePreview;
+
+	private ImageResult _selectedImage;
+	private Listener _listener;
 
 	public ImageSearchWidget() {
 		loadSearchAPI();
+		imagePreview = new PopupPanel() {
+			{
+				addDomHandler(new MouseOutHandler() {
+
+					@Override
+					public void onMouseOut(MouseOutEvent event) {
+						imagePreview.hide();
+					}
+				}, MouseOutEvent.getType());
+			}
+		};
 		initWidget(uiBinder.createAndBindUi(this));
-		attachSearchForm(searchForm.getElement());
+		attachBranding(brandingBox.getElement());
 		imagePreview.removeFromParent();
 
 	}
@@ -80,25 +106,31 @@ public class ImageSearchWidget extends Composite {
 		}
 	}
 
+	@UiHandler("searchInput")
+	public void onSearchInputKeyDown(KeyDownEvent event) {
+		if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+			executeSearch(searchInput.getText());
+			event.stopPropagation();
+		}
+	}
+
+	@UiHandler("searchButton")
+	public void onSearchButtonClicked(ClickEvent event) {
+		executeSearch(searchInput.getText());
+	}
+
 	private native void loadSearchAPI() /*-{
 		$wnd.google.load('search', '1');
 	}-*/;
 
-	public native void performSearch(String text)/*-{
-		var sf = this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_searchFormElement;
-		sf.execute(text);
-	}-*/;
+	public void performSearch(String text) {
+		searchInput.setText(text);
+		executeSearch(text);
+	}
 
 	/* @formatter:off */
-	private native void attachSearchForm(Element element)/*-{
-		var searchForm = new $wnd.google.search.SearchForm(false, element);
-		var onSubmit = function(searchForm) {
-			if (searchForm.input.value) {
-				this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::executeSearch(Ljava/lang/String;)(searchForm.input.value);
-			}
-		}
-		searchForm.setOnSubmitCallback(this, onSubmit);
-		this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_searchFormElement = searchForm;
+	private native void attachBranding(Element element)/*-{
+		$wnd.google.search.Search.getBranding(element);
 	}-*/;
 	/* @formatter:on */
 
@@ -137,13 +169,64 @@ public class ImageSearchWidget extends Composite {
 	}-*/;
 	/* @formatter:on */
 
-	public void addImage(ImageResult result) {
+	public void addImage(final ImageResult result) {
 
-		Image image = new Image(result.getThumbnailUrl(), 0, 0,
+		final Image image = new Image(result.getThumbnailUrl(), 0, 0,
 				result.getThumbnailWidth(), result.getThumbnailHeight());
 		image.addStyleName(style.resultImg());
+		image.addMouseOverHandler(new MouseOverHandler() {
+
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				_selectedImage = result;
+				previewThumbnail.setUrl(result.getUnescapedUrl());
+				previewThumbnail.setPixelSize(result.getThumbnailWidth() * 2,
+						result.getThumbnailHeight() * 2);
+				previewLink.setText(result.getVisibleUrl());
+
+				previewLink.setHref(result.getOriginalContextUrl());
+				previewDimensions.setText(result.getWidth() + " x "
+						+ result.getHeight());
+				imagePreview.setPopupPositionAndShow(new PositionCallback() {
+
+					@Override
+					public void setPosition(int offsetWidth, int offsetHeight) {
+						int x = image.getAbsoluteLeft()
+								+ (image.getOffsetWidth() - offsetWidth) / 2;
+						int y = image.getAbsoluteTop()
+								+ (image.getOffsetHeight() - offsetHeight) / 2;
+						if (x + offsetWidth > Window.getClientWidth()) {
+							x = Window.getClientWidth() - offsetWidth;
+						}
+						if (x < 0) {
+							x = 0;
+						}
+						if (y + offsetHeight > Window.getClientHeight()) {
+							y = Window.getClientHeight() - offsetHeight;
+						}
+						if (y < 0) {
+							y = 0;
+						}
+
+						imagePreview.setPopupPosition(x, y);
+
+					}
+				});
+			}
+		});
 		imageContainer.add(image);
 		imageContainer.add(new InlineLabel(" "));
 	}
 
+	@UiHandler("previewThumbnail")
+	public void onPreviewThumbnailClicked(ClickEvent event) {
+		if (_listener != null) {
+			_listener.imageChosenGesture(_selectedImage.getUnescapedUrl());
+			imagePreview.hide();
+		}
+	}
+
+	public void setListener(Listener listener) {
+		_listener = listener;
+	}
 }

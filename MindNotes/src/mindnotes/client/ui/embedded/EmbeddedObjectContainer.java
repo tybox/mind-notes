@@ -53,10 +53,29 @@ public class EmbeddedObjectContainer extends Composite implements
 
 		initWidget(uiBinder.createAndBindUi(this));
 
+		// TODO change ifs to a hash map
 		if (type.equals("youtube")) {
 			insertYouTubePlayer(data);
 		}
+		if (type.equals("image")) {
+			insertImage(data);
+		}
 
+	}
+
+	private void insertImage(String data) {
+		ImageContainer ic = new ImageContainer();
+		ic.setImage(data);
+		ic.setListener(new ImageContainer.Listener() {
+
+			@Override
+			public void sizeUpdated() {
+				invalidateLayout();
+
+			}
+		});
+		embeddedWidget.setWidget(ic);
+		titleLabel.setText("Image");
 	}
 
 	private void insertYouTubePlayer(String data) {
