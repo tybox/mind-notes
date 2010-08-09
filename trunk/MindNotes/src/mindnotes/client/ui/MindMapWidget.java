@@ -262,7 +262,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 				public void imageChosenGesture(String url) {
 					if (_listener != null) {
 						_listener.imageInsertGesture(url);
-						_searchMenu.setVisible(false);
+						_searchMenu.hide();
 					}
 				}
 
@@ -270,13 +270,29 @@ public class MindMapWidget extends Composite implements MindMapView,
 				public void mapCreateGesture() {
 					if (_listener != null) {
 						_listener.mapInsertGesture();
-						_searchMenu.setVisible(false);
+						_searchMenu.hide();
 					}
+				}
+
+				@Override
+				public void onResize(int offsetWidth, int offsetHeight) {
+					int x = _searchMenu.getAbsoluteLeft();
+					int y = _searchMenu.getAbsoluteTop();
+					int w = _searchMenu.getOffsetWidth();
+					int h = _searchMenu.getOffsetHeight();
+					if (x + w > Window.getClientWidth()) {
+						x = Window.getClientWidth() - w - 30;
+					}
+					if (y + h > Window.getClientHeight()) {
+						y = Window.getClientHeight() - h - 30;
+					}
+					_searchMenu.setPopupPosition(x, y);
 				}
 			});
 		}
 		_searchMenu.performSearches(stripHTML(text));
-		showPopup(null, x, y, _searchMenu);
+		// showPopup(null, x, y, _searchMenu);
+		_searchMenu.showAt(x, y);
 
 	}
 
@@ -503,6 +519,12 @@ public class MindMapWidget extends Composite implements MindMapView,
 		int x = anchorOffsetX - _viewportPanel.getAbsoluteLeft() + left;
 		int y = anchorOffsetY - _viewportPanel.getAbsoluteTop() + top;
 		_viewportPanel.add(popup, x, y);
+		int dw = x + popup.getOffsetWidth();
+		int dh = y + popup.getOffsetHeight();
+		if (dw > _viewportPanel.getOffsetWidth()
+				|| dh > _viewportPanel.getOffsetHeight()) {
+			_viewportPanel.setPixelSize(dw, dh);
+		}
 		popup.setVisible(true);
 
 	}
