@@ -12,11 +12,15 @@
 			border: 1px #ccc solid;
 			background: #d7e6f5;
 		}
+		.insertMap {
+			cursor: pointer;
+		}
+			
 	</ui:style>
 	<g:FlowPanel addStyleNames="{style.container}">
 		<g:Label addStyleNames="{style.title}">Images</g:Label>
 		<mnis:ImageSearchWidget ui:field="imageSearch" />
 		<g:Label addStyleNames="{style.title}">Maps</g:Label>
-		<g:Anchor ui:field ="insertMap">Insert new map</g:Anchor>
+		<g:Anchor ui:field ="insertMap" addStyleNames="{style.insertMap}">Insert new map</g:Anchor>
 	</g:FlowPanel>
 </ui:UiBinder> 

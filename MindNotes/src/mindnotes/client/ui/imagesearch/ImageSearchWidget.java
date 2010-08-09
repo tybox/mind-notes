@@ -50,6 +50,8 @@ public class ImageSearchWidget extends Composite {
 
 		public void imageChosenGesture(String url);
 
+		public void onResize(int offsetWidth, int offsetHeight);
+
 	}
 
 	@UiField
@@ -79,7 +81,6 @@ public class ImageSearchWidget extends Composite {
 	private Listener _listener;
 
 	public ImageSearchWidget() {
-		loadSearchAPI();
 		imagePreview = new PopupPanel() {
 			{
 				addDomHandler(new MouseOutHandler() {
@@ -119,10 +120,6 @@ public class ImageSearchWidget extends Composite {
 		executeSearch(searchInput.getText());
 	}
 
-	private native void loadSearchAPI() /*-{
-		$wnd.google.load('search', '1');
-	}-*/;
-
 	public void performSearch(String text) {
 		searchInput.setText(text);
 		executeSearch(text);
@@ -130,32 +127,40 @@ public class ImageSearchWidget extends Composite {
 
 	/* @formatter:off */
 	private native void attachBranding(Element element)/*-{
-		$wnd.google.search.Search.getBranding(element);
+		$wnd.google.load("search", "1", {"callback" : function() {
+			$wnd.google.search.Search.getBranding(element);
+		}});
 	}-*/;
 	/* @formatter:on */
 
 	/* @formatter:off */
 	private native void executeSearch(String text)/*-{
 		var content = this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::imageContainer;
-		content.@com.google.gwt.user.client.ui.FlowPanel::clear()();
+			content.@com.google.gwt.user.client.ui.FlowPanel::clear()();
+		var t = this;
 
-		var searchComplete = function(searcher) {
-			this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_waiting = false;
-			if (searcher.results && searcher.results.length > 0) {
-				var results = searcher.results;
-				for (var i = 0; i < results.length; i++) {
-					var result = results[i];
-					this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::addImage(Lmindnotes/client/ui/imagesearch/ImageResult;)(result);
+		var executeSearch = function() {
+
+			var searchComplete = function(searcher) {
+				t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_waiting = false;
+				if (searcher.results && searcher.results.length > 0) {
+					var results = searcher.results;
+					for (var i = 0; i < results.length; i++) {
+						var result = results[i];
+						t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::addImage(Lmindnotes/client/ui/imagesearch/ImageResult;)(result);
+					}
 				}
 			}
+			var imageSearch = new $wnd.google.search.ImageSearch();
+
+			imageSearch.setSearchCompleteCallback(this, searchComplete, [imageSearch]);
+			imageSearch.setResultSetSize(8);
+
+			imageSearch.execute(text);
+			t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_imageSearch = imageSearch;
 		}
-		var imageSearch = new $wnd.google.search.ImageSearch();
 
-		imageSearch.setSearchCompleteCallback(this, searchComplete, [imageSearch]);
-		imageSearch.setResultSetSize(8);
-
-		imageSearch.execute(text);
-		this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_imageSearch = imageSearch;
+		$wnd.google.load("search", "1", {"callback" : executeSearch});
 	}-*/;
 	/* @formatter:on */
 
@@ -215,7 +220,11 @@ public class ImageSearchWidget extends Composite {
 			}
 		});
 		imageContainer.add(image);
+		// make justification work
 		imageContainer.add(new InlineLabel(" "));
+		if (_listener != null) {
+			_listener.onResize(getOffsetWidth(), getOffsetHeight());
+		}
 	}
 
 	@UiHandler("previewThumbnail")
