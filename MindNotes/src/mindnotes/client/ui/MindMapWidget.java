@@ -4,7 +4,6 @@ import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
-import mindnotes.client.ui.imagesearch.ImageSearchWidget;
 import mindnotes.client.ui.text.TinyEditor;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
@@ -21,7 +20,6 @@ import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -54,10 +52,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private int _oy;
 
 	private boolean _holdCentering;
-
-	private PopupPanel _imageSearchPopup;
-
-	private ImageSearchWidget _imageSearchWidget;
+	private SearchPopup _searchMenu;
 
 	public MindMapWidget() {
 		Event.addNativePreviewHandler(new NativePreviewHandler() {
@@ -125,7 +120,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 			}
 
 			@Override
-			public void actionMenuFired(int x, int y) {
+			public void searchMenuFired(int x, int y) {
 				_listener.actionMenuGesture(x, y);
 			}
 		});
@@ -257,45 +252,32 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	}
 
-	public void showImageSearch(final int x, final int y, String text) {
-
-		if (_imageSearchPopup == null) {
-			_imageSearchPopup = new PopupPanel(true);
-			_imageSearchPopup.setStylePrimaryName("image-search");
-			_imageSearchWidget = new ImageSearchWidget();
-			_imageSearchPopup.setWidget(_imageSearchWidget);
-			_imageSearchWidget.setListener(new ImageSearchWidget.Listener() {
+	@Override
+	public void showSearchMenu(int x, int y, String text) {
+		if (_searchMenu == null) {
+			_searchMenu = new SearchPopup();
+			_searchMenu.setListener(new SearchPopup.Listener() {
 
 				@Override
 				public void imageChosenGesture(String url) {
 					if (_listener != null) {
 						_listener.imageInsertGesture(url);
-						_imageSearchPopup.hide();
+						_searchMenu.setVisible(false);
+					}
+				}
+
+				@Override
+				public void mapCreateGesture() {
+					if (_listener != null) {
+						_listener.mapInsertGesture();
+						_searchMenu.setVisible(false);
 					}
 				}
 			});
-
 		}
+		_searchMenu.performSearches(stripHTML(text));
+		showPopup(null, x, y, _searchMenu);
 
-		_imageSearchWidget.performSearch(stripHTML(text));
-		_imageSearchPopup.setPopupPositionAndShow(new PositionCallback() {
-
-			@Override
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				int nx, ny;
-				if (x + offsetWidth > Window.getClientWidth()) {
-					nx = x - (offsetWidth + 20);
-				} else {
-					nx = x;
-				}
-				if (y + offsetHeight > Window.getClientHeight()) {
-					ny = y - (offsetHeight + 20);
-				} else {
-					ny = y;
-				}
-				_imageSearchPopup.setPopupPosition(nx, ny);
-			}
-		});
 	}
 
 	private native String stripHTML(String text)/*-{
@@ -515,10 +497,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	@Override
-	public void showPopup(Widget anchor, int top, int left, Widget popup) {
-		int x = anchor.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft()
-				+ left;
-		int y = anchor.getAbsoluteTop() - _viewportPanel.getAbsoluteTop() + top;
+	public void showPopup(Widget anchor, int left, int top, Widget popup) {
+		int anchorOffsetX = anchor == null ? 0 : anchor.getAbsoluteLeft();
+		int anchorOffsetY = anchor == null ? 0 : anchor.getAbsoluteTop();
+		int x = anchorOffsetX - _viewportPanel.getAbsoluteLeft() + left;
+		int y = anchorOffsetY - _viewportPanel.getAbsoluteTop() + top;
 		_viewportPanel.add(popup, x, y);
 		popup.setVisible(true);
 
@@ -577,4 +560,5 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public int getRelativeLeft(Widget button) {
 		return button.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft();
 	}
+
 }
