@@ -3,6 +3,7 @@ package mindnotes.client.ui.embedded;
 import mindnotes.client.presentation.EmbeddedObjectView;
 import mindnotes.client.ui.LayoutTreeElement;
 import mindnotes.client.ui.embedded.YouTubePlayer.PlayerReadyCallback;
+import mindnotes.client.ui.maps.MapViewer;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,6 +61,24 @@ public class EmbeddedObjectContainer extends Composite implements
 		if (type.equals("image")) {
 			insertImage(data);
 		}
+		if (type.equals("map")) {
+			insertMap(data);
+		}
+
+	}
+
+	private void insertMap(String data) {
+		MapViewer viewer = new MapViewer(data);
+		viewer.setListener(new MapViewer.Listener() {
+
+			@Override
+			public void onLocationUpdated(String newLocation) {
+				if (_listener != null) {
+					_listener.onDataChanged(newLocation);
+				}
+			}
+		});
+		embeddedWidget.setWidget(viewer);
 
 	}
 

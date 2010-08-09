@@ -270,7 +270,8 @@ public class Gestures implements MindMapView.Listener {
 
 	@Override
 	public void actionMenuGesture(int x, int y) {
-		_mindMapEditor.showImageSearch(x, y);
+		// _mindMapEditor.showImageSearch(x, y);
+		_mindMapEditor.insertMap();
 	}
 
 	@Override
