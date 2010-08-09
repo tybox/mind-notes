@@ -434,6 +434,11 @@ public class MindMapEditor {
 				node.removeObject(object);
 				nodeView.removeEmbeddedObject(videoView);
 			}
+
+			@Override
+			public void onDataChanged(String newData) {
+				object.setData(newData);
+			}
 		});
 	}
 
@@ -844,5 +849,10 @@ public class MindMapEditor {
 		EmbeddedObject image = new EmbeddedObject("image", url);
 		addEmbeddedObject(_selection.getCurrentNode(), image);
 
+	}
+
+	public void insertMap() {
+		EmbeddedObject map = new EmbeddedObject("map", "");
+		addEmbeddedObject(_selection.getCurrentNode(), map);
 	}
 }
