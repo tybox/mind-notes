@@ -67,7 +67,7 @@
 				<g:HTMLPanel addStyleNames="{style.header}">
 					<span class="{style.header-h1}">
 						Mind Notes
-						<span style="font-size: 21px">(07.08.2010)</span>
+						<span style="font-size: 21px">(09.08.2010)</span>
 					</span>
 					<g:InlineLabel ui:field="titleLabel" addStyleNames="{style.title}" />
 				</g:HTMLPanel>
@@ -96,6 +96,21 @@
 						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
 						<p><strong>Browser compatibility: </strong>All features tested on Chrome 5 (Win). Safari has some issues with YouTube embedding. Firefox mostly works although it's not extensively tested. IE is not supported.</p>
 						<h2>Iteration 5</h2>
+						<p>
+							<strong>Image Search</strong>
+							<ul>
+							<li>Click the search button below a selected node</li>
+							<li>Some images to insert are proposed to you based on the content of the node.</li>
+							<li>You can also use your own search terms.</li>
+						</ul>
+						</p>
+						<p>
+							<strong>Google Maps</strong>
+							<ul>
+							<li>Use the search menu to load a Google Maps widget to your node</li>
+							<li>The location of the map is saved together with the mind map.</li>
+						</ul>
+						</p>
 						<p>
 							<strong>Drag &amp; Drop</strong>
 							<ul>

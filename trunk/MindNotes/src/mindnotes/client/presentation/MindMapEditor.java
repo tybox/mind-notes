@@ -840,11 +840,6 @@ public class MindMapEditor {
 		_dragDropAction = null;
 	}
 
-	public void showImageSearch(int x, int y) {
-		_mindMapView.showImageSearch(x, y, _selection.getCurrentNode()
-				.getText());
-	}
-
 	public void insertImage(String url) {
 		EmbeddedObject image = new EmbeddedObject("image", url);
 		addEmbeddedObject(_selection.getCurrentNode(), image);
@@ -854,5 +849,10 @@ public class MindMapEditor {
 	public void insertMap() {
 		EmbeddedObject map = new EmbeddedObject("map", "");
 		addEmbeddedObject(_selection.getCurrentNode(), map);
+	}
+
+	public void showSearchMenu(int x, int y) {
+		_mindMapView
+				.showSearchMenu(x, y, _selection.getCurrentNode().getText());
 	}
 }

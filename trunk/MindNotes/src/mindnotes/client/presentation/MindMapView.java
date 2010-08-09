@@ -43,6 +43,8 @@ public interface MindMapView {
 		public void actionMenuGesture(int x, int y);
 
 		public void imageInsertGesture(String url);
+
+		public void mapInsertGesture();
 	}
 
 	public void setListener(Listener l);
@@ -69,5 +71,5 @@ public interface MindMapView {
 
 	public abstract void holdLayout();
 
-	public void showImageSearch(int x, int y, String text);
+	public void showSearchMenu(int x, int y, String text);
 }
