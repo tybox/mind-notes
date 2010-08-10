@@ -28,6 +28,9 @@ public class DSMindMap {
 	@Persistent
 	private String title;
 
+	@Persistent
+	private Boolean isPublic;
+
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	@PrimaryKey
 	private Key key;
@@ -82,4 +85,13 @@ public class DSMindMap {
 		return userID;
 	}
 
+	public void setPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+
+	public boolean getPublic() {
+		if (isPublic == null)
+			return false;
+		return isPublic;
+	}
 }

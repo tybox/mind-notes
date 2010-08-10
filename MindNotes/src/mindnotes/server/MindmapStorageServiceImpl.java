@@ -22,14 +22,15 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 		MindmapStorageService {
 
 	@Override
-	public void saveMindmap(MindMap map) {
+	public MindMapInfo saveMindmap(MindMap map) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
 			DSMindMap dsMindMap = new DSMindMap(map);
 			dsMindMap.setUserID(getCurrentUserID());
 			pm.makePersistent(dsMindMap);
-			System.out.println("saved" + map + " to: "
-					+ dsMindMap.getKey().getId());
+
+			return new MindMapInfo(KeyFactory.keyToString(dsMindMap.getKey()),
+					dsMindMap.getTitle());
 
 		} finally {
 			pm.close();
@@ -39,21 +40,61 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public MindMap loadMindmap(String key) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
-		Query query = createSingleSelectQuery(pm);
-
 		try {
-			@SuppressWarnings("unchecked")
-			List<DSMindMap> result = (List<DSMindMap>) query.execute(KeyFactory
-					.stringToKey(key));
-
-			if (!result.isEmpty()) {
-				return result.get(0).getMap();
-			}
+			return loadDSMindMap(pm, key, false).getMap();
 		} finally {
 			pm.close();
 		}
+	}
 
-		return null;
+	@Override
+	public MindMap loadMindmapPublic(String key) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			return loadDSMindMap(pm, key, true).getMap();
+		} finally {
+			pm.close();
+		}
+	}
+
+	/**
+	 * @param key
+	 * @return
+	 */
+	private DSMindMap loadDSMindMap(PersistenceManager pm, String key,
+			boolean hasToBePublic) {
+		Query query = createSingleSelectQuery(pm);
+
+		@SuppressWarnings("unchecked")
+		List<DSMindMap> result = (List<DSMindMap>) query.execute(KeyFactory
+				.stringToKey(key));
+
+		if (!result.isEmpty()) {
+
+			DSMindMap dsMindMap = result.get(0);
+			// check if user is authorized to load this map;
+			if (hasToBePublic) {
+				if (!dsMindMap.getPublic()) {
+					throw new SecurityException("Map is not public");
+				}
+			} else {
+				authorizeUser(dsMindMap.getUserID());
+			}
+			return dsMindMap;
+		} else {
+			throw new RuntimeException("No such map");
+		}
+
+	}
+
+	private void authorizeUser(String requiredID) {
+		UserService userService = UserServiceFactory.getUserService();
+		User user = userService.getCurrentUser();
+		if (user == null)
+			throw new SecurityException("user not logged in");
+		if (!user.getUserId().equals(requiredID)) {
+			throw new SecurityException("user not authorized");
+		}
 	}
 
 	@Override
@@ -61,7 +102,9 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		Query q = createSingleSelectQuery(pm);
 		try {
-			q.deletePersistentAll(KeyFactory.stringToKey(key));
+			// loadMindmap also does a security check
+			if (loadMindmap(key) != null)
+				q.deletePersistentAll(KeyFactory.stringToKey(key));
 		} finally {
 			pm.close();
 		}
@@ -70,8 +113,7 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 	private Query createSingleSelectQuery(PersistenceManager pm) {
 		Query query = pm.newQuery(DSMindMap.class);
 		query.setFilter("key == keyParam");
-		query
-				.declareParameters("com.google.appengine.api.datastore.Key keyParam");
+		query.declareParameters("com.google.appengine.api.datastore.Key keyParam");
 		return query;
 	}
 
@@ -88,10 +130,8 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 			List<Object[]> result = (List<Object[]>) query.execute(userID);
 			List<MindMapInfo> mminfos = new LinkedList<MindMapInfo>();
 			for (Object[] resultRow : result) {
-				mminfos
-						.add(new MindMapInfo(KeyFactory
-								.keyToString((Key) resultRow[0]),
-								(String) resultRow[1]));
+				mminfos.add(new MindMapInfo(KeyFactory
+						.keyToString((Key) resultRow[0]), (String) resultRow[1]));
 			}
 			return mminfos;
 		} finally {
@@ -110,6 +150,28 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 			throw new RuntimeException("user not logged in"); // panic
 
 		return user.getUserId();
+	}
+
+	@Override
+	public void setMapPublic(String key, boolean isPublic) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			DSMindMap map = loadDSMindMap(pm, key, false);
+			map.setPublic(isPublic);
+		} finally {
+			pm.close();
+		}
+	}
+
+	@Override
+	public boolean getMapPublic(String key) {
+		PersistenceManager pm = PMF.get().getPersistenceManager();
+		try {
+			DSMindMap map = loadDSMindMap(pm, key, false);
+			return map.getPublic();
+		} finally {
+			pm.close();
+		}
 	}
 
 }

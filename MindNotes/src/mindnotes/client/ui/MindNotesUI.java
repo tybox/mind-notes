@@ -25,32 +25,46 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	interface MindNotesUIUiBinder extends UiBinder<Widget, MindNotesUI> {
 	}
 
-	@UiField
+	@UiField(provided = true)
 	MindMapWidget mindMapWidget;
 	@UiField
 	DockLayoutPanel dockLayoutPanel;
 	@UiField
-	Anchor saveButton;
+	Panel cloudBarPanel;
+
 	@UiField
-	Anchor loadButton;
-	@UiField
-	Anchor logoutLink;
+	Label titleLabel;
+
 	@UiField
 	Label greetLabel;
 	@UiField
+	Anchor newButton;
+	@UiField
+	Anchor loadButton;
+	@UiField
+	Anchor saveButton;
+	@UiField
 	Anchor saveLocalButton;
 	@UiField
-	Panel cloudBarPanel;
+	Anchor shareButton;
 	@UiField
-	Label titleLabel;
-	@UiField
-	Anchor newButton;
+	Anchor logoutLink;
 
 	public MindNotesUI() {
-
+		mindMapWidget = new MindMapWidget(false);
 		initWidget(uiBinder.createAndBindUi(this));
 		mindMapWidget.setEditorWindow(this);
 
+	}
+
+	@UiHandler("titleLabel")
+	public void onTitleClicked(ClickEvent event) {
+		mindMapWidget.askForDocumentTitle(titleLabel.getText());
+	}
+
+	@UiHandler("newButton")
+	public void onNewClicked(ClickEvent event) {
+		mindMapWidget.newClicked();
 	}
 
 	@UiHandler("loadButton")
@@ -68,14 +82,9 @@ public class MindNotesUI extends Composite implements RequiresResize,
 		mindMapWidget.saveLocalClicked();
 	}
 
-	@UiHandler("newButton")
-	public void onNewClicked(ClickEvent event) {
-		mindMapWidget.newClicked();
-	}
-
-	@UiHandler("titleLabel")
-	public void onTitleClicked(ClickEvent event) {
-		mindMapWidget.askForDocumentTitle(titleLabel.getText());
+	@UiHandler("shareButton")
+	public void onShareClicked(ClickEvent event) {
+		mindMapWidget.shareClicked();
 	}
 
 	public MindMapView getMindMapView() {
@@ -99,6 +108,7 @@ public class MindNotesUI extends Composite implements RequiresResize,
 		logoutLink.setVisible(visible);
 		greetLabel.setVisible(visible);
 		saveButton.setVisible(visible);
+		shareButton.setVisible(visible);
 	}
 
 	public void setMindMapTitle(String title) {

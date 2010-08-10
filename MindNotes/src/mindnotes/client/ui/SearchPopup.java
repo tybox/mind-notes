@@ -34,7 +34,7 @@ public class SearchPopup extends PopupPanel {
 	public SearchPopup() {
 		setWidget(uiBinder.createAndBindUi(this));
 		setAutoHideEnabled(true);
-
+		setStylePrimaryName("search-dialog");
 	}
 
 	@UiHandler("insertMap")

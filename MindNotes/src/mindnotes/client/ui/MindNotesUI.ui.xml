@@ -77,6 +77,7 @@
 					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Open</g:Anchor>
 					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
 					<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
+					<g:Anchor ui:field="shareButton" addStyleNames="{style.topbutton}">Share</g:Anchor>
 					<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
 
 				</g:FlowPanel>
