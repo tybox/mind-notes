@@ -248,8 +248,10 @@ public class MindMapEditor {
 	private Selection _selection;
 	private UndoStack _undoStack;
 
-	private Storage _cloudStorage;
+	private CloudStorage _cloudStorage;
 	private Storage _localStorage;
+
+	private String _currentMapKey;
 
 	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
 	private DragDropAction _dragDropAction;
@@ -489,7 +491,7 @@ public class MindMapEditor {
 		setUpNodeView(childView, newNode);
 	}
 
-	public void load(MindMapInfo map, boolean local) {
+	public void load(final MindMapInfo map, boolean local) {
 		Storage s = local ? getLocalStorage() : getCloudStorage();
 		s.loadMindMap(map, new AsyncCallback<MindMap>() {
 
@@ -500,9 +502,11 @@ public class MindMapEditor {
 
 			@Override
 			public void onSuccess(MindMap result) {
-				if (result != null)
+				if (result != null) {
+
 					setMindMap(result);
-				else
+					_currentMapKey = map.getKey();
+				} else
 					throw new NullPointerException("result is null");
 			}
 		});
@@ -597,7 +601,7 @@ public class MindMapEditor {
 			_mindMap.setTitle(title);
 		}
 
-		_cloudStorage.saveMindMap(_mindMap, new AsyncCallback<Void>() {
+		_cloudStorage.saveMindMap(_mindMap, new AsyncCallback<MindMapInfo>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -606,7 +610,8 @@ public class MindMapEditor {
 			}
 
 			@Override
-			public void onSuccess(Void result) {
+			public void onSuccess(MindMapInfo result) {
+				_currentMapKey = result.getKey();
 				_mindMapView.showMessage("Succesfully saved.");
 			}
 		});
@@ -649,6 +654,7 @@ public class MindMapEditor {
 	}
 
 	public void setMindMap(MindMap mindMap) {
+		_currentMapKey = null;
 		_mindMap = mindMap;
 		generateView();
 		updateUserInfo();
@@ -685,19 +691,21 @@ public class MindMapEditor {
 
 	public void saveLocal() {
 
-		getLocalStorage().saveMindMap(_mindMap, new AsyncCallback<Void>() {
+		getLocalStorage().saveMindMap(_mindMap,
+				new AsyncCallback<MindMapInfo>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				_mindMapView
-						.showMessage("Oops! Local save was not successful. Check if local saving is supported!");
-			}
+					@Override
+					public void onFailure(Throwable caught) {
+						_mindMapView
+								.showMessage("Oops! Local save was not successful. Check if local saving is supported!");
+					}
 
-			@Override
-			public void onSuccess(Void result) {
-				_mindMapView.showMessage("Successfully saved on this device.");
-			}
-		});
+					@Override
+					public void onSuccess(MindMapInfo result) {
+						_mindMapView
+								.showMessage("Successfully saved on this device.");
+					}
+				});
 
 	}
 
@@ -854,5 +862,78 @@ public class MindMapEditor {
 	public void showSearchMenu(int x, int y) {
 		_mindMapView
 				.showSearchMenu(x, y, _selection.getCurrentNode().getText());
+	}
+
+	public void showShareDialog() {
+		final ShareOptionsView view = _mindMapView.showShareDialog();
+		view.setListener(new ShareOptionsView.Listener() {
+
+			@Override
+			public void makePublicGesture() {
+				setMapPublic(true);
+				view.setLink(getMindNotesViewerURL());
+
+			}
+
+			@Override
+			public void makeNotPublicGesture() {
+				setMapPublic(false);
+
+			}
+		});
+		if (_currentMapKey == null) {
+			view.setMapNotUploaded();
+			return;
+		}
+		_cloudStorage.getService().getMapPublic(_currentMapKey,
+				new AsyncCallback<Boolean>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						_mindMapView
+								.showMessage("Oops! There was an error during retrieving sharing preferences.");
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						view.setMapPublished(result);
+						if (result) {
+							view.setLink(getMindNotesViewerURL());
+
+						}
+					}
+				});
+
+	}
+
+	public void setMapPublic(boolean b) {
+		_cloudStorage.getService().setMapPublic(_currentMapKey, b,
+				new AsyncCallback<Void>() {
+
+					@Override
+					public void onFailure(Throwable caught) {
+						_mindMapView
+								.showMessage("Oops! There was an error during setting sharing preferences.");
+					}
+
+					@Override
+					public void onSuccess(Void result) {
+						_mindMapView
+								.showMessage("Sharing preferences changed.");
+					}
+				});
+	}
+
+	/**
+	 * @return
+	 */
+	private String getMindNotesViewerURL() {
+		if (GWT.isScript()) {
+			return "http://mind-notes.appspot.com/MindNotesViewer.html?map="
+					+ _currentMapKey;
+		} else {
+			return "http://127.0.0.1:8888/MindNotesViewer.html?gwt.codesvr=127.0.0.1:9997&map="
+					+ _currentMapKey;
+		}
 	}
 }

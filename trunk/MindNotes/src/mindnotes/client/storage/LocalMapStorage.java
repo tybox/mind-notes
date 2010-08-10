@@ -96,7 +96,7 @@ public class LocalMapStorage implements Storage {
 
 	@Override
 	public void saveMindMap(final MindMap map,
-			final AsyncCallback<Void> callback) {
+			final AsyncCallback<MindMapInfo> callback) {
 		DeferredCommand.addCommand(new Command() {
 
 			@Override
@@ -125,7 +125,7 @@ public class LocalMapStorage implements Storage {
 					_storage.setItem(MINDMAP_KEY_PREFIX + k
 							+ MINDMAP_KEY_CONTENT_SUFFIX, jmmb.getJSON());
 
-					callback.onSuccess(null);
+					callback.onSuccess(new MindMapInfo("" + k, map.getTitle()));
 				} catch (Throwable t) {
 					callback.onFailure(t);
 				}

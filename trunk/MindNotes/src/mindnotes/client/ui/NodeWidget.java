@@ -90,7 +90,8 @@ public class NodeWidget extends Composite implements NodeView,
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				if (!isEditing()) {
-					_listener.nodeMouseDownGesture(NodeWidget.this);
+					if (_listener != null)
+						_listener.nodeMouseDownGesture(NodeWidget.this);
 				}
 			}
 		};
@@ -112,7 +113,8 @@ public class NodeWidget extends Composite implements NodeView,
 					return;
 				event.stopPropagation();
 				event.preventDefault();
-				_listener.nodeClickedGesture(NodeWidget.this);
+				if (_listener != null)
+					_listener.nodeClickedGesture(NodeWidget.this);
 
 				if (_contextMenu != null) {
 					_contextMenu.showContextMenu(event.getNativeEvent()

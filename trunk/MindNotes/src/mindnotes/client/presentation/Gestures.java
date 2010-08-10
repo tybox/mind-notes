@@ -284,4 +284,9 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.insertMap();
 	}
 
+	@Override
+	public void shareClickGesture() {
+		_mindMapEditor.showShareDialog();
+	}
+
 }

@@ -4,6 +4,7 @@ import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
+import mindnotes.client.presentation.ShareOptionsView;
 import mindnotes.client.ui.text.TinyEditor;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
@@ -54,133 +55,98 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private boolean _holdCentering;
 	private SearchPopup _searchMenu;
 
-	public MindMapWidget() {
-		Event.addNativePreviewHandler(new NativePreviewHandler() {
+	private boolean _viewer;
 
-			@Override
-			public void onPreviewNativeEvent(NativePreviewEvent event) {
-				/**
-				 * Chrome does not fire a 'keypress' event with ctr+c, ctrl+v,
-				 * ctrl+x (it does for ctrl+z) Firefox does not exhibit this
-				 * behavior. Oh well.
-				 */
-				if (event.getTypeInt() == Event.ONKEYDOWN) {
+	private ShareOptionsDialog _shareOptionsDialog;
 
-					NativeEvent nativeEvent = event.getNativeEvent();
+	public MindMapWidget(boolean viewer) {
+		_viewer = viewer;
 
-					// hack for Macs to make cmd button behave like ctrl
-					// on
-					// other platforms
-					boolean meta = Window.Navigator.getPlatform().equals(
-							"MacIntel") ? nativeEvent.getMetaKey()
-							: nativeEvent.getCtrlKey();
+		initArrows();
+		initRootNode();
+		initViewport();
 
-					if (_listener != null) {
-						_listener.keyboardShortcut(nativeEvent.getKeyCode(),
-								meta, nativeEvent.getShiftKey(),
-								nativeEvent.getAltKey());
-					}
-				}
+		if (!_viewer) {
+			initKeyboardShortcuts();
+			initActionButtons();
+			initContextMenu();
+			initTextEditor();
+			initDragDrop();
 
-			}
-		});
+		}
+		addNode(_rootNode);
 
-		_actionButtons = new ActionButtons();
+		initWidget(_scrollPanel);
 
-		_actionButtons.setListener(new ActionButtons.Listener() {
+		if (!_viewer) {
+			initMindMapSelectionDialog();
+		}
 
-			@Override
-			public void deleteClicked() {
-				_listener.deleteGesture();
-			}
+	}
 
-			@Override
-			public void addRightClicked() {
-				_listener.addRightGesture();
-			}
+	/**
+	 * 
+	 */
+	private void initRootNode() {
+		_rootNode = new NodeWidget();
+		_rootNode.setContainer(this);
+	}
 
-			@Override
-			public void addLeftClicked() {
-				_listener.addLeftGesture();
-			}
-
-			@Override
-			public void expandClicked() {
-				_listener.expandGesture();
-			}
-
-			@Override
-			public void addUpClicked() {
-				_listener.addUpGesture();
-			}
-
-			@Override
-			public void addDownClicked() {
-				_listener.addDownGesture();
-			}
-
-			@Override
-			public void searchMenuFired(int x, int y) {
-				_listener.actionMenuGesture(x, y);
-			}
-		});
-
+	/**
+	 * 
+	 */
+	private void initArrows() {
 		_arrowsWidget = new CanvasRenderWidget(this);
 		_arrowsWidget.setPixelSize(1000, 1000);
+	}
 
-		_rootNode = new NodeWidget();
-		NodeContextMenu contextMenu = new NodeContextMenu();
-		contextMenu.setListener(new NodeContextMenu.Listener() {
-
-			@Override
-			public void onMenuPaste() {
-				_listener.pasteGesture();
-
-			}
-
-			@Override
-			public void onMenuDelete() {
-				_listener.deleteGesture();
-
-			}
-
-			@Override
-			public void onMenuCut() {
-				_listener.cutGesture();
-			}
-
-			@Override
-			public void onMenuCopy() {
-				_listener.copyGesture();
-
-			}
-		});
-		_rootNode.setContextMenu(contextMenu);
-		_rootNode.setContainer(this);
-		TinyEditor textEditor = new TinyEditor();
-		textEditor.setListener(new TinyEditor.Listener() {
-
-			@Override
-			public void onEditorExitGesture() {
-				_listener.editorExitGesture();
-			}
-
-			@Override
-			public void onYTVideoInserted(String id) {
-				_listener.ytVideoInsertGesture(id);
-			}
-		});
-		_rootNode.setTextEditor(textEditor);
-
+	/**
+	 * 
+	 */
+	private void initViewport() {
 		_viewportPanel = new AbsolutePanel();
 		_viewportPanel.add(_arrowsWidget, 0, 0);
+
+		_scrollPanel = new ScrollPanel(_viewportPanel);
+		// _scrollPanel.setPixelSize(600, 500);
+		_scrollPanel.setScrollPosition(250);
+		_scrollPanel.setHorizontalScrollPosition(250);
+		_scrollPanel.setAlwaysShowScrollBars(true);
+		_viewportPanel.setPixelSize(1000, 1000);
+		// _viewportPanel.addStyleName("checkers-bg");
+	}
+
+	/**
+	 * 
+	 */
+	private void initMindMapSelectionDialog() {
+		_mindMapSelectionDialog = new MindMapSelectionDialog();
+		_mindMapSelectionDialog.setPositionCallback(new PositionCallback() {
+
+			@Override
+			public void setPosition(int offsetWidth, int offsetHeight) {
+				if (_window == null)
+					return;
+				int maxLeft = Window.getClientWidth() - offsetWidth;
+				int left = _window.loadButton.getAbsoluteLeft();
+				int top = MindMapWidget.this.getAbsoluteTop();
+				if (left > maxLeft)
+					left = maxLeft;
+				_mindMapSelectionDialog.setPopupPosition(left, top);
+			}
+		});
+	}
+
+	/**
+	 * 
+	 */
+	private void initDragDrop() {
 		_dragController = new PickupDragController(_viewportPanel, false);
 		_dragController.setBehaviorDragProxy(false);
 		_dragController.setBehaviorDragStartSensitivity(4);
 
 		_dropController = new MindMapDropController(this);
 		_dragController.registerDropController(_dropController);
-		addNode(_rootNode);
 
 		_dragController.addDragHandler(new DragHandler() {
 
@@ -223,33 +189,154 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 			}
 		});
+	}
 
-		_scrollPanel = new ScrollPanel(_viewportPanel);
-		// _scrollPanel.setPixelSize(600, 500);
-		_scrollPanel.setScrollPosition(250);
-		_scrollPanel.setHorizontalScrollPosition(250);
-		_scrollPanel.setAlwaysShowScrollBars(true);
-		_viewportPanel.setPixelSize(1000, 1000);
-		// _viewportPanel.addStyleName("checkers-bg");
-		initWidget(_scrollPanel);
-
-		_actionButtons.setContainer(this);
-		_actionButtons.setNodeContainer(this);
-
-		_mindMapSelectionDialog = new MindMapSelectionDialog();
-		_mindMapSelectionDialog.setPositionCallback(new PositionCallback() {
+	/**
+	 * 
+	 */
+	private void initTextEditor() {
+		TinyEditor textEditor = new TinyEditor();
+		textEditor.setListener(new TinyEditor.Listener() {
 
 			@Override
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				int maxLeft = Window.getClientWidth() - offsetWidth;
-				int left = _window.loadButton.getAbsoluteLeft();
-				int top = MindMapWidget.this.getAbsoluteTop();
-				if (left > maxLeft)
-					left = maxLeft;
-				_mindMapSelectionDialog.setPopupPosition(left, top);
+			public void onEditorExitGesture() {
+				if (_listener != null)
+					_listener.editorExitGesture();
+			}
+
+			@Override
+			public void onYTVideoInserted(String id) {
+				if (_listener != null)
+					_listener.ytVideoInsertGesture(id);
 			}
 		});
+		_rootNode.setTextEditor(textEditor);
+	}
 
+	/**
+	 * 
+	 */
+	private void initContextMenu() {
+		NodeContextMenu contextMenu = new NodeContextMenu();
+		contextMenu.setListener(new NodeContextMenu.Listener() {
+
+			@Override
+			public void onMenuPaste() {
+				if (_listener != null)
+					_listener.pasteGesture();
+
+			}
+
+			@Override
+			public void onMenuDelete() {
+				if (_listener != null)
+					_listener.deleteGesture();
+
+			}
+
+			@Override
+			public void onMenuCut() {
+				if (_listener != null)
+					_listener.cutGesture();
+			}
+
+			@Override
+			public void onMenuCopy() {
+				if (_listener != null)
+					_listener.copyGesture();
+
+			}
+		});
+		_rootNode.setContextMenu(contextMenu);
+	}
+
+	/**
+	 * 
+	 */
+	private void initKeyboardShortcuts() {
+		Event.addNativePreviewHandler(new NativePreviewHandler() {
+
+			@Override
+			public void onPreviewNativeEvent(NativePreviewEvent event) {
+				/**
+				 * Chrome does not fire a 'keypress' event with ctr+c, ctrl+v,
+				 * ctrl+x (it does for ctrl+z) Firefox does not exhibit this
+				 * behavior. Oh well.
+				 */
+				if (event.getTypeInt() == Event.ONKEYDOWN) {
+
+					NativeEvent nativeEvent = event.getNativeEvent();
+
+					// hack for Macs to make cmd button behave like ctrl
+					// on
+					// other platforms
+					boolean meta = Window.Navigator.getPlatform().equals(
+							"MacIntel") ? nativeEvent.getMetaKey()
+							: nativeEvent.getCtrlKey();
+
+					if (_listener != null) {
+						_listener.keyboardShortcut(nativeEvent.getKeyCode(),
+								meta, nativeEvent.getShiftKey(),
+								nativeEvent.getAltKey());
+					}
+				}
+
+			}
+		});
+	}
+
+	/**
+	 * 
+	 */
+	private void initActionButtons() {
+		_actionButtons = new ActionButtons();
+
+		_actionButtons.setListener(new ActionButtons.Listener() {
+
+			@Override
+			public void deleteClicked() {
+				if (_listener != null)
+					_listener.deleteGesture();
+			}
+
+			@Override
+			public void addRightClicked() {
+				if (_listener != null)
+					_listener.addRightGesture();
+			}
+
+			@Override
+			public void addLeftClicked() {
+				if (_listener != null)
+					_listener.addLeftGesture();
+			}
+
+			@Override
+			public void expandClicked() {
+				if (_listener != null)
+					_listener.expandGesture();
+			}
+
+			@Override
+			public void addUpClicked() {
+				if (_listener != null)
+					_listener.addUpGesture();
+			}
+
+			@Override
+			public void addDownClicked() {
+				if (_listener != null)
+					_listener.addDownGesture();
+			}
+
+			@Override
+			public void searchMenuFired(int x, int y) {
+				if (_listener != null)
+					_listener.actionMenuGesture(x, y);
+			}
+		});
+		_actionButtons.setContainer(this);
+		_actionButtons.setNodeContainer(this);
 	}
 
 	@Override
@@ -346,7 +433,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	public void setTitle(String title) {
-		_window.setMindMapTitle(title);
+		if (_window != null) {
+			_window.setMindMapTitle(title);
+		}
 	}
 
 	/**
@@ -373,7 +462,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 		for (NodeWidget child : node.getNodeChildren()) {
 			addNode(child);
 		}
-		if (node.getParentNodeWidget() != null) {
+		if (node.getParentNodeWidget() != null && _dragController != null) {
 			_dragController.makeDraggable(node, node.getContentWidget());
 		}
 	}
@@ -404,7 +493,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		_arrowsWidget.render(_ox, _oy);
 
-		_actionButtons.updateButtonLayout();
+		if (_actionButtons != null)
+			_actionButtons.updateButtonLayout();
 		_layoutValid = true;
 
 	}
@@ -507,9 +597,11 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	@Override
 	public void setUserInfo(String email, String logoutURL) {
-		_window.setUserEmail(email);
-		_window.setLogoutLink(logoutURL);
-		_window.setCloudBarVisible(email != null);
+		if (_window != null) {
+			_window.setUserEmail(email);
+			_window.setLogoutLink(logoutURL);
+			_window.setCloudBarVisible(email != null);
+		}
 	}
 
 	@Override
@@ -569,7 +661,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	public GhostNode getGhostNode() {
-		return _dropController.getGhostNode();
+		if (_dropController != null)
+			return _dropController.getGhostNode();
+		else
+			return null;
 
 	}
 
@@ -583,4 +678,40 @@ public class MindMapWidget extends Composite implements MindMapView,
 		return button.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft();
 	}
 
+	public void shareClicked() {
+		if (_listener != null) {
+			_listener.shareClickGesture();
+		}
+	}
+
+	@Override
+	public ShareOptionsView showShareDialog() {
+		if (_shareOptionsDialog == null) {
+			_shareOptionsDialog = new ShareOptionsDialog();
+		}
+		DeferredCommand.addCommand(new Command() {
+
+			@Override
+			public void execute() {
+				_shareOptionsDialog
+						.setPopupPositionAndShow(new PositionCallback() {
+
+							@Override
+							public void setPosition(int offsetWidth,
+									int offsetHeight) {
+								int x = _window.shareButton.getAbsoluteLeft();
+								int y = getAbsoluteTop();
+								if (x + offsetWidth > Window.getClientWidth()) {
+									x -= offsetWidth
+											- _window.shareButton
+													.getOffsetWidth();
+								}
+								_shareOptionsDialog.setPopupPosition(x, y);
+							}
+						});
+			}
+		});
+
+		return _shareOptionsDialog;
+	}
 }

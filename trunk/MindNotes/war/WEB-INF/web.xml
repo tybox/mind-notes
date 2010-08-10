@@ -18,6 +18,10 @@
 		<servlet-name>mindmapStorageServlet</servlet-name>
 		<url-pattern>/mindnotes/storage</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>mindmapStorageServlet</servlet-name>
+		<url-pattern>/mindviewer/storage</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>userInfoServlet</servlet-name>
@@ -34,8 +38,9 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>main-app</web-resource-name>
-			<url-pattern>/*</url-pattern>
+			<web-resource-name>mindnotes</web-resource-name>
+			<url-pattern>/mindnotes/*</url-pattern>
+			<url-pattern>/MindNotes.html</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>*</role-name>

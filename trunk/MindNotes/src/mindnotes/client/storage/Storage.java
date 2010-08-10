@@ -13,7 +13,7 @@ public interface Storage {
 
 	public void loadMindMap(MindMapInfo map, AsyncCallback<MindMap> callback);
 
-	public void saveMindMap(MindMap map, AsyncCallback<Void> callback);
-
 	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback);
+
+	public void saveMindMap(MindMap map, AsyncCallback<MindMapInfo> callback);
 }
