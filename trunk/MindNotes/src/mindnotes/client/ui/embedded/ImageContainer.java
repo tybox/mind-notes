@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class ImageContainer extends Composite {
 
+	private static final int SMALL_SIZE_PX = 72;
+
 	private static ImageContainerUiBinder uiBinder = GWT
 			.create(ImageContainerUiBinder.class);
 
@@ -116,10 +118,10 @@ public class ImageContainer extends Composite {
 		case SMALL:
 
 			if (ar > 1) {
-				w = 200;
+				w = SMALL_SIZE_PX;
 				h = (int) ((ar == 0) ? 0 : (w / ar));
 			} else {
-				h = 200;
+				h = SMALL_SIZE_PX;
 				w = (int) (h * ar);
 			}
 
