@@ -179,10 +179,6 @@ public class NodeLayout {
 
 		boolean isRoot = root.getLocation() == NodeLocation.ROOT;
 
-		if (isRoot) {
-			System.out.println("Right: " + right);
-		}
-
 		if (root.getLayoutChildren().isEmpty()) {
 			if (isRoot) {
 

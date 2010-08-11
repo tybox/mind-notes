@@ -39,7 +39,6 @@ public class MapViewer extends Composite {
 					var dataChunks = data.split(";", 2);
 					var sw = maps.LatLng.fromUrlValue(dataChunks[0]);
 					var ne = maps.LatLng.fromUrlValue(dataChunks[1]);
-					$wnd.alert('"'+sw+'" "'+ne+'"');
 					var bounds = new maps.LatLngBounds(sw, ne);
 					map.setCenter(bounds.getCenter());
 					map.setZoom(map.getBoundsZoomLevel(bounds));
