@@ -63,8 +63,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_viewer = viewer;
 
 		initArrows();
-		initRootNode();
 		initViewport();
+		initRootNode();
 
 		if (!_viewer) {
 			initKeyboardShortcuts();
@@ -89,6 +89,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	 */
 	private void initRootNode() {
 		_rootNode = new NodeWidget();
+		_rootNode.setResizeController(new NodeResizeController(_viewportPanel));
 		_rootNode.setContainer(this);
 	}
 
