@@ -21,9 +21,12 @@ import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NodeWidget extends Composite implements NodeView,
@@ -32,6 +35,8 @@ public class NodeWidget extends Composite implements NodeView,
 	interface Resources extends ClientBundle {
 		@Source("NodeWidget.css")
 		NodeStyle style();
+
+		ImageResource resizeHandleIcon();
 	}
 
 	interface NodeStyle extends CssResource {
@@ -46,6 +51,10 @@ public class NodeWidget extends Composite implements NodeView,
 		String nodeCurrent();
 
 		String nodeFocused();
+
+		String textPanel();
+
+		String resizeHandle();
 	}
 
 	// ClientBundle resources
@@ -57,6 +66,7 @@ public class NodeWidget extends Composite implements NodeView,
 	private Listener _listener;
 	private TinyEditor _textEditor;
 	private NodeContextMenu _contextMenu;
+	private NodeResizeController _resizeController;
 
 	// node contents
 	private HTML _content;
@@ -80,6 +90,8 @@ public class NodeWidget extends Composite implements NodeView,
 	private Box _elementBounds;
 
 	private FlowPanel _objectContainer;
+
+	private FocusPanel _dragHandle;
 
 	public NodeWidget() {
 
@@ -134,11 +146,31 @@ public class NodeWidget extends Composite implements NodeView,
 		_content.setStyleName(_resources.style().nodeText());
 		_content.addMouseDownHandler(mouseDownHandler);
 
+		FlowPanel textPanel = new FlowPanel();
+		textPanel.setStyleName(_resources.style().textPanel());
+		textPanel.add(_content);
+		_dragHandle = new FocusPanel(new Image(_resources.resizeHandleIcon())) {
+			{
+				addDomHandler(new DoubleClickHandler() {
+
+					@Override
+					public void onDoubleClick(DoubleClickEvent event) {
+						_content.setSize("auto", "auto");
+						setLayoutValid(false);
+						event.stopPropagation();
+					}
+				}, DoubleClickEvent.getType());
+
+			}
+		};
+		_dragHandle.setStyleName(_resources.style().resizeHandle());
+		textPanel.add(_dragHandle);
+
 		_children = new ArrayList<NodeWidget>();
 		_layoutChildren = new TemporaryInsertList<LayoutTreeElement>(_children);
 
 		_objectContainer = new FlowPanel();
-		_objectContainer.add(_content);
+		_objectContainer.add(textPanel);
 
 		initWidget(_objectContainer);
 
@@ -183,6 +215,7 @@ public class NodeWidget extends Composite implements NodeView,
 		child.setContainer(_container);
 		child.setTextEditor(_textEditor);
 		child.setContextMenu(_contextMenu);
+		child.setResizeController(_resizeController);
 
 		_arrows.add(new Arrow(this, child));
 
@@ -513,5 +546,23 @@ public class NodeWidget extends Composite implements NodeView,
 			for (NodeWidget child : _children) {
 				child.setLocation(location, true);
 			}
+	}
+
+	public void setResizeController(NodeResizeController resizeController) {
+		_resizeController = resizeController;
+		_resizeController.makeDraggable(_dragHandle);
+	}
+
+	public void setTextPanelSize(int w, int h) {
+		_content.setPixelSize(w, h);
+		setLayoutValid(false);
+	}
+
+	public int getTextPanelWidth() {
+		return _content.getOffsetWidth();
+	}
+
+	public int getTextPanelHeight() {
+		return _content.getOffsetHeight();
 	}
 }

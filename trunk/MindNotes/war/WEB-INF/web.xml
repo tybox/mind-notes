@@ -39,8 +39,10 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>mindnotes</web-resource-name>
-			<url-pattern>/mindnotes/*</url-pattern>
+			<url-pattern>/mindnotes/storage</url-pattern>
+			<url-pattern>/mindnotes/userinfo</url-pattern>
 			<url-pattern>/MindNotes.html</url-pattern>
+			<url-pattern>/</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>*</role-name>
