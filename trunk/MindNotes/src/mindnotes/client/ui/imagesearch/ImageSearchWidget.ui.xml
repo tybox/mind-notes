@@ -4,8 +4,10 @@
 	<ui:style type="mindnotes.client.ui.imagesearch.ImageSearchWidget.Styles">
 		.scroll {
 			max-height: 240px;
-			background: #2d2f33;
-			border: 1px #aaa solid;
+			background: #414854;
+			border-top: 1px #aaa solid;
+			border-bottom: 1px #aaa solid;
+			
 		}
 		.panel {
 			width: 500px;

@@ -6,8 +6,9 @@
 			width: 220px;
 
 			padding: 6px;
-			border: 1px #ccc solid;
+			border: 1px #b0b99b solid;
 			overflow: hidden;
+			background: #edf3ff;
 		}
 		.check {
 			font-weight: bold;

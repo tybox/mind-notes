@@ -1,5 +1,6 @@
 package mindnotes.client.ui;
 
+import static com.google.gwt.dom.client.Style.Unit.PX;
 import mindnotes.client.presentation.ActionOptions;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
@@ -13,6 +14,8 @@ import com.allen_sauer.gwt.dnd.client.DragStartEvent;
 import com.allen_sauer.gwt.dnd.client.PickupDragController;
 import com.allen_sauer.gwt.dnd.client.VetoDragException;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
@@ -91,6 +94,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_rootNode = new NodeWidget();
 		_rootNode.setResizeController(new NodeResizeController(_viewportPanel));
 		_rootNode.setContainer(this);
+
 	}
 
 	/**
@@ -115,6 +119,15 @@ public class MindMapWidget extends Composite implements MindMapView,
 		_scrollPanel.setAlwaysShowScrollBars(true);
 		_viewportPanel.setPixelSize(1000, 1000);
 		// _viewportPanel.addStyleName("checkers-bg");
+
+		// fix scroll panel positioning to let the scroll panel take up the
+		// whole parent
+		Style style = _scrollPanel.getElement().getStyle();
+		style.setPosition(Position.ABSOLUTE);
+		style.setLeft(0, PX);
+		style.setTop(0, PX);
+		style.setRight(0, PX);
+		style.setBottom(0, PX);
 	}
 
 	/**
@@ -130,7 +143,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 					return;
 				int maxLeft = Window.getClientWidth() - offsetWidth;
 				int left = _window.loadButton.getAbsoluteLeft();
-				int top = MindMapWidget.this.getAbsoluteTop();
+				int top = _window.cloudBarPanel.getAbsoluteTop()
+						+ _window.cloudBarPanel.getOffsetHeight();
 				if (left > maxLeft)
 					left = maxLeft;
 				_mindMapSelectionDialog.setPopupPosition(left, top);
@@ -701,7 +715,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 							public void setPosition(int offsetWidth,
 									int offsetHeight) {
 								int x = _window.shareButton.getAbsoluteLeft();
-								int y = getAbsoluteTop();
+								int y = _window.cloudBarPanel.getAbsoluteTop()
+										+ _window.cloudBarPanel
+												.getOffsetHeight();
 								if (x + offsetWidth > Window.getClientWidth()) {
 									x -= offsetWidth
 											- _window.shareButton

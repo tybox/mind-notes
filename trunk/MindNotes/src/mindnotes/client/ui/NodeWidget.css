@@ -1,5 +1,5 @@
 .node {
-	border-bottom: 2px #333 solid;
+	border-bottom: 2px #2e58a8 solid;
 	font-size: 14px;
 	background-color: #fff;
 	margin: 0px;
@@ -7,7 +7,7 @@
 }
 
 .node:hover {
-	background-color: #e4eCf5;
+	background-color: #a7c5ff;
 	-webkit-border-top-right-radius: 9px;
 	-webkit-border-top-left-radius: 9px;
 	-moz-border-radius-topright: 9px;
@@ -21,16 +21,20 @@
 
 .nodeText {
 	margin: 4px 12px 1px 12px;
+	overflow: auto;
 }
 
 .nodeText p {
 	margin: 2px 0;
 }
 
+.nodeFocused {
+}
+
 .nodeSelected,
 .nodeCurrent {
-	background-color: #d7e8f5;
-	border-bottom: 2px #4882e0 solid;
+	background-color: #9cb26c;
+	border-bottom: 2px #82a82e solid;
 	 -webkit-border-top-right-radius: 9px;
 	 -webkit-border-top-left-radius: 9px;
 	 -moz-border-radius-topright: 9px;
@@ -38,16 +42,13 @@
 }
 .nodeSelected:hover,
 .nodeCurrent:hover {
-	background-color: #c0d6ed;
+	background-color: #b4cb82;
 	}
 
 .nodeParentSelected {
-	border-bottom: 2px #1b56b5 solid;
+	border-bottom: 2px #9cb26c solid;
 }
 
-.nodeFocused {
-	border: 2px #f88 solid;
-}
 .textPanel {
 	position: relative;
 }

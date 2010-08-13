@@ -7,10 +7,11 @@
 			font-size: 16px;
 			font-weight: bold;
 			margin: 6px 2px 4px 3px;
+			color: #2e58a8;
 		}
 		.container {
-			border: 1px #ccc solid;
-			background: #d7e6f5;
+			border: 1px #b0b99b solid;
+			background: #edf3ff;
 		}
 		.insertMap {
 			cursor: pointer;

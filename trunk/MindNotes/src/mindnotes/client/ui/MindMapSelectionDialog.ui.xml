@@ -3,13 +3,14 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<ui:style type='mindnotes.client.ui.MindMapSelectionDialog.Styles'>
 		.popup {
-			border: 1px #ccc solid;
-			border-top: none;
-			
+			border: 1px #b0b99b solid;
+			padding: 0px;
+			background: #edf3ff;
 		}
 		.scrolls {
 			min-width: 200px;
 			max-height: 200px;
+			padding: 2px;
 		}		
 		.dialog-content {
 			margin: 6px;
@@ -31,12 +32,15 @@
 		.heading {
 			font-weight: bold;
 			font-size: smaller;
-			color: #888;
+			color: #82a82e;
 		}
 		.removeImg {
 			position: relative;
 			top: 3px;
 			cursor: pointer;
+		}
+		.mindmapListLink {
+			color: #2e58a8;
 		}
 	</ui:style>
 	<g:PopupPanel addStyleNames="{style.popup}">
