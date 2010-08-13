@@ -23,7 +23,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class MindMapEditor {
 
-	public class DragDropAction implements Action {
+	public class DragDropAction implements UndoableAction {
 
 		private Node _parent;
 
@@ -47,8 +47,9 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			_oldParent = _child.getParent();
+
 			_oldIndex = _oldParent.getChildren().indexOf(_child);
 			_oldLocation = _child.getNodeLocation();
 
@@ -64,6 +65,7 @@ public class MindMapEditor {
 					_nodeViews.get(_parent), _index, _location);
 
 			_mindMapView.resumeLayout();
+			return _oldParent != _parent;
 		}
 
 		@Override
@@ -86,7 +88,7 @@ public class MindMapEditor {
 
 	}
 
-	private class AddAction implements Action {
+	private class AddAction implements UndoableAction {
 
 		private Node _createdNode;
 		private NodeLocation _location;
@@ -96,9 +98,10 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			_createdNode = addChild(_selection.getCurrentNode(), _location);
 			setCurrentNode(_createdNode);
+			return true;
 		}
 
 		@Override
@@ -108,7 +111,7 @@ public class MindMapEditor {
 
 	}
 
-	private class AddSiblingAction implements Action {
+	private class AddSiblingAction implements UndoableAction {
 
 		private Node _createdNode;
 		private boolean _above;
@@ -118,11 +121,12 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			Node current = _selection.getCurrentNode();
 			_createdNode = insertChild(current.getParent(), current, _above);
 
 			setCurrentNode(_createdNode);
+			return true;
 		}
 
 		@Override
@@ -132,7 +136,7 @@ public class MindMapEditor {
 
 	}
 
-	private class CutAction implements Action {
+	private class CutAction implements UndoableAction {
 
 		private Node _cutNode;
 		private Node _parentNode;
@@ -141,14 +145,16 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			// TODO make this action work on the whole selection
 			_cutNode = _selection.getCurrentNode();
 			if (_cutNode == null)
-				return;
+				return false;
 			_parentNode = _cutNode.getParent();
 			_clipboard.setCurrentNode(_cutNode);
 			deleteNode(_cutNode);
+
+			return true;
 		}
 
 		@Override
@@ -165,7 +171,7 @@ public class MindMapEditor {
 
 	}
 
-	private class DeleteAction implements Action {
+	private class DeleteAction implements UndoableAction {
 
 		private Node _parentNode;
 		private Node _removedNode;
@@ -175,9 +181,10 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			_parentNode = _removedNode.getParent();
 			deleteNode(_removedNode);
+			return true;
 		}
 
 		@Override
@@ -188,7 +195,7 @@ public class MindMapEditor {
 
 	}
 
-	private class ExpandAction implements Action {
+	private class ExpandAction implements UndoableAction {
 
 		private boolean _expandOnUndo;
 		private Node _subject;
@@ -200,11 +207,12 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			_subject.setExpanded(!_subject.isExpanded());
 
 			_nodeViews.get(_subject).setExpanded(_subject.isExpanded());
 			_expandOnUndo = !_subject.isExpanded();
+			return true;
 		}
 
 		@Override
@@ -215,7 +223,7 @@ public class MindMapEditor {
 
 	}
 
-	private class PasteAction implements Action {
+	private class PasteAction implements UndoableAction {
 
 		private Node _pastedNode;
 
@@ -224,12 +232,13 @@ public class MindMapEditor {
 		}
 
 		@Override
-		public void doAction() {
+		public boolean doAction() {
 			if (_clipboard.getCurrentNode() == null)
-				return;
+				return false;
 			_pastedNode = _clipboard.getCurrentNode();
 			insertChild(_selection.getCurrentNode(), _pastedNode);
 			setCurrentNode(_pastedNode);
+			return true;
 		}
 
 		@Override
@@ -255,6 +264,11 @@ public class MindMapEditor {
 
 	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
 	private DragDropAction _dragDropAction;
+
+	/**
+	 * The editor is dirty if there are any unsaved changes in the map.
+	 */
+	private boolean _isDirty;
 
 	public MindMapEditor(MindMapView mindMapView) {
 		_nodeViews = new HashMap<Node, NodeView>();
@@ -374,9 +388,9 @@ public class MindMapEditor {
 		}
 	}
 
-	private void doUndoableAction(Action a) {
-		a.doAction();
-		_undoStack.push(a);
+	private void doUndoableAction(UndoableAction a) {
+		if (a.doAction())
+			_undoStack.push(a);
 	}
 
 	private void generateView() {
