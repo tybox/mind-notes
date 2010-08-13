@@ -3,217 +3,112 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" 
 	xmlns:mn='urn:import:mindnotes.client.ui'
 	xmlns:txt='urn:import:mindnotes.client.ui.text'>
+	<ui:image field="logo"  src="mindnotes-logo.png" />
 	<ui:style>
-		
-		.sidebar {
-			padding: 12px;
-			min-width: 266px;
+	
+		.rootPanel {
+			position: absolute;
+			overflow: hidden;
 		}
 		
-		.sidebar p {
-			text-align: justify;		
+		.mindmap {
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			overflow: hidden;
 		}
 		
-		.header {
-						
-			margin-bottom: 12px;
+		.title {
+			position: absolute;
+			top: 0;
+			left: 0;
+			margin: 6px;
+			background: none;
+			font-weight:bold;
+			color: #2e58a8;
+			font-size: 18px;
+			cursor: pointer;
+			line-height: 18px;
+		}
+
+		.logo {
+			position: absolute;
+			bottom: 11px;
+			left: 0;
+			margin: 2px;
+			background: none;
+			line-height: 0px;
+			font-size: 11px;
 			
 		}
 		
-		.header-h1 {
-			margin-top: 0px;
-			margin-left: 12px;
-			font-size: 28px;
-			font-weight: bold;
+		.logo img {
+			vertical-align: middle;
 		}
 		
-		.toprightlinks {
-			padding: 12px;
-			text-align: right;
-			font-weight: bold;
-			color: #eee;
+		.logo a {
+			color: #a7c5ff;
+			text-decoration: none;
+			cursor: pointer;
+			position: relative;
+			top: 8px;
+			left: -18px;
+			margin-right: 6px;
 		}
 		
-		.toprightlinks a {
-			color: #eee;
+		.greetLabel {
+			font-weight: bold;
+			color: #82a82e;
 		}
 		
 		.topbutton {
 			cursor: pointer;
-
 			margin-left: 12px;
 			text-decoration: underline;
+			
 		}
 		
-		.topbar {
-			background: #222228;
-			color: #fffaf1;
-			width: 100%;
+		.cloud-bar {
+			position: absolute;
+			top: 0;
+			right: 20px;
+			margin: 6px;
+			background: none;
+			color: #2e58a8;	
 		}
 		
-		.title {
-			padding: 10px 12px 12px 24px;
-			font-weight:bold;
-			color: #eee;
-			font-size: large;
-			cursor: pointer;
+		.cloud-bar a {
+			color: #2e58a8;	
 		}
+		
+
 
 		
 	</ui:style>
-	<g:DockLayoutPanel unit='PX' ui:field="dockLayoutPanel">
-		<g:north size='40'>
-			<g:HorizontalPanel addStyleNames="{style.topbar}">
-				<g:HTMLPanel addStyleNames="{style.header}">
-					<span class="{style.header-h1}">
-						Mind Notes
-						<span style="font-size: 21px">(09.08.2010)</span>
-					</span>
-					<g:InlineLabel ui:field="titleLabel" addStyleNames="{style.title}" />
-				</g:HTMLPanel>
-				<g:FlowPanel addStyleNames="{style.header} {style.toprightlinks}" ui:field="cloudBarPanel">
-					<g:InlineLabel ui:field="greetLabel"></g:InlineLabel>
-					<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>
-					<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Open</g:Anchor>
-					<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
-					<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
-					<g:Anchor ui:field="shareButton" addStyleNames="{style.topbutton}">Share</g:Anchor>
-					<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
+	<g:FlowPanel addStyleNames="{style.rootPanel}">
+			<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
+			<g:HTMLPanel addStyleNames="{style.logo}">
+				<g:Image resource="{logo}" />
+				<a href="http://code.google.com/p/mind-notes/" target="_blank">project site</a>
+				<a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">source</a>
+				<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">report issues</a>
+			</g:HTMLPanel>
+		
+			<g:Label ui:field="titleLabel" addStyleNames="{style.title}" />
+		
+			<g:FlowPanel addStyleNames="{style.cloud-bar}" ui:field="cloudBarPanel">
+				<g:InlineLabel ui:field="greetLabel" addStyleNames="{style.greetLabel}"></g:InlineLabel>
+				<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>
+				<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Open</g:Anchor>
+				<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
+				<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
+				<g:Anchor ui:field="shareButton" addStyleNames="{style.topbutton}">Share</g:Anchor>
+				<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
+			</g:FlowPanel>
 
-				</g:FlowPanel>
 
-			</g:HorizontalPanel>
-
-		</g:north>
-		<g:center>
-			
-			<g:SplitLayoutPanel>
-			<g:west size='266'>
-			<g:ScrollPanel>
-				<g:HTMLPanel>
-					<div class="{style.sidebar}">
-						<p><a href="http://code.google.com/p/mind-notes/source/checkout" target="_blank">View source</a><br />
-						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Report a bug</a><br />
-						<a href="http://code.google.com/p/mind-notes/issues/list" target="_blank">Propose a feature</a></p>
-						<p><strong>Browser compatibility: </strong>All features tested on Chrome 5 (Win). Safari has some issues with YouTube embedding. Firefox mostly works although it's not extensively tested. IE is not supported.</p>
-						<h2>Iteration 5</h2>
-						<p>
-							<strong>Image Search</strong>
-							<ul>
-							<li>Click the search button below a selected node</li>
-							<li>Some images to insert are proposed to you based on the content of the node.</li>
-							<li>You can also use your own search terms.</li>
-						</ul>
-						</p>
-						<p>
-							<strong>Google Maps</strong>
-							<ul>
-							<li>Use the search menu to load a Google Maps widget to your node</li>
-							<li>The location of the map is saved together with the mind map.</li>
-						</ul>
-						</p>
-						<p>
-							<strong>Drag &amp; Drop</strong>
-							<ul>
-							<li>It finally works!</li>
-							<li>Try dragging a node to another position in the tree.</li>
-							<li>Note that you can move whole branches this way.</li>
-						</ul>
-						</p>
-						<p>
-							<strong>Additional content</strong>
-						</p>
-						<ul>
-							<li>Pasting a YouTube link causes a video to appear.</li>
-						</ul>
-						<p>
-							<strong>Cubic curve arrows &amp; new L&amp;F</strong>
-						</p>
-						<ul>
-							<li>Arrows are now rendered using cubic splines</li>
-							<li>The maps have a different look and feel.</li>
-						</ul>
-						<p>
-							<strong>L&amp;F advances</strong>
-						</p>
-						<ul>
-							<li>Action buttons now look different</li>
-							<li>There are more keyboard shortcuts.</li>
-							<li>Nodes feel more responsive (style changes on hover)</li>
-							<li>The node layout &amp; rendering is now much faster.</li>
-						</ul>
-						<h2>Iteration 4</h2>
-						<p>
-							<strong>Local Storage</strong>
-						</p>
-						<ul>
-							<li>You can now save your maps locally using HTML5 local storage.</li>
-							<li>The "Open" link in the top right corner allows you to open maps from cloud, open local maps, and delete maps</li>
-						</ul>
-						<p>
-							<strong>Rich text editing</strong>
-						</p>
-						<ul>
-							<li>TinyMCE is now integrated into the app, providing first-class rich text editing.</li>
-						</ul>
-						<p>
-							<strong>UI improvements</strong>
-							<ul>
-								<li>Creating nodes and selecting them is less laggy (still a little bit too much jumpy for my taste)</li>
-								<li>You can now change the mind map title and it is constantly visible in the window.</li>
-								<li>There are neat buttons with icons instead text buttons for node actions.</li>
-								<li>You can now add siblings directly from sibling node selection</li>
-								<li>There is a context menu that contains options for the node is meant to contain the most complete of node actions.</li>
-								<li>When selecting a node, all child nodes of that node also get highlighted in a different color.</li>
-							</ul>
-						</p>
-						<p>
-							<strong>App cache</strong>
-							<ul>
-								<li>App cache manifest is now dynamically generated during compile time.</li>
-							</ul>
-						</p>						
-												
-						<h2>Iteration 3</h2>
-						<p>
-							<strong>Cloud Storage</strong>
-						</p>
-						<ul>
-							<li>The app now requires Google Accounts login; you should see your
-							email in the top right corner.</li>
-							<li>Try making your own mind map and click "Save to cloud"</li>
-							<li>Make some changes or reload the page, then click "Load from cloud"</li>
-						</ul>
-						<p>
-							<strong>App Cache</strong>
-						</p>
-						<ul>
-							<li>The app can be loaded and used without an internet connection.
-							Try disconnecting from the internet and then hitting refresh.</li>
-							<li>Notice the cloud features are disabled now.</li>
-						</ul>
-						<h2>Iteration 2</h2>
-					<p><strong>Better Layout, Undo Stack, Rich Text Formatting, Copy/Paste</strong></p>
-					<ul>
-					<li>The nodes are now positioned on an AbsolutePanel, and their positions are calculated
-					by the script. Left-hand side and right-hand sides are now supported.</li>
-					<li>After adding or deleting nodes, try undoing this (ctrl+z)</li>
-					<li>Nodes now can be edited using rich text editing. You can play with the B-I-U buttons, or paste some text from another webpage.</li>
-					<li>Try cutting (ctrl+x) and pasting (ctrl+v) nodes around. Copy is not implemented yet.</li>
-					<li>I abandoned the idea of porting this to SVG, because current method works well enough.</li>
-					</ul>
-					
-					</div>
-					
-				</g:HTMLPanel>
-			</g:ScrollPanel>
-			</g:west>
-			<g:center>
-				<mn:MindMapWidget ui:field="mindMapWidget"></mn:MindMapWidget>
-			</g:center>
-			</g:SplitLayoutPanel>
-		</g:center>
-
-	</g:DockLayoutPanel>
+	</g:FlowPanel>
 
 </ui:UiBinder> 

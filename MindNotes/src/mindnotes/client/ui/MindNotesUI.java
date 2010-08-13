@@ -9,7 +9,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ProvidesResize;
@@ -27,8 +26,7 @@ public class MindNotesUI extends Composite implements RequiresResize,
 
 	@UiField(provided = true)
 	MindMapWidget mindMapWidget;
-	@UiField
-	DockLayoutPanel dockLayoutPanel;
+
 	@UiField
 	Panel cloudBarPanel;
 
@@ -51,6 +49,7 @@ public class MindNotesUI extends Composite implements RequiresResize,
 	Anchor logoutLink;
 
 	public MindNotesUI() {
+
 		mindMapWidget = new MindMapWidget(false);
 		initWidget(uiBinder.createAndBindUi(this));
 		mindMapWidget.setEditorWindow(this);
@@ -91,11 +90,6 @@ public class MindNotesUI extends Composite implements RequiresResize,
 		return mindMapWidget;
 	}
 
-	@Override
-	public void onResize() {
-		dockLayoutPanel.onResize();
-	}
-
 	public void setLogoutLink(String logoutURL) {
 		logoutLink.setHref(logoutURL);
 	}
@@ -113,6 +107,12 @@ public class MindNotesUI extends Composite implements RequiresResize,
 
 	public void setMindMapTitle(String title) {
 		titleLabel.setText(title);
+	}
+
+	@Override
+	public void onResize() {
+		mindMapWidget.onResize();
+
 	}
 
 }

@@ -76,6 +76,8 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 
 	interface Styles extends CssResource {
 		String removeImg();
+
+		String mindmapListLink();
 	}
 
 	private static MindMapSelectionDialogUiBinder uiBinder = GWT
@@ -141,7 +143,7 @@ public class MindMapSelectionDialog implements MindMapSelectionView {
 		int i = 0;
 		for (MindMapInfo doc : mindmaps) {
 			Anchor link = new Anchor(doc.getTitle());
-			link.setStylePrimaryName("mindmap-list-link");
+			link.setStyleName(style.mindmapListLink());
 			link.addClickHandler(new ListSelectionHandler(doc, local));
 			table.setWidget(i, 0, link);
 
