@@ -16,14 +16,17 @@ public class UserInfoServiceImpl extends RemoteServiceServlet implements
 	public UserInfo getUserInfo() {
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
-		if (user == null)
-			throw new RuntimeException("user not logged in");
 		UserInfo info = new UserInfo();
-		info.setLogoutURL(userService.createLogoutURL("/MindNotes.html"));
+		if (user == null) {
+			info.setLoginURL(userService.createLoginURL("/MindNotes.html"));
+		} else {
+			info.setLogoutURL(userService.createLogoutURL("/MindNotes.html"));
 
-		info.setEmail(user.getEmail());
-		info.setNickname(user.getNickname());
-		info.setUserId(user.getUserId());
+			info.setEmail(user.getEmail());
+			info.setNickname(user.getNickname());
+			info.setUserId(user.getUserId());
+
+		}
 		return info;
 	}
 }

@@ -47,33 +47,38 @@ public interface MindMapView {
 		public void mapInsertGesture();
 
 		public void shareClickGesture();
+
+		public boolean windowClosing();
+
+		public void reconnectGesture();
 	}
 
-	public void setListener(Listener l);
-
 	public NodeView getRootNodeView();
+
+	public CloudActionsView getCloudActionsView();
+
+	public MindMapSelectionView getMindMapSelectionView();
+
+	public ShareOptionsView showShareDialog();
+
+	public void showSearchMenu(int x, int y, String text);
+
+	public void setListener(Listener l);
 
 	public void showActions(NodeView view, ActionOptions options);
 
 	public void hideActions();
 
-	public void updateLayout();
-
-	public MindMapSelectionView getMindMapSelectionView();
-
 	public String askForDocumentTitle();
 
-	public void setUserInfo(String email, String logoutURL);
-
-	void setTitle(String title);
+	public void setTitle(String title);
 
 	public void showMessage(String string);
+
+	public void updateLayout();
 
 	public abstract void resumeLayout();
 
 	public abstract void holdLayout();
 
-	public void showSearchMenu(int x, int y, String text);
-
-	public ShareOptionsView showShareDialog();
 }

@@ -1,0 +1,55 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.cloud-bar {
+			margin: 6px;
+			background: none;
+			color: #2e58a8;	
+		}
+		
+		.cloud-bar a {
+			color: #2e58a8;	
+		}
+		.button {
+			cursor: pointer;
+			margin-left: 12px;
+			text-decoration: underline;
+			
+		}
+		.greetLabel {
+			font-weight: bold;
+			color: #82a82e;
+		}
+		.offline {
+			color: #ff6347;
+		}
+		.try-again, .login-link {
+			margin-left: 5px;
+			font-size: 10px;
+			cursor: pointer;
+		}
+		
+		a.login-link {
+			color: #82a82e;
+		}
+		.notloggedin {
+			color: #82a82e;
+			
+			
+		}
+	</ui:style>
+	<g:FlowPanel addStyleNames="{style.cloud-bar}" visible = "false">
+		<g:InlineLabel ui:field="greetLabel" addStyleNames="{style.greetLabel}" />
+		<g:InlineLabel ui:field="offlineLabel" addStyleNames="{style.offline}">offline </g:InlineLabel>
+		<g:Anchor ui:field="tryAgainLink" addStyleNames="{style.try-again}">(reconnect)</g:Anchor>
+		<g:InlineLabel ui:field="notLoggedInLabel" addStyleNames="{style.notloggedin}">not logged in </g:InlineLabel>
+		<g:Anchor ui:field="loginLink" addStyleNames="{style.login-link}">(login)</g:Anchor>
+		<g:Anchor ui:field="newButton" addStyleNames="{style.button}">New</g:Anchor>
+		<g:Anchor ui:field="loadButton" addStyleNames="{style.button}">Open</g:Anchor>
+		<g:Anchor ui:field="saveButton" addStyleNames="{style.button}">Save to cloud</g:Anchor>						
+		<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.button}">Save locally</g:Anchor>
+		<g:Anchor ui:field="shareButton" addStyleNames="{style.button}">Share</g:Anchor>
+		<g:Anchor ui:field="logoutLink" addStyleNames="{style.button}">Log out</g:Anchor>
+	</g:FlowPanel>
+</ui:UiBinder> 
