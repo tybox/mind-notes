@@ -8,7 +8,7 @@ import mindnotes.shared.model.MindMapInfo;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath(value = "storage")
+@RemoteServiceRelativePath(value = "network/storage")
 public interface MindmapStorageService extends RemoteService {
 	public MindMapInfo saveMindmap(MindMap map);
 

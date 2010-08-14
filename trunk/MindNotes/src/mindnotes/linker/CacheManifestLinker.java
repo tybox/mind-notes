@@ -1,6 +1,7 @@
 package mindnotes.linker;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import com.google.gwt.core.ext.LinkerContext;
 import com.google.gwt.core.ext.TreeLogger;
@@ -54,21 +55,33 @@ public class CacheManifestLinker extends AbstractLinker {
 	}
 
 	private EmittedArtifact emitManifest(TreeLogger logger,
-			LinkerContext context, ArtifactSet as, File dir)
+			final LinkerContext context, ArtifactSet as, File dir)
 			throws UnableToCompleteException {
 		StringBuilder sb = new StringBuilder("CACHE MANIFEST\n");
-
+		sb.append("NETWORK:\n");
+		sb.append("network/*\n");
+		sb.append("*\n");
+		sb.append("CACHE:\n");
 		sb.append("# static files\n");
-		for (File f : dir.listFiles()) {
-			if (f.isDirectory()) {
-				if (!(f.getName().equals(context.getModuleName())
-						|| f.getName().equals("WEB-INF") || f.getName()
-						.startsWith("."))) {
-					appendFiles(dir.getPath(), "../", f.getName(), sb);
-				}
-			} else {
-				sb.append("../" + f.getName() + "\n");
+
+		// only get:
+		// 1. static entry html file
+		File[] entryFiles = dir.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File arg0, String filename) {
+				return filename.equalsIgnoreCase(context.getModuleName()
+						+ ".html");
 			}
+		});
+		if (entryFiles != null && entryFiles.length > 0) {
+			sb.append("../" + entryFiles[0].getName() + "\n");
+		}
+
+		// 2. content of "static" folder
+		File staticDir = new File(dir, "static");
+		if (staticDir.exists() && staticDir.isDirectory()) {
+			appendFiles(dir.getPath(), "..", staticDir.getName(), sb);
 		}
 
 		sb.append("# generated files\n");
@@ -97,16 +110,15 @@ public class CacheManifestLinker extends AbstractLinker {
 			if (f.getName().startsWith("."))
 				continue;
 
-			File appendFile = new File(appendPath, dir);
+			String appendFile = appendPath + "/" + dir;
 
 			if (f.isDirectory()) {
 				// recursive call
-				appendFiles(dirfile.getPath(), appendFile.getPath(), f
-						.getName(), sb);
+				appendFiles(dirfile.getPath(), appendFile, f.getName(), sb);
 
 			} else {
 				// append a new file declaration in the manifest
-				sb.append(new File(appendFile, f.getName()) + "\n");
+				sb.append(appendFile + "/" + f.getName() + "\n");
 			}
 
 		}

@@ -1,11 +1,25 @@
 package mindnotes.client.ui;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 public class NodeContextMenu extends PopupPanel {
+
+	interface Resources extends ClientBundle {
+		@Source("NodeContextMenu.css")
+		Style style();
+	}
+
+	interface Style extends CssResource {
+		public String contextMenu();
+	}
+
+	Resources _resources = GWT.create(Resources.class);
 
 	public interface Listener {
 		public void onMenuDelete();
@@ -65,7 +79,7 @@ public class NodeContextMenu extends PopupPanel {
 
 		});
 
-		setStylePrimaryName("context-menu");
+		setStyleName(_resources.style().contextMenu());
 
 		add(menu);
 	}

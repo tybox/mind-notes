@@ -1,0 +1,8 @@
+.contextMenu {
+	border: 1px #ccc solid;	
+}
+
+@external gwt-MenuBar-vertical, gwt-MenuItem;
+.contextMenu .gwt-MenuBar-vertical .gwt-MenuItem {
+	padding: 2px 36px 2px 6px;
+}
