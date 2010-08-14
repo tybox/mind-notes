@@ -289,4 +289,14 @@ public class Gestures implements MindMapView.Listener {
 		_mindMapEditor.showShareDialog();
 	}
 
+	@Override
+	public boolean windowClosing() {
+		return _mindMapEditor.isDirty();
+	}
+
+	@Override
+	public void reconnectGesture() {
+		_mindMapEditor.updateUserInfo(true);
+	}
+
 }

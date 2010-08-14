@@ -7,19 +7,19 @@
 			-webkit-border-bottom-left-radius: 5px;
 			-moz-border-radius-bottomright: 5px;
 			-webkit-border-bottom-right-radius: 5px;
-			font-size: 14px;
+			font-size: 12px;
+			color: #82a82e;
 			font-weight: bold;
-			color: #222;
-			background: #999;
+			background: #e6eed5;
 			max-height: 24px;
 			border: 1px transparent;
-			padding: 1px 7px 2px 7px;
+			padding: 2px 9px 4px 9px;
 		}
 		.link:hover {
-			color: #ffd;
+			color: #82a82e;
 		}
 		.link {
-			color: #fff;
+			color: #5879b9;
 			padding: 0 0 0 5px;
 			
 			/* ARE YOU EFFING KIDDING ME - we have to do this for links now? */

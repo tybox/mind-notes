@@ -20,6 +20,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.InvocationException;
 
 public class MindMapEditor {
 
@@ -262,13 +263,13 @@ public class MindMapEditor {
 
 	private String _currentMapKey;
 
-	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
-	private DragDropAction _dragDropAction;
-
 	/**
 	 * The editor is dirty if there are any unsaved changes in the map.
 	 */
 	private boolean _isDirty;
+
+	UserInfoServiceAsync _userInfoService = GWT.create(UserInfoService.class);
+	private DragDropAction _dragDropAction;
 
 	public MindMapEditor(MindMapView mindMapView) {
 		_nodeViews = new HashMap<Node, NodeView>();
@@ -285,22 +286,37 @@ public class MindMapEditor {
 
 	}
 
+	public void updateUserInfo() {
+		updateUserInfo(false);
+	}
+
 	/**
 	 * 
 	 */
-	private void updateUserInfo() {
+	public void updateUserInfo(final boolean reconnecting) {
 		// ask asynchronously for user info
 		_userInfoService.getUserInfo(new AsyncCallback<UserInfo>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				_mindMapView.setUserInfo(null, null);
+				// most likely a connection error;
+				_mindMapView.getCloudActionsView().setOffline();
+				if (reconnecting)
+					_mindMapView
+							.showMessage("Cannot reach MindNotes server. Are you online?");
+
 			}
 
 			@Override
 			public void onSuccess(UserInfo result) {
-				_mindMapView.setUserInfo(result.getEmail(),
-						result.getLogoutURL());
+				if (result.isLoggedIn()) {
+					_mindMapView.getCloudActionsView().setOnline(
+							result.getEmail(), result.getLogoutURL());
+				} else {
+					// the cloud is available, but user not logged in;
+					_mindMapView.getCloudActionsView().setNotLoggedIn(
+							result.getLoginURL());
+				}
 
 			}
 		});
@@ -389,8 +405,11 @@ public class MindMapEditor {
 	}
 
 	private void doUndoableAction(UndoableAction a) {
-		if (a.doAction())
+		if (a.doAction()) {
+			_isDirty = true;
+			System.out.println("D");
 			_undoStack.push(a);
+		}
 	}
 
 	private void generateView() {
@@ -511,7 +530,12 @@ public class MindMapEditor {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				throw new RuntimeException(caught);
+
+				if (caught instanceof InvocationException) {
+					// connection to the server failed for some reason
+					updateUserInfo(true);
+				}
+
 			}
 
 			@Override
@@ -520,6 +544,7 @@ public class MindMapEditor {
 
 					setMindMap(result);
 					_currentMapKey = map.getKey();
+					_isDirty = false;
 				} else
 					throw new NullPointerException("result is null");
 			}
@@ -564,6 +589,11 @@ public class MindMapEditor {
 			@Override
 			public void onFailure(Throwable caught) {
 				selectionView.setMindMaps(null);
+
+				if (caught instanceof InvocationException) {
+					// connection to the server failed for some reason
+					updateUserInfo(true);
+				}
 			}
 
 			@Override
@@ -576,6 +606,7 @@ public class MindMapEditor {
 			@Override
 			public void onFailure(Throwable caught) {
 				selectionView.setLocalMindMaps(null);
+
 			}
 
 			@Override
@@ -593,6 +624,10 @@ public class MindMapEditor {
 			public void onFailure(Throwable caught) {
 				_mindMapView
 						.showMessage("Oops! There was an error during deleting. Try again later.");
+				if (caught instanceof InvocationException) {
+					// connection to the server failed for some reason
+					updateUserInfo();
+				}
 			}
 
 			@Override
@@ -620,13 +655,19 @@ public class MindMapEditor {
 			@Override
 			public void onFailure(Throwable caught) {
 				_mindMapView
-						.showMessage("Oops! There was an error during saving. Try saving locally for now.");
+						.showMessage("Oops! There was an error during saving. Try saving locally for now."
+								+ caught);
+				if (caught instanceof InvocationException) {
+					// connection to the server failed for some reason
+					updateUserInfo(true);
+				}
 			}
 
 			@Override
 			public void onSuccess(MindMapInfo result) {
 				_currentMapKey = result.getKey();
 				_mindMapView.showMessage("Succesfully saved.");
+				_isDirty = false;
 			}
 		});
 	}
@@ -718,6 +759,7 @@ public class MindMapEditor {
 					public void onSuccess(MindMapInfo result) {
 						_mindMapView
 								.showMessage("Successfully saved on this device.");
+						_isDirty = false;
 					}
 				});
 
@@ -743,6 +785,7 @@ public class MindMapEditor {
 				n.addChildNode(n2);
 				mm.setRootNode(n);
 				setMindMap(mm);
+				_isDirty = false;
 			}
 		});
 	}
@@ -906,6 +949,10 @@ public class MindMapEditor {
 					public void onFailure(Throwable caught) {
 						_mindMapView
 								.showMessage("Oops! There was an error during retrieving sharing preferences.");
+						if (caught instanceof InvocationException) {
+							// connection to the server failed for some reason
+							updateUserInfo(true);
+						}
 					}
 
 					@Override
@@ -928,6 +975,10 @@ public class MindMapEditor {
 					public void onFailure(Throwable caught) {
 						_mindMapView
 								.showMessage("Oops! There was an error during setting sharing preferences.");
+						if (caught instanceof InvocationException) {
+							// connection to the server failed for some reason
+							updateUserInfo(true);
+						}
 					}
 
 					@Override
@@ -950,4 +1001,9 @@ public class MindMapEditor {
 					+ _currentMapKey;
 		}
 	}
+
+	public boolean isDirty() {
+		return _isDirty;
+	}
+
 }

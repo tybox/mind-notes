@@ -8,6 +8,7 @@ public class UserInfo implements IsSerializable {
 	private String _userId;
 	private String _nickname;
 	private String _logoutURL;
+	private String _loginURL;
 
 	public String getEmail() {
 		return _email;
@@ -41,4 +42,15 @@ public class UserInfo implements IsSerializable {
 		return _userId;
 	}
 
+	public void setLoginURL(String loginURL) {
+		_loginURL = loginURL;
+	}
+
+	public String getLoginURL() {
+		return _loginURL;
+	}
+
+	public boolean isLoggedIn() {
+		return _userId != null;
+	}
 }

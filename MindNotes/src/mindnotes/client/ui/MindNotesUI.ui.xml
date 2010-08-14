@@ -58,29 +58,10 @@
 			margin-right: 6px;
 		}
 		
-		.greetLabel {
-			font-weight: bold;
-			color: #82a82e;
-		}
-		
-		.topbutton {
-			cursor: pointer;
-			margin-left: 12px;
-			text-decoration: underline;
-			
-		}
-		
 		.cloud-bar {
 			position: absolute;
 			top: 0;
 			right: 20px;
-			margin: 6px;
-			background: none;
-			color: #2e58a8;	
-		}
-		
-		.cloud-bar a {
-			color: #2e58a8;	
 		}
 		
 
@@ -97,16 +78,7 @@
 			</g:HTMLPanel>
 		
 			<g:Label ui:field="titleLabel" addStyleNames="{style.title}" />
-		
-			<g:FlowPanel addStyleNames="{style.cloud-bar}" ui:field="cloudBarPanel">
-				<g:InlineLabel ui:field="greetLabel" addStyleNames="{style.greetLabel}"></g:InlineLabel>
-				<g:Anchor ui:field="newButton" addStyleNames="{style.topbutton}">New</g:Anchor>
-				<g:Anchor ui:field="loadButton" addStyleNames="{style.topbutton}">Open</g:Anchor>
-				<g:Anchor ui:field="saveButton" addStyleNames="{style.topbutton}">Save to cloud</g:Anchor>						
-				<g:Anchor ui:field="saveLocalButton" addStyleNames="{style.topbutton}">Save locally</g:Anchor>
-				<g:Anchor ui:field="shareButton" addStyleNames="{style.topbutton}">Share</g:Anchor>
-				<g:Anchor ui:field="logoutLink" addStyleNames="{style.topbutton}">Log out</g:Anchor>
-			</g:FlowPanel>
+			<mn:CloudBar ui:field="cloudBarPanel" addStyleNames="{style.cloud-bar}"/>
 
 
 	</g:FlowPanel>

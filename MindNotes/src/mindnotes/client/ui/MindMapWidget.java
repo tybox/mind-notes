@@ -2,6 +2,7 @@ package mindnotes.client.ui;
 
 import static com.google.gwt.dom.client.Style.Unit.PX;
 import mindnotes.client.presentation.ActionOptions;
+import mindnotes.client.presentation.CloudActionsView;
 import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
@@ -22,6 +23,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.PopupPanel.PositionCallback;
@@ -85,6 +88,22 @@ public class MindMapWidget extends Composite implements MindMapView,
 			initMindMapSelectionDialog();
 		}
 
+		initWindowClosingHandler();
+	}
+
+	private void initWindowClosingHandler() {
+		Window.addWindowClosingHandler(new ClosingHandler() {
+
+			@Override
+			public void onWindowClosing(ClosingEvent event) {
+				if (_listener != null && _listener.windowClosing()) {
+					event.setMessage("There are unsaved changes in your mind map. Are you sure you want to close this window?");
+				} else {
+					event.setMessage(null);
+				}
+			}
+		});
+
 	}
 
 	/**
@@ -142,7 +161,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 				if (_window == null)
 					return;
 				int maxLeft = Window.getClientWidth() - offsetWidth;
-				int left = _window.loadButton.getAbsoluteLeft();
+				int left = _window.cloudBarPanel.loadButton.getAbsoluteLeft();
 				int top = _window.cloudBarPanel.getAbsoluteTop()
 						+ _window.cloudBarPanel.getOffsetHeight();
 				if (left > maxLeft)
@@ -553,27 +572,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 		return _rootNode;
 	}
 
-	public void saveToCloudClicked() {
-		if (_listener != null) {
-			_listener.saveToCloudGesture();
-		}
-
-	}
-
-	public void saveLocalClicked() {
-		if (_listener != null) {
-			_listener.saveLocalGesture();
-		}
-
-	}
-
-	public void loadFromCloudClicked() {
-		if (_listener != null) {
-			_listener.loadFromCloudGesture();
-		}
-
-	}
-
 	@Override
 	public MindMapSelectionView getMindMapSelectionView() {
 
@@ -608,15 +606,51 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 	public void setEditorWindow(MindNotesUI window) {
 		_window = window;
-	}
+		_window.cloudBarPanel.setListener(new CloudActionsView.Listener() {
 
-	@Override
-	public void setUserInfo(String email, String logoutURL) {
-		if (_window != null) {
-			_window.setUserEmail(email);
-			_window.setLogoutLink(logoutURL);
-			_window.setCloudBarVisible(email != null);
-		}
+			@Override
+			public void newClicked() {
+				if (_listener != null) {
+					_listener.newMapGesture();
+				}
+			}
+
+			@Override
+			public void loadFromCloudClicked() {
+				if (_listener != null) {
+					_listener.loadFromCloudGesture();
+				}
+			}
+
+			@Override
+			public void saveToCloudClicked() {
+				if (_listener != null) {
+					_listener.saveToCloudGesture();
+				}
+			}
+
+			@Override
+			public void saveLocalClicked() {
+				if (_listener != null) {
+					_listener.saveLocalGesture();
+				}
+			}
+
+			@Override
+			public void shareClicked() {
+				if (_listener != null) {
+					_listener.shareClickGesture();
+				}
+			}
+
+			@Override
+			public void tryAgainClicked() {
+				if (_listener != null) {
+					_listener.reconnectGesture();
+				}
+			}
+
+		});
 	}
 
 	@Override
@@ -646,12 +680,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 	public void setButtonPosition(Widget button, int x, int y) {
 		_viewportPanel.setWidgetPosition(button, x, y);
 
-	}
-
-	public void newClicked() {
-		if (_listener != null) {
-			_listener.newMapGesture();
-		}
 	}
 
 	@Override
@@ -693,12 +721,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 		return button.getAbsoluteLeft() - _viewportPanel.getAbsoluteLeft();
 	}
 
-	public void shareClicked() {
-		if (_listener != null) {
-			_listener.shareClickGesture();
-		}
-	}
-
 	@Override
 	public ShareOptionsView showShareDialog() {
 		if (_shareOptionsDialog == null) {
@@ -714,13 +736,14 @@ public class MindMapWidget extends Composite implements MindMapView,
 							@Override
 							public void setPosition(int offsetWidth,
 									int offsetHeight) {
-								int x = _window.shareButton.getAbsoluteLeft();
+								int x = _window.cloudBarPanel.shareButton
+										.getAbsoluteLeft();
 								int y = _window.cloudBarPanel.getAbsoluteTop()
 										+ _window.cloudBarPanel
 												.getOffsetHeight();
 								if (x + offsetWidth > Window.getClientWidth()) {
 									x -= offsetWidth
-											- _window.shareButton
+											- _window.cloudBarPanel.shareButton
 													.getOffsetWidth();
 								}
 								_shareOptionsDialog.setPopupPosition(x, y);
@@ -730,5 +753,10 @@ public class MindMapWidget extends Composite implements MindMapView,
 		});
 
 		return _shareOptionsDialog;
+	}
+
+	@Override
+	public CloudActionsView getCloudActionsView() {
+		return _window.cloudBarPanel;
 	}
 }
