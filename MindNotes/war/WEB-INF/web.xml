@@ -16,20 +16,20 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>mindmapStorageServlet</servlet-name>
-		<url-pattern>/mindnotes/storage</url-pattern>
+		<url-pattern>/mindnotes/network/storage</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>mindmapStorageServlet</servlet-name>
-		<url-pattern>/mindviewer/storage</url-pattern>
+		<url-pattern>/mindviewer/network/storage</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>userInfoServlet</servlet-name>
-		<url-pattern>/mindnotes/userinfo</url-pattern>
+		<url-pattern>/mindnotes/network/userinfo</url-pattern>
 	</servlet-mapping>
 	<mime-mapping>
 		<extension>manifest</extension>
-		<mime-type>text/cache-manifst</mime-type>
+		<mime-type>text/cache-manifest</mime-type>
 	</mime-mapping>
 	<!-- Default page to serve -->
 	<welcome-file-list>
@@ -39,7 +39,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>mindnotes</web-resource-name>
-			<url-pattern>/mindnotes/storage</url-pattern>
+			<url-pattern>/mindnotes/network/storage</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>*</role-name>
