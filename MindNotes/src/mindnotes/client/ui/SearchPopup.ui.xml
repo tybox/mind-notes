@@ -23,5 +23,6 @@
 		<mnis:ImageSearchWidget ui:field="imageSearch" />
 		<g:Label addStyleNames="{style.title}">Maps</g:Label>
 		<g:Anchor ui:field ="insertMap" addStyleNames="{style.insertMap}">Insert new map</g:Anchor>
+		<g:Anchor ui:field ="insertText" addStyleNames="{style.insertMap}">Insert text</g:Anchor>
 	</g:FlowPanel>
 </ui:UiBinder> 

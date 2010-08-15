@@ -774,12 +774,12 @@ public class MindMapEditor {
 				final MindMap mm = new MindMap();
 				mm.setTitle("New Untitled Mind Map");
 				Node n = new Node();
-				n.setText("<b>New Mind Map</b>");
+				n.setText("New Mind Map");
 				Node n1 = new Node();
-				n1.setText("<b>A bubble</b>");
+				n1.setText("A bubble");
 				n1.setNodeLocation(NodeLocation.LEFT);
 				Node n2 = new Node();
-				n2.setText("<b>Another bubble</b>");
+				n2.setText("Another bubble");
 				n2.setNodeLocation(NodeLocation.RIGHT);
 				n.addChildNode(n1);
 				n.addChildNode(n2);
@@ -916,9 +916,14 @@ public class MindMapEditor {
 		addEmbeddedObject(_selection.getCurrentNode(), map);
 	}
 
-	public void showSearchMenu(int x, int y) {
+	public void insertRichText() {
+		EmbeddedObject text = new EmbeddedObject("richtext", "type text here");
+		addEmbeddedObject(_selection.getCurrentNode(), text);
+	}
+
+	public void showInsertMenu(int x, int y) {
 		_mindMapView
-				.showSearchMenu(x, y, _selection.getCurrentNode().getText());
+				.showInsertMenu(x, y, _selection.getCurrentNode().getText());
 	}
 
 	public void showShareDialog() {

@@ -2,8 +2,7 @@ package mindnotes.client.ui.embedded;
 
 import mindnotes.client.presentation.EmbeddedObjectView;
 import mindnotes.client.ui.LayoutTreeElement;
-import mindnotes.client.ui.embedded.YouTubePlayer.PlayerReadyCallback;
-import mindnotes.client.ui.maps.MapViewer;
+import mindnotes.client.ui.embedded.widgets.EmbeddedObjectWidget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -20,7 +19,7 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class EmbeddedObjectContainer extends Composite implements
-		EmbeddedObjectView {
+		EmbeddedObjectView, EmbeddedObjectWidget.Listener {
 
 	private static EmbeddedObjectContainerUiBinder uiBinder = GWT
 			.create(EmbeddedObjectContainerUiBinder.class);
@@ -50,64 +49,16 @@ public class EmbeddedObjectContainer extends Composite implements
 
 	private LayoutTreeElement _layoutHost;
 
-	public EmbeddedObjectContainer(String type, String data) {
+	public EmbeddedObjectContainer(EmbeddedObjectWidget widget, String data) {
 
 		initWidget(uiBinder.createAndBindUi(this));
 
-		// TODO change ifs to a hash map
-		if (type.equals("youtube")) {
-			insertYouTubePlayer(data);
+		if (widget != null) {
+			widget.setListener(this);
+			widget.setData(data);
+			titleLabel.setText(widget.getObjectTitle());
+			embeddedWidget.setWidget(widget.getObjectWidget());
 		}
-		if (type.equals("image")) {
-			insertImage(data);
-		}
-		if (type.equals("map")) {
-			insertMap(data);
-		}
-
-	}
-
-	private void insertMap(String data) {
-		MapViewer viewer = new MapViewer(data);
-		viewer.setListener(new MapViewer.Listener() {
-
-			@Override
-			public void onLocationUpdated(String newLocation) {
-				if (_listener != null) {
-					_listener.onDataChanged(newLocation);
-				}
-			}
-		});
-		embeddedWidget.setWidget(viewer);
-
-	}
-
-	private void insertImage(String data) {
-		ImageContainer ic = new ImageContainer();
-		ic.setImage(data);
-		ic.setListener(new ImageContainer.Listener() {
-
-			@Override
-			public void sizeUpdated() {
-				invalidateLayout();
-
-			}
-		});
-		embeddedWidget.setWidget(ic);
-		titleLabel.setText("Image");
-	}
-
-	private void insertYouTubePlayer(String data) {
-		YouTubePlayer player = new YouTubePlayer();
-		embeddedWidget.setWidget(player);
-		player.showPlayer(data, new PlayerReadyCallback() {
-
-			@Override
-			public void onPlayerReady() {
-				invalidateLayout();
-			}
-		});
-		titleLabel.setText("Video");
 
 	}
 
@@ -164,6 +115,18 @@ public class EmbeddedObjectContainer extends Composite implements
 
 	public LayoutTreeElement getLayoutHost() {
 		return _layoutHost;
+	}
+
+	@Override
+	public void dataChanged(String newData) {
+		if (_listener != null) {
+			_listener.onDataChanged(newData);
+		}
+	}
+
+	@Override
+	public void layoutChanged() {
+		invalidateLayout();
 	}
 
 }

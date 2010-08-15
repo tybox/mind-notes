@@ -72,6 +72,9 @@
 		.dimensions {
 			font-size: 9px;
 		}
+		.preview {
+			border: 1px #b0b99b solid;
+		}
 		
 		
 	</ui:style>
@@ -85,7 +88,7 @@
 		<g:ScrollPanel alwaysShowScrollBars="false" addStyleNames="{style.scroll}" ui:field="scrollPanel">
 			<g:FlowPanel ui:field="imageContainer" addStyleNames="{style.container}" />
 		</g:ScrollPanel>
-		<g:PopupPanel ui:field="imagePreview" visible ="false">
+		<g:PopupPanel ui:field="imagePreview" visible ="false" addStyleNames="{style.preview}">
 			
 			<g:HTMLPanel ui:field="imagePreviewPanel">
 				<div class="{style.imageDiv}"><g:Image ui:field="previewThumbnail" addStyleNames="{style.image}"/></div>

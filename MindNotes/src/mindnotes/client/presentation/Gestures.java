@@ -269,9 +269,9 @@ public class Gestures implements MindMapView.Listener {
 	}
 
 	@Override
-	public void actionMenuGesture(int x, int y) {
+	public void insertMenuGesture(int x, int y) {
 		// _mindMapEditor.showImageSearch(x, y);
-		_mindMapEditor.showSearchMenu(x, y);
+		_mindMapEditor.showInsertMenu(x, y);
 	}
 
 	@Override
@@ -297,6 +297,11 @@ public class Gestures implements MindMapView.Listener {
 	@Override
 	public void reconnectGesture() {
 		_mindMapEditor.updateUserInfo(true);
+	}
+
+	@Override
+	public void textInsertGesture() {
+		_mindMapEditor.insertRichText();
 	}
 
 }

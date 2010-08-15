@@ -1,0 +1,24 @@
+.resizeHandle {
+	position: absolute;
+	visibility: hidden;	
+	bottom: -3px;
+	right: 0;
+}
+
+.resizable:hover .resizeHandle {
+	visibility: visible;
+}
+
+.resizable {
+	position: relative;
+}
+
+.glassPanel {
+	background-color: transparent !important;
+	opacity: 1 !important;
+}
+
+@external dragdrop-handle;
+.resizable .dragdrop-handle {
+	cursor: default;
+}

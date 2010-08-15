@@ -40,7 +40,7 @@ public interface MindMapView {
 
 		public void ytVideoInsertGesture(String id);
 
-		public void actionMenuGesture(int x, int y);
+		public void insertMenuGesture(int x, int y);
 
 		public void imageInsertGesture(String url);
 
@@ -51,6 +51,8 @@ public interface MindMapView {
 		public boolean windowClosing();
 
 		public void reconnectGesture();
+
+		public void textInsertGesture();
 	}
 
 	public NodeView getRootNodeView();
@@ -61,7 +63,7 @@ public interface MindMapView {
 
 	public ShareOptionsView showShareDialog();
 
-	public void showSearchMenu(int x, int y, String text);
+	public void showInsertMenu(int x, int y, String text);
 
 	public void setListener(Listener l);
 

@@ -21,7 +21,9 @@ public class SearchPopup extends PopupPanel {
 	}
 
 	interface Listener extends ImageSearchWidget.Listener {
-		public void mapCreateGesture();
+		public void mapInsertGesture();
+
+		public void textInsertGesture();
 	}
 
 	private Listener _listener;
@@ -30,6 +32,8 @@ public class SearchPopup extends PopupPanel {
 	ImageSearchWidget imageSearch;
 	@UiField
 	Anchor insertMap;
+	@UiField
+	Anchor insertText;
 
 	public SearchPopup() {
 		setWidget(uiBinder.createAndBindUi(this));
@@ -40,7 +44,14 @@ public class SearchPopup extends PopupPanel {
 	@UiHandler("insertMap")
 	public void onInsertMapClicked(ClickEvent e) {
 		if (_listener != null) {
-			_listener.mapCreateGesture();
+			_listener.mapInsertGesture();
+		}
+	}
+
+	@UiHandler("insertText")
+	public void onInsertTextClicked(ClickEvent e) {
+		if (_listener != null) {
+			_listener.textInsertGesture();
 		}
 	}
 
