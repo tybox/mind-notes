@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -52,6 +53,24 @@ public class ImageSearchWidget extends Composite {
 
 		public void onResize(int offsetWidth, int offsetHeight);
 
+		public void onCancelHide();
+
+		public void onMaybeHide();
+	}
+
+	private class PreviewTimer extends Timer {
+
+		private PositionCallback _callback;
+
+		@Override
+		public void run() {
+			imagePreview.setPopupPositionAndShow(_callback);
+		}
+
+		public void setCallback(PositionCallback callback) {
+			_callback = callback;
+		}
+
 	}
 
 	@UiField
@@ -80,6 +99,10 @@ public class ImageSearchWidget extends Composite {
 	private ImageResult _selectedImage;
 	private Listener _listener;
 
+	private PreviewTimer _previewTimer;
+
+	private static final int POPUP_TIMEOUT = 300;
+
 	public ImageSearchWidget() {
 		imagePreview = new PopupPanel() {
 			{
@@ -88,13 +111,27 @@ public class ImageSearchWidget extends Composite {
 					@Override
 					public void onMouseOut(MouseOutEvent event) {
 						imagePreview.hide();
+						if (_listener != null) {
+							_listener.onMaybeHide();
+						}
 					}
 				}, MouseOutEvent.getType());
+				addDomHandler(new MouseOverHandler() {
+
+					@Override
+					public void onMouseOver(MouseOverEvent event) {
+						if (_listener != null) {
+							_listener.onCancelHide();
+						}
+					}
+				}, MouseOverEvent.getType());
 			}
 		};
+
 		initWidget(uiBinder.createAndBindUi(this));
 		attachBranding(brandingBox.getElement());
 		imagePreview.removeFromParent();
+		_previewTimer = new PreviewTimer();
 
 	}
 
@@ -123,6 +160,7 @@ public class ImageSearchWidget extends Composite {
 	public void performSearch(String text) {
 		searchInput.setText(text);
 		executeSearch(text);
+
 	}
 
 	/* @formatter:off */
@@ -192,7 +230,7 @@ public class ImageSearchWidget extends Composite {
 				previewLink.setHref(result.getOriginalContextUrl());
 				previewDimensions.setText(result.getWidth() + " x "
 						+ result.getHeight());
-				imagePreview.setPopupPositionAndShow(new PositionCallback() {
+				PositionCallback positionCallback = new PositionCallback() {
 
 					@Override
 					public void setPosition(int offsetWidth, int offsetHeight) {
@@ -216,7 +254,16 @@ public class ImageSearchWidget extends Composite {
 						imagePreview.setPopupPosition(x, y);
 
 					}
-				});
+				};
+				_previewTimer.setCallback(positionCallback);
+				_previewTimer.schedule(POPUP_TIMEOUT);
+			}
+		});
+		image.addMouseOutHandler(new MouseOutHandler() {
+
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				_previewTimer.cancel();
 			}
 		});
 		imageContainer.add(image);

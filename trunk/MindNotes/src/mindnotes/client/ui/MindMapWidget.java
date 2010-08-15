@@ -7,7 +7,8 @@ import mindnotes.client.presentation.MindMapSelectionView;
 import mindnotes.client.presentation.MindMapView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.presentation.ShareOptionsView;
-import mindnotes.client.ui.text.TinyEditor;
+import mindnotes.client.ui.embedded.widgets.EmbeddedObjectWidgetFactory;
+import mindnotes.client.ui.resize.ResizeController;
 
 import com.allen_sauer.gwt.dnd.client.DragEndEvent;
 import com.allen_sauer.gwt.dnd.client.DragHandler;
@@ -59,7 +60,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	private int _oy;
 
 	private boolean _holdCentering;
-	private SearchPopup _searchMenu;
+	private InsertMenu _insertMenu;
 
 	private boolean _viewer;
 
@@ -76,7 +77,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 			initKeyboardShortcuts();
 			initActionButtons();
 			initContextMenu();
-			initTextEditor();
 			initDragDrop();
 
 		}
@@ -111,7 +111,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 	 */
 	private void initRootNode() {
 		_rootNode = new NodeWidget();
-		_rootNode.setResizeController(new NodeResizeController(_viewportPanel));
+		_rootNode.setEmbeddedObjectFactory(new EmbeddedObjectWidgetFactory(
+				new ResizeController(_viewportPanel)));
 		_rootNode.setContainer(this);
 
 	}
@@ -176,8 +177,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 	 */
 	private void initDragDrop() {
 		_dragController = new PickupDragController(_viewportPanel, false);
-		_dragController.setBehaviorDragProxy(false);
-		_dragController.setBehaviorDragStartSensitivity(4);
+		_dragController.setBehaviorDragStartSensitivity(40);
 
 		_dropController = new MindMapDropController(this);
 		_dragController.registerDropController(_dropController);
@@ -223,28 +223,6 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 			}
 		});
-	}
-
-	/**
-	 * 
-	 */
-	private void initTextEditor() {
-		TinyEditor textEditor = new TinyEditor();
-		textEditor.setListener(new TinyEditor.Listener() {
-
-			@Override
-			public void onEditorExitGesture() {
-				if (_listener != null)
-					_listener.editorExitGesture();
-			}
-
-			@Override
-			public void onYTVideoInserted(String id) {
-				if (_listener != null)
-					_listener.ytVideoInsertGesture(id);
-			}
-		});
-		_rootNode.setTextEditor(textEditor);
 	}
 
 	/**
@@ -364,9 +342,9 @@ public class MindMapWidget extends Composite implements MindMapView,
 			}
 
 			@Override
-			public void searchMenuFired(int x, int y) {
+			public void insertMenuFired(int x, int y) {
 				if (_listener != null)
-					_listener.actionMenuGesture(x, y);
+					_listener.insertMenuGesture(x, y);
 			}
 		});
 		_actionButtons.setContainer(this);
@@ -374,46 +352,54 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	@Override
-	public void showSearchMenu(int x, int y, String text) {
-		if (_searchMenu == null) {
-			_searchMenu = new SearchPopup();
-			_searchMenu.setListener(new SearchPopup.Listener() {
+	public void showInsertMenu(int x, int y, String text) {
+		if (_insertMenu == null) {
+			_insertMenu = new InsertMenu();
+			_insertMenu.setListener(new InsertMenu.Listener() {
 
 				@Override
 				public void imageChosenGesture(String url) {
 					if (_listener != null) {
 						_listener.imageInsertGesture(url);
-						_searchMenu.hide();
+						_insertMenu.hide();
 					}
 				}
 
 				@Override
-				public void mapCreateGesture() {
+				public void mapInsertGesture() {
 					if (_listener != null) {
 						_listener.mapInsertGesture();
-						_searchMenu.hide();
+						_insertMenu.hide();
 					}
 				}
 
-				@Override
+				/*@Override
 				public void onResize(int offsetWidth, int offsetHeight) {
-					int x = _searchMenu.getAbsoluteLeft();
-					int y = _searchMenu.getAbsoluteTop();
-					int w = _searchMenu.getOffsetWidth();
-					int h = _searchMenu.getOffsetHeight();
+					int x = _insertMenu.getAbsoluteLeft();
+					int y = _insertMenu.getAbsoluteTop();
+					int w = _insertMenu.getOffsetWidth();
+					int h = _insertMenu.getOffsetHeight();
 					if (x + w > Window.getClientWidth()) {
 						x = Window.getClientWidth() - w - 30;
 					}
 					if (y + h > Window.getClientHeight()) {
 						y = Window.getClientHeight() - h - 30;
 					}
-					_searchMenu.setPopupPosition(x, y);
+					_insertMenu.setPopupPosition(x, y);
+				}*/
+
+				@Override
+				public void textInsertGesture() {
+					if (_listener != null) {
+						_listener.textInsertGesture();
+						_insertMenu.hide();
+					}
 				}
 			});
 		}
-		_searchMenu.performSearches(stripHTML(text));
+		_insertMenu.performSearches(stripHTML(text));
 		// showPopup(null, x, y, _searchMenu);
-		_searchMenu.showAt(x, y);
+		_insertMenu.showAt(x, y);
 
 	}
 

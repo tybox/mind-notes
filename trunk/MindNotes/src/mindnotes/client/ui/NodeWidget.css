@@ -1,6 +1,5 @@
 .node {
 	border-bottom: 2px #2e58a8 solid;
-	font-size: 14px;
 	background-color: #fff;
 	margin: 0px;
 		
@@ -15,17 +14,27 @@
 	
 }
 
-.node:hover .resizeHandle {
-	visibility: visible;
-}
-
 .nodeText {
-	margin: 4px 12px 1px 12px;
-	overflow: auto;
+	margin-right: 15px;
 }
 
-.nodeText p {
-	margin: 2px 0;
+.nodeText, .textBox {
+	margin: 4px 12px 1px 12px;
+	font-family: 'Arial Unicode MS', 'Arial', 'Helvetica', sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	
+}
+
+.textBox {
+	background: none;
+	border: none;
+	padding: 0;
+	display: block;	
+}
+.textBox:focus {
+	outline: none;
+	background: #cdd2c0;
 }
 
 .nodeFocused {
@@ -49,15 +58,10 @@
 	border-bottom: 2px #9cb26c solid;
 }
 
-.textPanel {
-	position: relative;
+.textPanel:focus {
+	outline: none;
 }
-.resizeHandle {
-	position: absolute;
-	visibility: hidden;	
-	bottom: -6px;
-	right: 0;
-}
+
 
 @external dragdrop-handle;
 .node .dragdrop-handle {

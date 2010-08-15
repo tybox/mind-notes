@@ -22,8 +22,8 @@ public class ActionButtons {
 		// (sic!)
 		ImageResource deleteIcon();
 
-		@Source("search.gif")
-		ImageResource searchIcon();
+		@Source("insertObject.gif")
+		ImageResource insertIcon();
 
 		Styles buttonStyles();
 
@@ -47,7 +47,7 @@ public class ActionButtons {
 
 		public void expandClicked();
 
-		public void searchMenuFired(int relativeLeft, int i);
+		public void insertMenuFired(int relativeLeft, int i);
 
 	}
 
@@ -62,7 +62,7 @@ public class ActionButtons {
 	private PushButton _addRightButton;
 	private PushButton _addUpButton;
 	private PushButton _addDownButton;
-	private PushButton _searchButton;
+	private PushButton _insertButton;
 
 	// resources
 	private Resources _resources = GWT.create(Resources.class);
@@ -75,7 +75,7 @@ public class ActionButtons {
 		_addRightButton = createButton(_resources.plusIcon());
 		_addUpButton = createButton(_resources.plusIcon());
 		_addDownButton = createButton(_resources.plusIcon());
-		_searchButton = createButton(_resources.searchIcon());
+		_insertButton = createButton(_resources.insertIcon());
 		_deleteButton = createButton(_resources.deleteIcon());
 		_deleteButton.addStyleName(_resources.buttonStyles().button());
 
@@ -122,7 +122,7 @@ public class ActionButtons {
 						_listener.deleteClicked();
 				}
 			});
-			_searchButton.addClickHandler(new ClickHandler() {
+			_insertButton.addClickHandler(new ClickHandler() {
 
 				@Override
 				public void onClick(ClickEvent event) {
@@ -137,10 +137,10 @@ public class ActionButtons {
 
 	protected void showSearchMenu() {
 		if (_listener != null) {
-			_listener.searchMenuFired(
-					_searchButton.getAbsoluteLeft(),
-					_searchButton.getAbsoluteTop()
-							+ _searchButton.getOffsetHeight());
+			_listener.insertMenuFired(
+					_insertButton.getAbsoluteLeft(),
+					_insertButton.getAbsoluteTop()
+							+ _insertButton.getOffsetHeight());
 		}
 	}
 
@@ -183,7 +183,7 @@ public class ActionButtons {
 		_container.addButton(_addUpButton);
 		_container.addButton(_addDownButton);
 		_container.addButton(_deleteButton);
-		_container.addButton(_searchButton);
+		_container.addButton(_insertButton);
 	}
 
 	public ButtonContainer getContainer() {
@@ -205,7 +205,7 @@ public class ActionButtons {
 		_addRightButton.setVisible(false);
 		_addUpButton.setVisible(false);
 		_addDownButton.setVisible(false);
-		_searchButton.setVisible(false);
+		_insertButton.setVisible(false);
 	}
 
 	public void updateButtonLayout() {
@@ -231,8 +231,8 @@ public class ActionButtons {
 		_addDownButton.setVisible(_options.canHaveSiblings());
 		_container.setButtonPosition(_addDownButton, x + (w - 20) / 2, y + h
 				+ 5);
-		_searchButton.setVisible(true);
-		_container.setButtonPosition(_searchButton, x, y + h + 5);
+		_insertButton.setVisible(true);
+		_container.setButtonPosition(_insertButton, x, y + h + 5);
 
 	}
 

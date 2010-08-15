@@ -118,5 +118,6 @@
 			<attribute name="javadoc_location" value="jar:file:/C:/Users/dominik/gwt-dnd-3.0.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="gwt-incubator.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

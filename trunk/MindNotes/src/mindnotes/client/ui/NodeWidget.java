@@ -9,24 +9,32 @@ import mindnotes.client.presentation.EmbeddedObjectView;
 import mindnotes.client.presentation.NodeView;
 import mindnotes.client.presentation.SelectionState;
 import mindnotes.client.ui.embedded.EmbeddedObjectContainer;
-import mindnotes.client.ui.text.TinyEditor;
+import mindnotes.client.ui.embedded.widgets.EmbeddedObjectWidgetFactory;
 import mindnotes.shared.model.NodeLocation;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ContextMenuEvent;
 import com.google.gwt.event.dom.client.ContextMenuHandler;
 import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NodeWidget extends Composite implements NodeView,
@@ -36,7 +44,6 @@ public class NodeWidget extends Composite implements NodeView,
 		@Source("NodeWidget.css")
 		NodeStyle style();
 
-		ImageResource resizeHandleIcon();
 	}
 
 	interface NodeStyle extends CssResource {
@@ -54,7 +61,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 		String textPanel();
 
-		String resizeHandle();
+		String textBox();
 	}
 
 	// ClientBundle resources
@@ -64,12 +71,12 @@ public class NodeWidget extends Composite implements NodeView,
 	private Set<Arrow> _arrows;
 	private NodeContainer _container;
 	private Listener _listener;
-	private TinyEditor _textEditor;
 	private NodeContextMenu _contextMenu;
-	private NodeResizeController _resizeController;
+	private EmbeddedObjectWidgetFactory _embeddedObjectFactory;
 
 	// node contents
-	private HTML _content;
+	private Label _content;
+	private TextBox _textBox;
 
 	// node tree relatives
 	private TemporaryInsertList<LayoutTreeElement> _layoutChildren;
@@ -91,7 +98,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 	private FlowPanel _objectContainer;
 
-	private FocusPanel _dragHandle;
+	private FocusPanel _textPanel;
 
 	public NodeWidget() {
 
@@ -101,10 +108,8 @@ public class NodeWidget extends Composite implements NodeView,
 
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
-				if (!isEditing()) {
-					if (_listener != null)
-						_listener.nodeMouseDownGesture(NodeWidget.this);
-				}
+				if (_listener != null)
+					_listener.nodeMouseDownGesture(NodeWidget.this);
 			}
 		};
 
@@ -112,9 +117,8 @@ public class NodeWidget extends Composite implements NodeView,
 
 			@Override
 			public void onDoubleClick(DoubleClickEvent event) {
-				if (_listener != null) {
-					_listener.nodeDoubleClickedGesture(NodeWidget.this);
-				}
+				setSelectionState(SelectionState.TEXT_EDITING);
+				_textBox.selectAll();
 			}
 		};
 		final ContextMenuHandler contextMenuHandler = new ContextMenuHandler() {
@@ -137,40 +141,70 @@ public class NodeWidget extends Composite implements NodeView,
 
 		_arrows = new HashSet<Arrow>();
 
-		_content = new HTML() {
+		_content = new Label() {
 			{
 				addDomHandler(doubleClickHandler, DoubleClickEvent.getType());
 				addDomHandler(contextMenuHandler, ContextMenuEvent.getType());
 			}
 		};
+
 		_content.setStyleName(_resources.style().nodeText());
-		_content.addMouseDownHandler(mouseDownHandler);
+		// _content.addMouseDownHandler(mouseDownHandler);
 
-		FlowPanel textPanel = new FlowPanel();
-		textPanel.setStyleName(_resources.style().textPanel());
-		textPanel.add(_content);
-		_dragHandle = new FocusPanel(new Image(_resources.resizeHandleIcon())) {
-			{
-				addDomHandler(new DoubleClickHandler() {
+		_textBox = new TextBox();
+		_textBox.setVisible(false);
+		_textBox.setStyleName(_resources.style().textBox());
+		_textBox.addKeyDownHandler(new KeyDownHandler() {
 
-					@Override
-					public void onDoubleClick(DoubleClickEvent event) {
-						_content.setSize("auto", "auto");
-						setLayoutValid(false);
-						event.stopPropagation();
-					}
-				}, DoubleClickEvent.getType());
-
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					exitTextEditing(true);
+					setSelectionState(SelectionState.CURRENT);
+				}
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE) {
+					exitTextEditing(false);
+					setSelectionState(SelectionState.CURRENT);
+				}
 			}
-		};
-		_dragHandle.setStyleName(_resources.style().resizeHandle());
-		textPanel.add(_dragHandle);
+		});
+		_textBox.addMouseDownHandler(new MouseDownHandler() {
+
+			@Override
+			public void onMouseDown(MouseDownEvent event) {
+				event.stopPropagation();
+			}
+		});
+		_textBox.addBlurHandler(new BlurHandler() {
+
+			@Override
+			public void onBlur(BlurEvent event) {
+				exitTextEditing(true);
+				setSelectionState(SelectionState.CURRENT);
+			}
+		});
+
+		_content.addMouseUpHandler(new MouseUpHandler() {
+
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				setSelectionState(SelectionState.TEXT_EDITING);
+			}
+		});
+
+		FlowPanel textComponents = new FlowPanel();
+		_textPanel = new FocusPanel();
+		_textPanel.setStyleName(_resources.style().textPanel());
+
+		textComponents.add(_content);
+		textComponents.add(_textBox);
+		_textPanel.setWidget(textComponents);
 
 		_children = new ArrayList<NodeWidget>();
 		_layoutChildren = new TemporaryInsertList<LayoutTreeElement>(_children);
 
 		_objectContainer = new FlowPanel();
-		_objectContainer.add(textPanel);
+		_objectContainer.add(_textPanel);
 
 		initWidget(_objectContainer);
 
@@ -183,10 +217,6 @@ public class NodeWidget extends Composite implements NodeView,
 
 	protected boolean isEditing() {
 		return _state == SelectionState.TEXT_EDITING;
-	}
-
-	public void setTextEditor(TinyEditor textEditor) {
-		_textEditor = textEditor;
 	}
 
 	public void setContainer(NodeContainer container) {
@@ -213,9 +243,8 @@ public class NodeWidget extends Composite implements NodeView,
 	protected void addChildAtIndex(NodeWidget child, int index) {
 		child.setLayoutParent(this);
 		child.setContainer(_container);
-		child.setTextEditor(_textEditor);
 		child.setContextMenu(_contextMenu);
-		child.setResizeController(_resizeController);
+		child.setEmbeddedObjectFactory(_embeddedObjectFactory);
 
 		_arrows.add(new Arrow(this, child));
 
@@ -264,7 +293,6 @@ public class NodeWidget extends Composite implements NodeView,
 
 	private void removeArrowTo(NodeWidget child) {
 		// we rely on the behavior that Set.remove works on .equals() not on ==
-		// TODO does this upset GC? in javascript?
 		_arrows.remove(new Arrow(this, child));
 	}
 
@@ -277,7 +305,7 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public void setText(String text) {
-		_content.setHTML(text);
+		_content.setText(text);
 		setLayoutValid(false);
 	}
 
@@ -327,31 +355,42 @@ public class NodeWidget extends Composite implements NodeView,
 		}
 
 		if (state != SelectionState.TEXT_EDITING) {
-			exitTextEditing();
+			exitTextEditing(true);
 		}
 
 	}
 
 	private void enterTextEditing() {
 
-		// setHTML after making rich text editor visible
-		// to avoid weird behavior of using the formatter when the widget is
-		// not visible
-		_textEditor.setLayoutHost(this);
-		_textEditor.attach(_content.getElement());
+		_textBox.setText(_content.getText());
+		_textBox.setSize(_content.getOffsetWidth() + "px", "auto");
+		_textBox.setVisible(true);
 
+		_content.setVisible(false);
 		setLayoutValid(false);
+		DeferredCommand.addCommand(new Command() {
+
+			@Override
+			public void execute() {
+				_textBox.setFocus(true);
+			}
+		});
 
 	}
 
-	private void exitTextEditing() {
+	private void exitTextEditing(boolean commit) {
+		if (!_textBox.isVisible())
+			return;
+		_textPanel.setFocus(false);
+		_textBox.setFocus(false);
+		_textBox.setVisible(false);
+		_content.setVisible(true);
 
-		_textEditor.detach();
 		setLayoutValid(false);
-		if (_listener != null) {
-			// TODO use isDirty;
-			_listener.nodeTextEditedGesture(this, _content.getHTML(),
-					_content.getHTML());
+
+		if (commit && _listener != null) {
+			_listener.nodeTextEditedGesture(this, _content.getText(),
+					_textBox.getText());
 		}
 	}
 
@@ -485,7 +524,8 @@ public class NodeWidget extends Composite implements NodeView,
 
 	@Override
 	public EmbeddedObjectView createEmbeddedObject(String type, String data) {
-		EmbeddedObjectContainer eoc = new EmbeddedObjectContainer(type, data);
+		EmbeddedObjectContainer eoc = new EmbeddedObjectContainer(
+				_embeddedObjectFactory.createObjectWidget(type), data);
 		eoc.setLayoutHost(this);
 		_objectContainer.add(eoc);
 		setLayoutValid(false);
@@ -499,7 +539,7 @@ public class NodeWidget extends Composite implements NodeView,
 	}
 
 	public Widget getContentWidget() {
-		return _content;
+		return _textPanel;
 	}
 
 	public int indexOfChild(NodeWidget widget) {
@@ -548,9 +588,9 @@ public class NodeWidget extends Composite implements NodeView,
 			}
 	}
 
-	public void setResizeController(NodeResizeController resizeController) {
-		_resizeController = resizeController;
-		_resizeController.makeDraggable(_dragHandle);
+	public void setEmbeddedObjectFactory(
+			EmbeddedObjectWidgetFactory embeddedObjectFactory) {
+		_embeddedObjectFactory = embeddedObjectFactory;
 	}
 
 	public void setTextPanelSize(int w, int h) {

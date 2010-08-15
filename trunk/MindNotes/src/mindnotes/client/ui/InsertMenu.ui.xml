@@ -1,0 +1,48 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:mnis="urn:import:mindnotes.client.ui.imagesearch">
+	<ui:style>
+		.title {
+
+		}
+		.container {
+			border: 1px #b0b99b solid;
+			background: #edf3ff;
+		}
+		.insertMap {
+			cursor: pointer;
+		}
+		.header {
+			font-size: 13px;
+			font-weight: bold;
+			margin: 6px 3px 2px 4px;
+			color: #7890bf;
+			line-height: 10px;
+		}
+		.item {
+			font-size: 11px;
+			font-weight: bold;
+			padding: 2px 9px 2px 6px;
+			color: #2e58a8;
+			cursor: pointer;
+		}
+		.item:hover {
+			background: #b4cb82;
+		}
+		.imageSearch {
+			border: 1px #b0b99b solid;
+			background: #edf3ff;
+		}
+			
+	</ui:style>
+	<g:FlowPanel addStyleNames="{style.container}">
+		<g:Label addStyleNames="{style.header}">Insert</g:Label>
+		<g:Label ui:field="insertText" addStyleNames="{style.item}">Text</g:Label>
+		<g:Label ui:field="showImageSearch" addStyleNames="{style.item}">Suggest Image</g:Label>
+		<g:Label ui:field="insertMap" addStyleNames="{style.item}">Geographical Map</g:Label>
+		<g:PopupPanel ui:field="imageSearchPopup" addStyleNames="{style.imageSearch}">
+			<mnis:ImageSearchWidget ui:field="imageSearch" />
+		</g:PopupPanel>
+	</g:FlowPanel>
+</ui:UiBinder> 
