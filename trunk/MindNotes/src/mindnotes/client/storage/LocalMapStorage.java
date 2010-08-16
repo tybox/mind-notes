@@ -95,7 +95,7 @@ public class LocalMapStorage implements Storage {
 	}
 
 	@Override
-	public void saveMindMap(final MindMap map,
+	public void saveMindMap(String key, final MindMap map,
 			final AsyncCallback<MindMapInfo> callback) {
 		DeferredCommand.addCommand(new Command() {
 

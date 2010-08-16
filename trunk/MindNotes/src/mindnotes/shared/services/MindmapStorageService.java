@@ -10,7 +10,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath(value = "network/storage")
 public interface MindmapStorageService extends RemoteService {
-	public MindMapInfo saveMindmap(MindMap map);
+
+	public MindMapInfo saveMindmap(String key, MindMap map);
 
 	public MindMap loadMindmap(String key);
 

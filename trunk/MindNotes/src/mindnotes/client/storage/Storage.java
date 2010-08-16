@@ -15,5 +15,6 @@ public interface Storage {
 
 	public void remove(MindMapInfo map, AsyncCallback<Void> asyncCallback);
 
-	public void saveMindMap(MindMap map, AsyncCallback<MindMapInfo> callback);
+	public void saveMindMap(String key, MindMap map,
+			AsyncCallback<MindMapInfo> callback);
 }

@@ -26,8 +26,9 @@ public class CloudStorage implements Storage {
 	}
 
 	@Override
-	public void saveMindMap(MindMap map, AsyncCallback<MindMapInfo> callback) {
-		_mindmapStorage.saveMindmap(map, callback);
+	public void saveMindMap(String key, MindMap map,
+			AsyncCallback<MindMapInfo> callback) {
+		_mindmapStorage.saveMindmap(key, map, callback);
 	}
 
 	@Override

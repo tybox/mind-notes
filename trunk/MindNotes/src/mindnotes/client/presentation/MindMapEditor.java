@@ -649,26 +649,27 @@ public class MindMapEditor {
 			_mindMap.setTitle(title);
 		}
 
-		_cloudStorage.saveMindMap(_mindMap, new AsyncCallback<MindMapInfo>() {
+		_cloudStorage.saveMindMap(_currentMapKey, _mindMap,
+				new AsyncCallback<MindMapInfo>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-				_mindMapView
-						.showMessage("Oops! There was an error during saving. Try saving locally for now."
-								+ caught);
-				if (caught instanceof InvocationException) {
-					// connection to the server failed for some reason
-					updateUserInfo(true);
-				}
-			}
+					@Override
+					public void onFailure(Throwable caught) {
+						_mindMapView
+								.showMessage("Oops! There was an error during saving. Try saving locally for now."
+										+ caught);
+						if (caught instanceof InvocationException) {
+							// connection to the server failed for some reason
+							updateUserInfo(true);
+						}
+					}
 
-			@Override
-			public void onSuccess(MindMapInfo result) {
-				_currentMapKey = result.getKey();
-				_mindMapView.showMessage("Succesfully saved.");
-				_isDirty = false;
-			}
-		});
+					@Override
+					public void onSuccess(MindMapInfo result) {
+						_currentMapKey = result.getKey();
+						_mindMapView.showMessage("Succesfully saved.");
+						_isDirty = false;
+					}
+				});
 	}
 
 	public void setCurrentNode(Node node) {
@@ -745,7 +746,7 @@ public class MindMapEditor {
 
 	public void saveLocal() {
 
-		getLocalStorage().saveMindMap(_mindMap,
+		getLocalStorage().saveMindMap(null, _mindMap,
 				new AsyncCallback<MindMapInfo>() {
 
 					@Override
@@ -771,6 +772,7 @@ public class MindMapEditor {
 			@Override
 			public void execute() {
 				final MindMap mm = new MindMap();
+				_currentMapKey = null;
 				mm.setTitle("New Untitled Mind Map");
 				Node n = new Node();
 				n.setText("New Mind Map");
@@ -785,6 +787,7 @@ public class MindMapEditor {
 				mm.setRootNode(n);
 				setMindMap(mm);
 				_isDirty = false;
+
 			}
 		});
 	}
