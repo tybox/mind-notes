@@ -12,8 +12,12 @@
 			position:absolute;
 			top: 0;
 			left: 0;
-			font-size: 23px;
 			margin: 6px;
+			font-weight:bold;
+			color: #2e58a8;
+			font-size: 18px;
+			cursor: pointer;
+			line-height: 18px;
 		}
 		
 		.errorLabel {
