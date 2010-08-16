@@ -13,7 +13,8 @@ public class EmbeddedObjectWidgetFactory {
 	private HashMap<String, FactoryAction> _types;
 	private ResizeController _controller;
 
-	public EmbeddedObjectWidgetFactory(ResizeController resizeController) {
+	public EmbeddedObjectWidgetFactory(ResizeController resizeController,
+			final boolean viewOnly) {
 		_controller = resizeController;
 		_types = new HashMap<String, EmbeddedObjectWidgetFactory.FactoryAction>();
 
@@ -42,7 +43,11 @@ public class EmbeddedObjectWidgetFactory {
 
 			@Override
 			public EmbeddedObjectWidget create() {
-				return new TextEditor(_controller);
+				if (viewOnly) {
+					return new TextViewer();
+				} else {
+					return new TextEditor(_controller);
+				}
 			}
 		});
 	}

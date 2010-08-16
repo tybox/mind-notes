@@ -71,7 +71,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 
 		initArrows();
 		initViewport();
-		initRootNode();
+		initRootNode(viewer);
 
 		if (!_viewer) {
 			initKeyboardShortcuts();
@@ -107,12 +107,13 @@ public class MindMapWidget extends Composite implements MindMapView,
 	}
 
 	/**
+	 * @param viewOnly
 	 * 
 	 */
-	private void initRootNode() {
+	private void initRootNode(boolean viewOnly) {
 		_rootNode = new NodeWidget();
 		_rootNode.setEmbeddedObjectFactory(new EmbeddedObjectWidgetFactory(
-				new ResizeController(_viewportPanel)));
+				new ResizeController(_viewportPanel), viewOnly));
 		_rootNode.setContainer(this);
 
 	}
@@ -161,7 +162,7 @@ public class MindMapWidget extends Composite implements MindMapView,
 			public void setPosition(int offsetWidth, int offsetHeight) {
 				if (_window == null)
 					return;
-				int maxLeft = Window.getClientWidth() - offsetWidth;
+				int maxLeft = Window.getClientWidth() - offsetWidth - 16;
 				int left = _window.cloudBarPanel.loadButton.getAbsoluteLeft();
 				int top = _window.cloudBarPanel.getAbsoluteTop()
 						+ _window.cloudBarPanel.getOffsetHeight();
