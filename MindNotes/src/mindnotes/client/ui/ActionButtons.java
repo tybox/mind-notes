@@ -68,6 +68,7 @@ public class ActionButtons {
 	private Resources _resources = GWT.create(Resources.class);
 	private ActionOptions _options;
 	private NodeWidget _widget;
+	private NodeWidget _previousWidget;
 
 	public ActionButtons() {
 		_resources.buttonStyles().ensureInjected();
@@ -199,6 +200,9 @@ public class ActionButtons {
 	}
 
 	public void hideButtons() {
+		if (_widget != null) {
+			_previousWidget = _widget;
+		}
 		_widget = null;
 		_deleteButton.setVisible(false);
 		_addLeftButton.setVisible(false);
@@ -237,6 +241,8 @@ public class ActionButtons {
 	}
 
 	public void show() {
+		if (_widget == null)
+			_widget = _previousWidget;
 		updateButtonLayout();
 	}
 }

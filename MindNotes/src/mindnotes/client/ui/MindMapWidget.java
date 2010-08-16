@@ -219,8 +219,8 @@ public class MindMapWidget extends Composite implements MindMapView,
 					_parentNodeWidget.addChildAtIndex(_dragged, _index);
 
 				}
-				showActions();
 				resumeCentering();
+				showActions();
 
 			}
 		});
