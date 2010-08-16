@@ -45,6 +45,8 @@ public class ImageSearchWidget extends Composite {
 
 	interface Styles extends CssResource {
 		String resultImg();
+
+		String offlineLabel();
 	}
 
 	public interface Listener {
@@ -101,6 +103,8 @@ public class ImageSearchWidget extends Composite {
 
 	private PreviewTimer _previewTimer;
 
+	private Timer _offlineTimer;
+
 	private static final int POPUP_TIMEOUT = 300;
 
 	public ImageSearchWidget() {
@@ -132,6 +136,13 @@ public class ImageSearchWidget extends Composite {
 		attachBranding(brandingBox.getElement());
 		imagePreview.removeFromParent();
 		_previewTimer = new PreviewTimer();
+		_offlineTimer = new Timer() {
+
+			@Override
+			public void run() {
+				reportOffline();
+			}
+		};
 
 	}
 
@@ -163,23 +174,46 @@ public class ImageSearchWidget extends Composite {
 
 	}
 
+	private void reportLoading() {
+		Label loadingLabel = new Label("Searching...");
+		loadingLabel.setStyleName(style.offlineLabel());
+		imageContainer.clear();
+		imageContainer.add(loadingLabel);
+	}
+
+	private void reportOffline() {
+		Label offlineLabel = new Label(
+				"The image search is taking an unusally long time to complete. Are you online?");
+		offlineLabel.setStyleName(style.offlineLabel());
+		imageContainer.clear();
+		imageContainer.add(offlineLabel);
+	}
+
 	/* @formatter:off */
 	private native void attachBranding(Element element)/*-{
-		$wnd.google.load("search", "1", {"callback" : function() {
-			$wnd.google.search.Search.getBranding(element);
-		}});
+		if ($wnd.google.load) {
+			$wnd.google.load("search", "1", {"callback" : function() {
+				$wnd.google.search.Search.getBranding(element);
+			}});
+		}
 	}-*/;
 	/* @formatter:on */
 
+	private void executeSearch(String text) {
+		_offlineTimer.schedule(5000);
+		reportLoading();
+		executeSearchNative(text);
+	}
+
 	/* @formatter:off */
-	private native void executeSearch(String text)/*-{
-		var content = this.@mindnotes.client.ui.imagesearch.ImageSearchWidget::imageContainer;
-			content.@com.google.gwt.user.client.ui.FlowPanel::clear()();
+	private native void executeSearchNative(String text)/*-{
 		var t = this;
 
 		var executeSearch = function() {
 
 			var searchComplete = function(searcher) {
+				var content = t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::imageContainer;
+				content.@com.google.gwt.user.client.ui.FlowPanel::clear()();
 				t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_waiting = false;
 				if (searcher.results && searcher.results.length > 0) {
 					var results = searcher.results;
@@ -197,8 +231,9 @@ public class ImageSearchWidget extends Composite {
 			imageSearch.execute(text);
 			t.@mindnotes.client.ui.imagesearch.ImageSearchWidget::_imageSearch = imageSearch;
 		}
-
-		$wnd.google.load("search", "1", {"callback" : executeSearch});
+		if ($wnd.google.load) {
+			$wnd.google.load("search", "1", {"callback" : executeSearch});
+		}
 	}-*/;
 	/* @formatter:on */
 
@@ -213,7 +248,7 @@ public class ImageSearchWidget extends Composite {
 	/* @formatter:on */
 
 	public void addImage(final ImageResult result) {
-
+		_offlineTimer.cancel();
 		final Image image = new Image(result.getThumbnailUrl(), 0, 0,
 				result.getThumbnailWidth(), result.getThumbnailHeight());
 		image.addStyleName(style.resultImg());

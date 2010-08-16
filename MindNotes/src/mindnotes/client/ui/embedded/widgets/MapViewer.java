@@ -1,27 +1,70 @@
 package mindnotes.client.ui.embedded.widgets;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MapViewer extends Composite implements EmbeddedObjectWidget {
 
+	interface Resources extends ClientBundle {
+		@Source("MapViewer.css")
+		Style style();
+	}
+
+	interface Style extends CssResource {
+		String offline();
+	}
+
 	private Listener _listener;
 	private HTML _html;
+	private Timer _offlineTimer;
+	private Resources _resources = GWT.create(Resources.class);
 
 	public MapViewer() {
+		_resources.style().ensureInjected();
 		_html = new HTML();
-		initWidget(_html);
-		_html.setPixelSize(500, 400);
 
+		initWidget(_html);
+		_offlineTimer = new Timer() {
+
+			@Override
+			public void run() {
+				reportOffline();
+			}
+		};
+		reportLoading();
+	}
+
+	private void reportLoading() {
+		_html.setHTML("<div class=\"" + _resources.style().offline()
+				+ "\">loading...</div>");
+		if (_listener != null) {
+			_listener.layoutChanged();
+		}
+	}
+
+	private void reportOffline() {
+		_html.setHTML("<div class=\""
+				+ _resources.style().offline()
+				+ "\">Google Maps is taking longer to load than usual. Are you online?</div>");
+		if (_listener != null) {
+			_listener.layoutChanged();
+		}
 	}
 
 	/* @formatter:off */
 	private native void embedMap(Element element, String data)/*-{
-		var maps = $wnd.google.maps;
 		var viewer = this;
 		var mapsLoaded = function() {
+			var timer = viewer.@mindnotes.client.ui.embedded.widgets.MapViewer::_offlineTimer;
+			timer.@com.google.gwt.user.client.Timer::cancel()();
+			var html = viewer.@mindnotes.client.ui.embedded.widgets.MapViewer::_html;
+			html.@com.google.gwt.user.client.ui.HTML::setPixelSize(II)(500, 400);
 			var maps = $wnd.google.maps;
 			var map;
 			if (maps.BrowserIsCompatible()) {
@@ -51,11 +94,15 @@ public class MapViewer extends Composite implements EmbeddedObjectWidget {
 					viewer.@mindnotes.client.ui.embedded.widgets.MapViewer::onLocationUpdated(Ljava/lang/String;)(strBounds);
 				};
 				maps.Event.addListener(map, "moveend", handler);
-
+				var l = viewer.@mindnotes.client.ui.embedded.widgets.MapViewer::_listener;
+				if (l) {
+					l.@mindnotes.client.ui.embedded.widgets.EmbeddedObjectWidget.Listener::layoutChanged()();
+				}
 			}
 		}
-
-		$wnd.google.load("maps", "2", {"callback" : mapsLoaded});
+		if ($wnd.google.load) {
+			$wnd.google.load("maps", "2", {"callback" : mapsLoaded});
+		}
 	}-*/;
 	/* @formatter:on */
 
@@ -72,7 +119,9 @@ public class MapViewer extends Composite implements EmbeddedObjectWidget {
 
 	@Override
 	public void setData(String data) {
+		_offlineTimer.schedule(5000);
 		embedMap(_html.getElement(), data);
+
 	}
 
 	@Override

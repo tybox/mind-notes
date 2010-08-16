@@ -407,7 +407,6 @@ public class MindMapEditor {
 	private void doUndoableAction(UndoableAction a) {
 		if (a.doAction()) {
 			_isDirty = true;
-			System.out.println("D");
 			_undoStack.push(a);
 		}
 	}
