@@ -22,12 +22,18 @@ public class MindmapStorageServiceImpl extends RemoteServiceServlet implements
 		MindmapStorageService {
 
 	@Override
-	public MindMapInfo saveMindmap(MindMap map) {
+	public MindMapInfo saveMindmap(String key, MindMap map) {
 		PersistenceManager pm = PMF.get().getPersistenceManager();
 		try {
-			DSMindMap dsMindMap = new DSMindMap(map);
-			dsMindMap.setUserID(getCurrentUserID());
-			pm.makePersistent(dsMindMap);
+			DSMindMap dsMindMap;
+			if (key == null) {
+				dsMindMap = new DSMindMap(map);
+				dsMindMap.setUserID(getCurrentUserID());
+				pm.makePersistent(dsMindMap);
+			} else {
+				dsMindMap = loadDSMindMap(pm, key, false);
+				dsMindMap.setMap(map);
+			}
 
 			return new MindMapInfo(KeyFactory.keyToString(dsMindMap.getKey()),
 					dsMindMap.getTitle());

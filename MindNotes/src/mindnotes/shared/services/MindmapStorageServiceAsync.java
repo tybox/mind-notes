@@ -13,8 +13,6 @@ public interface MindmapStorageServiceAsync {
 
 	void loadMindmap(String key, AsyncCallback<MindMap> callback);
 
-	void saveMindmap(MindMap map, AsyncCallback<MindMapInfo> callback);
-
 	void removeMindmap(String key, AsyncCallback<Void> callback);
 
 	void setMapPublic(String key, boolean isPublic, AsyncCallback<Void> callback);
@@ -22,5 +20,8 @@ public interface MindmapStorageServiceAsync {
 	void getMapPublic(String key, AsyncCallback<Boolean> callback);
 
 	void loadMindmapPublic(String key, AsyncCallback<MindMap> callback);
+
+	void saveMindmap(String key, MindMap map,
+			AsyncCallback<MindMapInfo> callback);
 
 }
