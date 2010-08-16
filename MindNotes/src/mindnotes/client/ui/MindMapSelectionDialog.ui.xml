@@ -8,7 +8,7 @@
 			background: #edf3ff;
 		}
 		.scrolls {
-			min-width: 200px;
+			min-width: 240px;
 			max-height: 200px;
 			padding: 2px;
 		}		
@@ -50,7 +50,7 @@
 		<g:DeckPanel ui:field="cloudMapsDeck" addStyleNames="{style.list}">
 			<g:HTML>Please wait...</g:HTML>
 			<g:HTML>No mindmaps stored in the cloud</g:HTML>
-			<g:HTML>Cloud not available</g:HTML>
+			<g:HTML>Log in to access cloud storage</g:HTML>
 			<g:FlexTable ui:field="availableDocumentsTable"></g:FlexTable>
 		</g:DeckPanel>
 		<g:HTML addStyleNames="{style.heading}">LOCAL STORAGE</g:HTML>

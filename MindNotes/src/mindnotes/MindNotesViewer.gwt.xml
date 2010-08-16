@@ -18,7 +18,7 @@
 	<inherits name='gwt.canvas.gwt-canvas' />
 	<inherits name='com.google.code.gwt.storage.Html5Storage' />
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/>
-	
+	<inherits name='com.google.gwt.widgetideas.WidgetIdeas' />
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='mindnotes.client.MindNotesViewer' />
