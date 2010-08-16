@@ -75,6 +75,11 @@
 		.preview {
 			border: 1px #b0b99b solid;
 		}
+		.offlineLabel {
+			color: #fff;
+			margin: 12px;
+			text-align: center;
+		}
 		
 		
 	</ui:style>
